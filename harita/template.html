@@ -4,182 +4,319 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>İstanbul Raylı Sistemler — İstasyon Kullanım Haritası</title>
+<script>
+/* Görünüm: kullanıcı seçimi yoksa sistem ayarı izlenir; boyamadan önce uygulanır */
+(function(){var t=null;try{localStorage.removeItem('ist-theme');t=localStorage.getItem('ist-gorunum')}catch(e){}
+if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+document.documentElement.dataset.theme=t})();
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
-  --bg:#0b0f14;--panel:rgba(17,21,28,.94);--panel-solid:#11151c;--border:#262d38;--border-strong:#343d4b;
-  --text:#e6e9ee;--muted:#9aa3b2;--faint:#6b7483;--hover:#1a2029;--active:#232b37;--accent:#7dd3fc;
+  color-scheme:dark;
+  --bg:#0b0f14;--panel:#11151c;--panel-solid:#11151c;--border:#262d38;--border-strong:#343d4b;--control:#717c8c;
+  --text:#e6e9ee;--muted:#9aa3b2;--faint:#8b95a5;--hover:#1a2029;--active:#232b37;--accent:#7dd3fc;
+  --hub:#f8fafc;--signal:#facc15;--fix-bg:rgba(250,204,21,.1);--fix-bd:rgba(250,204,21,.45);
   --shadow:0 8px 30px rgba(0,0,0,.35);
+  /* yazı ölçeği: 20 / 16 / 13 / 12 / 11 */
+  --fs-fig:1.25rem;--fs-title:1rem;--fs-body:.8125rem;--fs-sec:.75rem;--fs-cap:.6875rem;--badge-h:1.1875rem;
+  --hit:28px;--ctl:34px;--pl:364px;--peek:112px;--vh:1vh;
 }
 :root[data-theme="light"]{
-  --bg:#eef1f5;--panel:rgba(255,255,255,.95);--panel-solid:#fff;--border:#dde2ea;--border-strong:#c9d0db;
-  --text:#18202b;--muted:#5b6474;--faint:#8a93a3;--hover:#f1f4f8;--active:#e6ebf2;--accent:#0369a1;
+  color-scheme:light;
+  --bg:#eef1f5;--panel:#fff;--panel-solid:#fff;--border:#dde2ea;--border-strong:#c9d0db;--control:#737d8c;
+  --text:#18202b;--muted:#5b6474;--faint:#5f697a;--hover:#f1f4f8;--active:#e6ebf2;--accent:#0369a1;
+  --hub:#18202b;--signal:#b45309;--fix-bg:#fef3c7;--fix-bd:#b45309;
   --shadow:0 8px 30px rgba(20,30,50,.14);
 }
+@media (prefers-color-scheme: light){:root:not([data-theme]){color-scheme:light;--bg:#eef1f5;--panel:#fff;--text:#18202b;--muted:#5b6474}}
+@supports (height:1dvh){:root{--vh:1dvh}}
 *{box-sizing:border-box}
-html,body,#map{height:100%;margin:0}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+[hidden]{display:none!important}
+html,body{height:100%;height:100dvh;margin:0}
+main,#map{height:100%;margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:var(--fs-body);background:var(--bg);color:var(--text);overflow:hidden}
 #map{background:var(--bg)}
+.leaflet-container{font-family:inherit}
 button{font:inherit;color:inherit}
+:where(button,input,summary,a,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#map:focus-visible,#map .leaflet-bar a:focus-visible,#map a.leaflet-popup-close-button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.fail{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;margin:0;padding:24px;text-align:center;font-size:1rem;line-height:1.5;background:var(--bg);color:var(--text)}
 
 /* ---------- Panel ---------- */
 .panel{position:absolute;z-index:1000;top:12px;left:12px;width:340px;max-height:calc(100% - 24px);display:flex;flex-direction:column;
-  background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
-.panel-head{padding:14px 16px 10px;border-bottom:1px solid var(--border)}
-.panel-head h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.01em}
-.panel-head .sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
-.panel-body{overflow-y:auto;overflow-x:hidden;padding:12px 16px 14px;scrollbar-width:thin}
-.collapse-btn{display:none}
+  background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{position:relative;flex:none;padding:14px 52px 8px 16px}
+.panel-head h1{font-size:var(--fs-title);margin:0;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+.panel-head .sub{font-size:var(--fs-sec);color:var(--muted);margin:3px 0 0;line-height:1.4}
+.collapse-btn{position:absolute;top:10px;right:10px;width:28px;height:28px;padding:0;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;background:transparent;cursor:pointer}
+.collapse-btn:hover{background:var(--hover)}
+.collapse-btn svg{width:16px;height:16px}
+.grab{display:none}
+.pin{position:relative;z-index:2;flex:none;display:flex;flex-direction:column;padding:0 16px 10px;border-bottom:1px solid var(--border)}
+.sum{order:-1;margin:0 0 8px;font-size:var(--fs-body);line-height:1.4;font-variant-numeric:tabular-nums}
+.sum .pre{color:var(--muted)}
+.notice{margin:8px 0 0;padding:7px 9px;border-radius:8px;border:1px solid var(--fix-bd);background:var(--fix-bg);font-size:var(--fs-sec);line-height:1.4}
+.panel-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:10px 16px 14px;scrollbar-width:thin;overscroll-behavior:contain}
 
-.search{position:relative;margin-bottom:12px}
-.search input{width:100%;padding:9px 12px 9px 32px;border-radius:9px;border:1px solid var(--border-strong);background:var(--panel-solid);color:var(--text);font-size:13px;outline:none}
-.search input:focus{border-color:var(--accent)}
-.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--faint)}
-.results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--panel-solid);border:1px solid var(--border-strong);border-radius:9px;box-shadow:var(--shadow);max-height:280px;overflow:auto;z-index:5;display:none}
+.search{position:relative}
+.search input{width:100%;min-height:36px;padding:8px 12px 8px 34px;border-radius:9px;border:1px solid var(--control);background:var(--panel-solid);color:var(--text);font:inherit;font-size:var(--fs-body)}
+.search input::placeholder{color:var(--faint);opacity:1}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.search>svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.results{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--panel-solid);border:1px solid var(--control);border-radius:9px;box-shadow:var(--shadow);max-height:min(280px,50vh);overflow:auto;z-index:5;display:none}
 .results.open{display:block}
-.result{display:flex;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;font-size:13px}
-.result:hover,.result.sel{background:var(--hover)}
-.result .meta{margin-left:auto;font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+.result{display:flex;align-items:center;gap:8px;padding:6px 10px;min-height:max(30px,var(--hit));cursor:pointer;font-size:var(--fs-body);line-height:1.3}
+.result:hover{background:var(--hover)}
+.result.sel{background:var(--active);box-shadow:inset 2px 0 0 var(--accent)}
+.result .rn{min-width:0}
+.result .meta{margin-left:auto;font-size:var(--fs-cap);color:var(--faint);font-variant-numeric:tabular-nums;white-space:nowrap}
+.result.none{cursor:default;color:var(--muted);font-size:var(--fs-sec);line-height:1.4}
+.result.none:hover{background:none}
 
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.stat{background:var(--hover);border-radius:9px;padding:8px 10px}
-.stat .v{font-size:17px;font-weight:650;font-variant-numeric:tabular-nums}
-.stat .k{font-size:11px;color:var(--muted)}
+.seg{display:flex;gap:2px;background:var(--hover);border-radius:9px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;padding:6px 8px;min-height:var(--hit);border-radius:7px;font-size:var(--fs-sec);line-height:1.2;cursor:pointer;color:var(--muted)}
+.seg button[aria-checked="true"]{background:var(--panel-solid);color:var(--text);font-weight:600;box-shadow:0 0 0 1px var(--control)}
 
-.seg{display:flex;background:var(--hover);border-radius:9px;padding:3px;margin-bottom:12px}
-.seg button{flex:1;border:0;background:transparent;padding:6px 8px;border-radius:7px;font-size:12px;cursor:pointer;color:var(--muted)}
-.seg button.on{background:var(--panel-solid);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.section-title{display:flex;align-items:center;justify-content:space-between;min-height:var(--hit);margin:12px 0 2px}
+.section-title h2{margin:0;font-size:var(--fs-cap);text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
+.link{border:0;background:none;color:var(--accent);font-size:var(--fs-sec);cursor:pointer;padding:6px 8px;min-height:var(--hit);border-radius:7px}
+.link:hover{background:var(--hover);text-decoration:underline}
+.empty{margin:0;padding:2px 6px;font-size:var(--fs-sec);color:var(--muted);line-height:1.4}
 
-.section-title{display:flex;align-items:center;justify-content:space-between;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:14px 0 6px;font-weight:600}
-.section-title .links button{border:0;background:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0 0 0 8px;text-transform:none;letter-spacing:0}
-.group-head{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:10px 0 4px;cursor:pointer;user-select:none}
-.group-head input{margin:0}
-.line{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:7px;font-size:12.5px;cursor:pointer}
-.line:hover{background:var(--hover)}
-.line.focus{background:var(--active)}
-.line.off .badge,.line.off .lname{opacity:.4}
-.line input{margin:0;accent-color:#7dd3fc}
-.badge{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;min-width:30px;height:19px;padding:0 5px;border-radius:5px;font-size:11px;font-weight:700;color:#0b0f14;flex:0 0 auto}
-.lname{flex:1;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lpax{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+/* hat listesi: kutucuk = görünürlük, düğme = odak */
+.grp{position:relative}
+.cb{display:grid;place-items:center;width:var(--hit);height:var(--hit);flex:none;cursor:pointer}
+.cb input{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;display:grid;place-items:center;border:1.5px solid var(--control);border-radius:4px;background:var(--panel-solid);cursor:pointer}
+.cb input:checked,.cb input:indeterminate{background:var(--accent);border-color:var(--accent)}
+.cb input:checked::after{content:"";width:9px;height:5px;border:solid var(--panel-solid);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.cb input:indeterminate::after{content:"";width:8px;height:2px;border:0;background:var(--panel-solid);transform:none}
+.grp>.cb{position:absolute;left:0;top:0;z-index:1}
+summary{display:flex;align-items:center;gap:8px;min-height:var(--hit);padding:0 6px 0 calc(var(--hit) + 2px);border-radius:7px;cursor:pointer;font-size:var(--fs-sec);color:var(--muted);list-style:none;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary:hover{background:var(--hover)}
+.gname{font-weight:600}
+.gcount{margin-left:auto;font-size:var(--fs-cap);color:var(--faint)}
+.chev{width:14px;height:14px;flex:none;transition:transform .15s}
+details[open]>summary .chev{transform:rotate(90deg)}
+.line{display:flex;align-items:flex-start}
+.lfocus{flex:1;min-width:0;min-height:var(--hit);display:grid;grid-template-columns:auto minmax(0,1fr) auto;column-gap:8px;align-items:start;border:0;background:none;text-align:left;padding:4.5px 6px;border-radius:7px;cursor:pointer;font-size:var(--fs-body)}
+.lfocus:hover{background:var(--hover)}
+.lfocus[aria-pressed="true"]{background:var(--active);box-shadow:inset 2px 0 0 var(--text)}
+.badge{display:inline-flex;vertical-align:middle;align-items:center;justify-content:center;min-width:30px;height:var(--badge-h);padding:0 5px;border-radius:5px;font-size:var(--fs-cap);font-weight:700;line-height:1;color:#0b0f14;flex:0 0 auto;forced-color-adjust:none}
+.line.off .badge{background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--control);color:var(--muted)}
+.lname{color:var(--text);line-height:1.3;margin-top:1px;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.line.off .lname{color:var(--muted)}
+.lpax,.go{grid-area:1/3;justify-self:end;align-self:center;font-size:var(--fs-cap);white-space:nowrap;font-variant-numeric:tabular-nums}
+.lpax{color:var(--faint)}
+.go{color:var(--accent);visibility:hidden}
+.lfocus[aria-pressed="true"] .go{color:var(--text);font-weight:600}
+.lfocus:hover .lpax,.lfocus:focus-visible .lpax,.lfocus[aria-pressed="true"] .lpax{visibility:hidden}
+.lfocus:hover .go,.lfocus:focus-visible .go,.lfocus[aria-pressed="true"] .go{visibility:visible}
 
-.top{counter-reset:r}
-.top-item{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:12.5px}
+.top{counter-reset:r;list-style:none;margin:0;padding:0}
+.top-item{counter-increment:r;display:flex;align-items:center;gap:8px;width:100%;min-height:var(--hit);border:0;background:none;text-align:left;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:var(--fs-body)}
 .top-item:hover{background:var(--hover)}
-.top-item::before{counter-increment:r;content:counter(r);width:16px;color:var(--faint);font-size:11px;text-align:right;font-variant-numeric:tabular-nums}
-.top-item .nm{flex:1;min-width:0}
-.top-item .nm .t .badge{margin-left:4px}
-.top-item .nm .t{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar{height:3px;border-radius:2px;margin-top:3px;background:var(--accent);opacity:.7}
-.top-item .v{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.top-item::before{content:counter(r);width:16px;flex:none;color:var(--faint);font-size:var(--fs-cap);text-align:right;font-variant-numeric:tabular-nums}
+.top-item .nm{flex:1;min-width:0;display:block}
+.top-item .t{display:block;line-height:1.5}
+.top-item .t .badge{margin-left:2px}
+.bar{display:block;height:3px;border-radius:2px;margin-top:3px}
+.top-item .v{font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 
-.legend{display:flex;align-items:flex-end;gap:14px;padding:4px 2px 2px}
-.legend .c{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
-.legend .dot{border-radius:50%;border:1.5px solid var(--muted);background:rgba(154,163,178,.18)}
-.foot{font-size:11px;color:var(--faint);line-height:1.45;margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
-.foot b{color:var(--muted)}
+.info{margin-top:12px;border-top:1px solid var(--border);padding-top:6px}
+.info summary{padding-left:6px}
+.info p{margin:8px 6px 0;font-size:var(--fs-sec);color:var(--muted);line-height:1.5}
+.info b{color:var(--text);font-weight:600}
+kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius:4px;padding:0 4px}
 
-/* focus chip */
-.chip{position:absolute;z-index:1000;top:12px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:6px 8px 6px 12px;font-size:12.5px;display:none;align-items:center;gap:8px;box-shadow:var(--shadow)}
+/* odak etiketi */
+.chip{position:absolute;z-index:1000;top:12px;left:calc(var(--pl) + (100% - var(--pl) - 56px)/2);transform:translateX(-50%);max-width:calc(100% - var(--pl) - 72px);background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:3px 3px 3px 12px;font-size:var(--fs-body);line-height:1.3;display:none;align-items:center;gap:8px;box-shadow:var(--shadow)}
 .chip.show{display:flex}
-.chip button{border:0;background:var(--hover);border-radius:999px;width:22px;height:22px;cursor:pointer}
+#chip-text{display:flex;align-items:center;gap:6px;min-width:0}
+.chip .cn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .tot{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip button{flex:none;width:var(--hit);height:var(--hit);padding:0;display:grid;place-items:center;border:0;background:var(--hover);border-radius:999px;cursor:pointer}
+.chip button:hover{background:var(--active)}
+.chip button svg{width:12px;height:12px}
+.toast{position:absolute;z-index:1001;top:60px;left:calc(var(--pl) + (100% - var(--pl) - 56px)/2);transform:translateX(-50%);max-width:calc(100% - var(--pl) - 72px);background:var(--panel);border:1px solid var(--control);border-radius:9px;padding:7px 12px;font-size:var(--fs-sec);line-height:1.4;box-shadow:var(--shadow);display:none;pointer-events:none}
+.toast.show{display:block}
 
-/* map controls */
+/* daire boyutu göstergesi (harita üstünde) */
+.key{position:absolute;z-index:600;left:364px;bottom:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:6px 8px 5px;pointer-events:none}
+.key-t{font-size:var(--fs-cap);font-weight:600;color:var(--muted);margin-bottom:3px;white-space:nowrap}
+.key svg{display:block;overflow:visible}
+.key circle{fill:none;stroke:var(--hub);stroke-width:1.5}
+.key polyline{fill:none;stroke:var(--muted);stroke-width:1}
+.key text{font-size:var(--fs-cap);fill:var(--text);font-variant-numeric:tabular-nums}
+
+/* harita denetimleri */
 .ctl{display:flex;flex-direction:column;gap:6px}
-.ctl button{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
+.ctl button{width:var(--ctl);height:var(--ctl);padding:0;border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center}
 .ctl button:hover{background:var(--hover)}
+.ctl button[aria-pressed="true"]{background:var(--active);border-color:var(--control)}
 .ctl svg{width:17px;height:17px}
-.leaflet-bar{border:0!important;box-shadow:var(--shadow)!important}
-.leaflet-bar a{background:var(--panel)!important;color:var(--text)!important;border-color:var(--border)!important}
+.leaflet-bar{border:0!important;border-radius:9px!important;overflow:hidden;box-shadow:var(--shadow)!important}
+#map .leaflet-bar a{width:var(--ctl);height:var(--ctl);line-height:var(--ctl);background:var(--panel);color:var(--text);border-color:var(--border)}
+#map .leaflet-bar a:hover{background:var(--hover)}
+#map .leaflet-bar a.leaflet-disabled{color:var(--faint);cursor:default}
 .leaflet-control-attribution{background:var(--panel)!important;color:var(--faint)!important}
-.leaflet-control-attribution a{color:var(--muted)!important}
-.leaflet-control-scale-line{background:var(--panel);color:var(--muted);border-color:var(--muted)}
+.leaflet-control-attribution a{color:var(--muted)!important;display:inline-block;padding:7px 3px;margin:-7px -3px}
+.leaflet-control-scale-line{background:var(--panel);color:var(--muted);border-color:var(--muted);text-shadow:none}
 
-/* popup */
+/* açılır pencere */
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel-solid);color:var(--text);box-shadow:var(--shadow)}
 .leaflet-popup-content-wrapper{border-radius:12px;border:1px solid var(--border)}
-.leaflet-popup-content{margin:12px 14px;min-width:230px;font-size:12.5px;line-height:1.4}
-.leaflet-container a.leaflet-popup-close-button{color:var(--faint)}
-.pp-title{font-size:15px;font-weight:650;margin:0 18px 2px 0}
-.pp-town{color:var(--muted);font-size:12px;margin-bottom:8px}
-.pp-big{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
-.pp-big small{font-size:12px;font-weight:400;color:var(--muted)}
-.pp-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--border);font-size:12px}
-.pp-row span:first-child{color:var(--muted)}
+.leaflet-popup-content{margin:12px 14px;font-size:var(--fs-body);line-height:1.4}
+.leaflet-container a.leaflet-popup-close-button{width:var(--hit);height:var(--hit);font:400 18px/var(--hit) system-ui,sans-serif;color:var(--muted);border-radius:8px;top:2px;right:2px}
+.leaflet-container a.leaflet-popup-close-button:hover,.leaflet-container a.leaflet-popup-close-button:focus{color:var(--text);background:var(--hover)}
+.pp-title{font-size:var(--fs-title);font-weight:600;line-height:1.25;margin:0 calc(var(--hit) - 8px) 2px 0}
+.pp-town{color:var(--muted);font-size:var(--fs-sec);margin-bottom:8px}
+.pp-big{font-size:var(--fs-fig);font-weight:700;font-variant-numeric:tabular-nums}
+.pp-big small,.pp-day{font-size:var(--fs-sec);font-weight:400;color:var(--muted)}
+.pp-day{margin-bottom:8px;font-variant-numeric:tabular-nums}
+.pp-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--border);font-size:var(--fs-sec)}
+.pp-row>span:first-child{color:var(--muted)}
 .pp-row b{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
 .pp-lines{display:flex;flex-direction:column;gap:5px;margin:8px 0}
-.pp-line{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:12px}
+.pp-line{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:var(--fs-sec);font-variant-numeric:tabular-nums}
 .pp-line .track{height:6px;background:var(--hover);border-radius:3px;overflow:hidden}
 .pp-line .fill{height:100%}
-.pp-note{margin-top:8px;padding:7px 9px;border-radius:8px;background:var(--hover);font-size:11.5px;color:var(--muted)}
-.pp-fix{margin-top:6px;padding:7px 9px;border-radius:8px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.25);font-size:11.5px;color:var(--text)}
-.pp-actions{margin-top:9px;display:flex;gap:6px}
-.pp-actions button{border:1px solid var(--border-strong);background:transparent;border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer}
+.pp-note{margin-top:8px;padding:7px 9px;border-radius:8px;background:var(--hover);font-size:var(--fs-cap);line-height:1.45;color:var(--muted)}
+.pp-fix{margin-top:6px;padding:7px 9px;border-radius:8px;background:var(--fix-bg);border:1px solid var(--fix-bd);font-size:var(--fs-cap);line-height:1.45;color:var(--text)}
+.pp-fix b{color:var(--signal)}
+.pp-actions{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+.pp-actions button{border:1px solid var(--control);background:transparent;border-radius:7px;padding:5px 12px;min-height:var(--hit);font-size:var(--fs-sec);cursor:pointer}
 .pp-actions button:hover{background:var(--hover)}
 
-/* labels */
-.lbl{background:transparent!important;border:0!important;box-shadow:none!important;color:var(--text)!important;font-size:11px;font-weight:600;padding:0 0 0 2px!important;
-  text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 5px var(--bg)}
+/* etiketler */
+.lbl{background:transparent!important;border:0!important;box-shadow:none!important;color:var(--text)!important;font-size:var(--fs-cap);font-weight:600;padding:0 0 0 2px!important;
+  text-shadow:0 0 2px var(--bg),0 0 2px var(--bg),0 0 3px var(--bg),0 0 3px var(--bg),0 0 5px var(--bg)}
 .lbl::before{display:none}
-.tt{background:var(--panel-solid)!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:7px!important;box-shadow:var(--shadow)!important;font-size:12px}
+.tt{background:var(--panel-solid)!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:7px!important;box-shadow:var(--shadow)!important;font-size:var(--fs-sec)}
 .tt::before{display:none}
+.tt .badge{margin-right:3px}
 
-@media(max-width:700px){
-  .panel{top:auto;bottom:0;left:0;right:0;width:auto;max-height:62%;border-radius:14px 14px 0 0}
-  .panel.collapsed .panel-body{display:none}
-  .collapse-btn{display:block;position:absolute;right:12px;top:12px;border:1px solid var(--border);background:var(--hover);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
-  .panel-head{padding-right:84px}
-  .chip{top:10px;max-width:calc(100% - 90px)}
+/* ---------- Geniş ekran: panel gizlenebilir ---------- */
+@media(min-width:701px){
+  :root[data-panel="off"]{--pl:56px}
+  :root[data-panel="off"] .panel{width:auto}
+  :root[data-panel="off"] .panel>:not(.panel-head),:root[data-panel="off"] .panel-head>:not(.collapse-btn){display:none}
+  :root[data-panel="off"] .panel-head{padding:6px}
+  :root[data-panel="off"] .collapse-btn{position:static;border-color:transparent}
+  :root[data-panel="off"] .collapse-btn svg{transform:rotate(180deg)}
+  :root[data-panel="off"] .key{left:12px}
 }
+@media(min-width:701px) and (max-width:880px){.key{bottom:48px}}
+
+/* ---------- Dar ekran: üç yükseklikli alt sayfa ---------- */
+@media(max-width:700px){
+  :root{--fs-fig:1.375rem;--fs-title:1.0625rem;--fs-body:1rem;--fs-sec:.875rem;--fs-cap:.75rem;--badge-h:1.375rem;
+    --hit:44px;--ctl:44px;--pl:10px;--sheet:var(--peek);--lift:var(--peek)}
+  :root[data-sheet="medium"]{--sheet:calc(var(--vh)*50);--lift:calc(var(--vh)*50)}
+  :root[data-sheet="large"]{--sheet:calc(var(--vh)*88);--lift:calc(var(--vh)*50)}
+  .panel{z-index:1100}
+  .panel{top:auto;bottom:0;left:0;right:0;width:auto;max-height:none;height:var(--sheet);border-width:1px 0 0;border-radius:16px 16px 0 0;transition:height .2s ease;overscroll-behavior:contain}
+  :root[data-sheet="medium"] .panel,:root[data-sheet="large"] .panel{overflow-y:auto}
+  .panel>*{flex:none}
+  .pin{order:-1;position:sticky;top:0;z-index:3;background:var(--panel);padding:0 16px 6px;border:0}
+  .grab{display:grid;place-items:center;width:100%;height:44px;padding:0;border:0;background:none;cursor:pointer;border-radius:16px 16px 0 0}
+  .grab span{width:36px;height:5px;border-radius:3px;background:var(--control)}
+  .grab:focus-visible{outline-offset:-4px}
+  .collapse-btn{display:none}
+  .search input{min-height:44px}
+  .sum{order:0;margin:4px 0 0;font-size:var(--fs-sec);line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notice{margin:4px 0 8px}
+  .panel-head{padding:12px 16px 0}
+  .panel-body{flex:none;overflow:visible;padding:10px 16px 20px}
+  .lfocus{grid-template-rows:auto auto;padding:6px}
+  .lfocus .badge{grid-row:1/3}
+  .lname{display:block;margin-top:0}
+  .lpax{grid-area:2/2;justify-self:start;visibility:visible!important}
+  .go{grid-area:1/3/3/4;visibility:visible;font-size:var(--fs-sec)}
+  .cb{align-self:flex-start}
+  .chip{top:10px;font-size:var(--fs-sec);padding:3px 3px 3px 12px}
+  .chip button svg{width:14px;height:14px}
+  .toast{top:74px}
+  .key{left:8px;bottom:calc(var(--lift) + 48px);transition:bottom .2s ease}
+  .leaflet-bottom{bottom:var(--lift);transition:bottom .2s ease}
+  .leaflet-control-attribution a{padding:14px 5px;margin:-14px -5px}
+  .pp-title{margin-right:36px}
+}
+@media(max-width:400px){.sum .pre{display:none}}
+@media(min-width:701px) and (hover:none){
+  .lfocus{grid-template-rows:auto auto}
+  .lfocus .badge{grid-row:1/3}
+  .lpax{grid-area:2/2;justify-self:start;visibility:visible!important}
+  .go{grid-area:1/3/3/4;visibility:visible}
+}
+
+/* ---------- Sistem tercihleri ---------- */
+@media (prefers-reduced-motion: reduce){
+  .panel,.chev,.key,.leaflet-bottom,.leaflet-fade-anim .leaflet-popup,.leaflet-fade-anim .leaflet-tile{transition:none!important}
+}
+@media (prefers-contrast: more){
+  :root,:root[data-theme="light"]{--muted:var(--text);--faint:var(--text);--border:var(--control);--border-strong:var(--text);--control:var(--text)}
+  .panel,.chip,.key,.ctl button,.leaflet-popup-content-wrapper{border-color:var(--text)}
+}
+@media (prefers-reduced-transparency: reduce){.pp-fix,.notice{background:var(--panel-solid)}}
+@media (pointer:coarse){:root{--hit:44px;--ctl:44px}}
+@media (forced-colors: active){.cb input{appearance:auto;-webkit-appearance:auto}.cb input::after{display:none}}
 </style>
 </head>
 <body>
-<div id="map"></div>
+<noscript><p class="fail">Bu harita JavaScript ile çalışır. Tarayıcınızda JavaScript’i etkinleştirip sayfayı yenileyin.</p></noscript>
+<p class="fail" id="nolib" hidden>Harita kitaplığı yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
 
-<div class="chip" id="chip"><span id="chip-text"></span><button id="chip-x" title="Odağı kaldır (Esc)">✕</button></div>
-
-<aside class="panel" id="panel">
-  <div class="panel-head">
+<aside class="panel" id="panel" aria-label="Hatlar ve arama">
+  <div class="panel-head" id="panel-head">
     <h1>İstanbul raylı sistem istasyonları</h1>
-    <div class="sub">2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla orantılı</div>
-    <button class="collapse-btn" id="collapse">Gizle</button>
+    <p class="sub">2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı</p>
+    <button class="collapse-btn" id="collapse" type="button" aria-expanded="true" aria-controls="panel-body" aria-label="Paneli gizle" title="Paneli gizle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
   </div>
-  <div class="panel-body">
+  <div class="pin" id="pin">
+    <button class="grab" id="grab" type="button" aria-expanded="false" aria-controls="panel-body" aria-label="Paneli büyüt"><span></span></button>
     <div class="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="İstasyon, hat veya ilçe ara…" autocomplete="off">
-      <div class="results" id="results"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" role="combobox" aria-label="İstasyon, hat veya ilçe ara" aria-expanded="false" aria-controls="results" aria-autocomplete="list" placeholder="İstasyon, hat veya ilçe ara…" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      <div class="results" id="results" role="listbox" aria-label="Arama sonuçları"></div>
+    </div>
+    <p class="sum" id="sum"><span class="pre">Görünen: </span><span id="sum-t">–</span></p>
+    <p class="notice" id="notice" role="alert" hidden>Zemin harita yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
+  </div>
+  <div class="panel-body" id="panel-body">
+    <div class="seg" id="mode" role="radiogroup" aria-label="Görünüm">
+      <button type="button" role="radio" aria-checked="true" data-mode="station" title="Her hat için ayrı daire">Ayrı istasyonlar</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="hub" title="Aktarma istasyonlarını tek dairede topla">Aktarma merkezleri</button>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="v" id="s-pax">–</div><div class="k">görünen yıllık yolcu</div></div>
-      <div class="stat"><div class="v" id="s-st">–</div><div class="k">istasyon · <span id="s-ln">–</span> hat</div></div>
-    </div>
+    <div class="section-title"><h2 id="h-top">En yoğun istasyonlar</h2></div>
+    <ol class="top" id="top" aria-labelledby="h-top"></ol>
 
-    <div class="seg" id="mode">
-      <button data-mode="station" class="on" title="Her hat için ayrı daire">Hat bazında</button>
-      <button data-mode="hub" title="Aktarma istasyonlarını tek dairede topla">Aktarma merkezi</button>
-    </div>
-
-    <div class="section-title">Hatlar <span class="links"><button id="all">Tümü</button><button id="none">Hiçbiri</button></span></div>
+    <div class="section-title"><h2>Hatlar</h2><span class="links"><button class="link" id="all" type="button">Tümü</button><button class="link" id="none" type="button">Hiçbiri</button></span></div>
     <div id="lines"></div>
 
-    <div class="section-title">En yoğun istasyonlar</div>
-    <div class="top" id="top"></div>
-
-    <div class="section-title">Daire boyutu</div>
-    <div class="legend" id="legend"></div>
-
-    <div class="foot">
-      <b>Kullanım:</b> Kutucuk hattı açar/kapatır. Hat adına tıklamak hatta odaklanır, diğerleri soluklaşır. İstasyona tıklayınca ayrıntılar açılır. <b>Esc</b> odağı kaldırır, <b>/</b> aramaya geçer.<br><br>
-      Hat çizgileri OpenStreetMap'teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.<br><br>
-      <b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. Sarı kutulu açılır pencereler bu sürümde düzeltilen kayıtları gösterir.<br>
-      <b>Altlık:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.
-    </div>
+    <details class="info">
+      <summary><span class="gname">Veri ve kullanım</span><svg class="chev" style="margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+      <p><b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer.</p>
+      <p>Hat çizgileri OpenStreetMap’teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.</p>
+      <p><b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı kaynak, istasyon penceresinde yazar.</p>
+      <p><b>Zemin harita:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.</p>
+    </details>
   </div>
 </aside>
 
+<main>
+  <div class="chip" id="chip"><span id="chip-text"></span><button id="chip-x" type="button" aria-label="Odağı kaldır" title="Odağı kaldır (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="toast" id="toast" role="status"></div>
+  <div id="map" role="application" aria-label="İstasyon haritası"></div>
+  <div class="key" id="key" role="img" aria-label="Daire boyutu göstergesi"><div class="key-t">Yıllık yolcu</div><svg id="key-svg" aria-hidden="true"></svg></div>
+</main>
+<div class="vh" id="live" role="status" aria-live="polite"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>if(!window.L)document.getElementById('nolib').hidden=false</script>
 <script>
 const STATIONS = __DATA__;
 /* OpenStreetMap'ten alınmış gerçek ray geometrisi (build_map.py üretir) */
@@ -206,11 +343,11 @@ const LINES = {
       seq:[["Ataköy","Yenibosna","Çobançeşme","29 Ekim Cumhuriyet","Doğu Sanayi","Mimar Sinan","15 Temmuz","Halkalı Caddesi","Atatürk Mahallesi","Bahariye","MASKO","İkitelli Sanayi","Ziya Gökalp Mah.","Olimpiyat"]]},
   M11:{name:"Gayrettepe – İstanbul Havalimanı – Arnavutköy",type:"Metro",color:"#14b8a6",
       seq:[["Gayrettepe","Kağıthane","Hasdal","Kemerburgaz","Göktürk","İhsaniye","İstanbul Havalimanı","Taşoluk","Arnavutköy"]]},
-  Marmaray:{name:"Halkalı – Gebze",type:"Banliyö",color:"#cbd5e1",width:5,
+  Marmaray:{name:"Marmaray · Halkalı – Gebze",type:"Banliyö",color:"#cbd5e1",width:5,
       seq:[["Halkalı","Mustafa Kemal","Küçükçekmece","Florya","Florya Akvaryum","Yeşilköy","Yeşilyurt","Ataköy","Bakırköy","Yenimahalle","Zeytinburnu","Kazlıçeşme","Yenikapı","Sirkeci","Üsküdar","Ayrılıkçeşme","Söğütlüçeşme","Feneryolu","Göztepe","Erenköy","Suadiye","Bostancı","Küçükyalı","İdealtepe","Süreyya Plajı","Maltepe","Cevizli","Atalar","Başak","Kartal","Yunus","Pendik","Kaynarca","Tersane","Güzelyalı","Aydıntepe","İçmeler","Tuzla","Çayırova","Fatih","Osmangazi","Darıca","Gebze"]]},
   SK:{name:"Sirkeci – Kazlıçeşme (TCDD)",type:"Banliyö",color:"#a8b3c4",dash:"6 6",
       seq:[["Sirkeci","Cankurtaran","Kumkapı","Yenikapı","Cerrahpaşa","Koca Mustafa Paşa","Yedikule","Kazlıçeşme"]]},
-  HB:{name:"Halkalı – Bahçeşehir (TCDD)",type:"Banliyö",color:"#a8b3c4",dash:"6 6",seq:[["Halkalı","Ispartakule","Bahçeşehir"]]},
+  HB:{name:"Halkalı – Bahçeşehir (TCDD)",type:"Banliyö",color:"#a8b3c4",dash:"2 6",seq:[["Halkalı","Ispartakule","Bahçeşehir"]]},
   T1:{name:"Kabataş – Bağcılar",type:"Tramvay",color:"#fb923c",
       seq:[["Kabataş","Fındıklı","Tophane","Karaköy","Eminönü","Sirkeci","Gülhane","Sultanahmet","Çemberlitaş","Beyazıt","Laleli","Aksaray","Yusufpaşa","Haseki","Fındıkzade","Çapa","Pazartekke","Topkapı","Atatürk Öğrenci Yurdu","Merkezefendi","Akşemsettin","Mithatpaşa","Zeytinburnu","Mehmetakif","Keresteciler","Güngören","Akıncılar","Soğanlı","Cami","Güneştepe","Bağcılar"]]},
   T2:{name:"Taksim – Tünel (nostaljik)",type:"Tramvay",color:"#fca5a5",seq:[]},
@@ -226,16 +363,29 @@ const LINES = {
   TF2:{name:"Eyüp – Piyer Loti",type:"Füniküler / Teleferik",color:"#fb7185",seq:[["Eyüp","Piyer Loti"]]},
 };
 const TYPES = ["Metro","Banliyö","Tramvay","Füniküler / Teleferik"];
+const OPEN_TYPES = ["Metro","Tramvay"];
 const ORDER = Object.keys(LINES);
+const INK = '#18202b', SRC0 = 'İBB Açık Veri Portalı';
 
 /* ---------- Yardımcılar ---------- */
+const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('tr-TR').format(n);
-const short = n => n>=1e9 ? (n/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' Mr' : n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:n>=1e7?0:1})+' Mn' : Math.round(n/1e3).toLocaleString('tr-TR')+' B';
+const short = n => n>=1e9 ? (n/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' mr' : n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:n>=1e7?0:1})+' mn' : Math.round(n/1e3).toLocaleString('tr-TR')+' bin';
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => s.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ı/g,'i');
-const badge = l => `<span class="badge" style="background:${LINES[l].color}">${l==='Marmaray'?'B1':l}</span>`;
 const code = l => l==='Marmaray'?'B1':l;
+const badge = l => `<span class="badge" style="background:${LINES[l].color}">${code(l)}</span>`;
+const mix = (a,b) => '#'+[1,3,5].map(i=>Math.round((parseInt(a.slice(i,i+2),16)+parseInt(b.slice(i,i+2),16))/2).toString(16).padStart(2,'0')).join('');
 function km(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lon-a.lon)*Math.PI/180,x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+const say = t => {$('live').textContent=t};
+let toastT; function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),4000)}
+
+/* ---------- Sistem tercihleri ve yerleşim durumu ---------- */
+const RM = matchMedia('(prefers-reduced-motion: reduce)'), MQ = matchMedia('(max-width:700px)'), LQ = matchMedia('(prefers-color-scheme: light)');
+const mobile = () => MQ.matches;
+const root = document.documentElement, panel = $('panel'), pin = $('pin'), grab = $('grab');
+const SHEETS = ['peek','medium','large'];
+let sheet = 'peek', panelOff = false;
 
 /* ---------- Durum ---------- */
 const visible = new Set(ORDER);
@@ -255,29 +405,43 @@ const hubs = [];
 hubs.forEach((h,i)=>{h.id=i;h.lat=h.members.reduce((a,m)=>a+m.lat,0)/h.members.length;h.lon=h.members.reduce((a,m)=>a+m.lon,0)/h.members.length;});
 
 /* ---------- Harita ---------- */
-const map = L.map('map',{center:[41.03,28.97],zoom:11,zoomSnap:.25,zoomControl:false,preferCanvas:true,attributionControl:true});
+const map = L.map('map',{center:[41.03,28.97],zoom:11,zoomSnap:.25,zoomControl:false,preferCanvas:true,attributionControl:true,
+  renderer:L.canvas({tolerance:matchMedia('(pointer:coarse)').matches?12:6}),
+  zoomAnimation:!RM.matches,fadeAnimation:!RM.matches,markerZoomAnimation:!RM.matches,inertia:!RM.matches});
+{const pb=map.panBy.bind(map);map.panBy=(o,opt)=>pb(o,RM.matches?Object.assign({},opt,{animate:false}):opt)}
 const ESRI='https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/';
 const TILES = {
   dark:[ESRI+'World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',ESRI+'World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}'],
   light:[ESRI+'World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',ESRI+'World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}']
 };
-let theme = (()=>{try{return localStorage.getItem('ist-theme')}catch(e){return null}})() || 'dark';
+const sysTheme = () => LQ.matches?'light':'dark';
+const stored = () => {try{const t=localStorage.getItem('ist-gorunum');return t==='light'||t==='dark'?t:null}catch(e){return null}};
+let theme = stored() || sysTheme();
+const hubCol = () => theme==='light'?INK:'#f8fafc';
 const base = L.tileLayer(TILES[theme][0],{maxZoom:19,maxNativeZoom:16,attribution:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap katkıcıları'}).addTo(map);
 map.createPane('refs').style.zIndex=350;map.getPane('refs').style.pointerEvents='none';
 const ref = L.tileLayer(TILES[theme][1],{maxZoom:19,maxNativeZoom:16,pane:'refs'}).addTo(map);
-L.control.zoom({position:'topright'}).addTo(map);
+L.control.zoom({position:'topright',zoomInTitle:'Yakınlaştır',zoomOutTitle:'Uzaklaştır'}).addTo(map);
 L.control.scale({imperial:false,position:'bottomright'}).addTo(map);
+/* zemin harita yüklenemezse panelde tek satır uyarı */
+let tileErr=0;
+base.on('loading',()=>{tileErr=0}).on('tileerror',()=>{if(!tileErr++)setNotice(true)}).on('load',()=>{if(!tileErr)setNotice(false)});
+function setNotice(on){if($('notice').hidden===!on)return;$('notice').hidden=!on;syncPeek()}
 
+const ICON = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/>'
+};
 const Tools = L.Control.extend({options:{position:'topright'},onAdd(){
-  const d=L.DomUtil.create('div','ctl');
-  d.innerHTML=`<button id="b-fit" title="Tüm hatları göster"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-  <button id="b-theme" title="Açık/koyu altlık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg></button>
-  <button id="b-lbl" title="İstasyon adlarını göster/gizle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg></button>`;
+  const d=L.DomUtil.create('div','ctl'), svg=(id,p)=>`<svg ${id?`id="${id}" `:''}viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${p}</svg>`;
+  d.innerHTML=`<button id="b-fit" type="button" aria-label="Tüm hatları göster" title="Tüm hatları göster">${svg('','<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>')}</button>
+  <button id="b-theme" type="button">${svg('i-theme','')}</button>
+  <button id="b-lbl" type="button" aria-pressed="true">${svg('','<path d="M4 7V5h16v2M9 19h6M12 5v14"/>')}</button>`;
   L.DomEvent.disableClickPropagation(d);return d;}});
 new Tools().addTo(map);
 
 const routeLayer = L.layerGroup().addTo(map), dotLayer = L.layerGroup().addTo(map), labelLayer = L.layerGroup().addTo(map);
-const routes = {}, markers = new Map();
+const routes = {}, casings = {}, markers = new Map(), drawn = [];
 let labelsOn = true;
 
 function radius(pax){const z=map.getZoom();const k=Math.pow(1.28,z-11);return Math.max(2.5,(1.6+Math.sqrt(pax/1e6)*2.7)*k)}
@@ -285,7 +449,7 @@ function radius(pax){const z=map.getZoom();const k=Math.pow(1.28,z-11);return Ma
 function drawRoutes(){
   const osm=Object.fromEntries(ROUTES.features.map(f=>[f.properties.line,f.geometry.coordinates]));
   ORDER.forEach(l=>{
-    const L_=LINES[l], opt={color:L_.color,weight:L_.width||4,dashArray:L_.dash,opacity:.75,lineCap:'round',lineJoin:'round',interactive:false};
+    const L_=LINES[l], opt={color:L_.color,weight:L_.width||4,dashArray:L_.dash,opacity:.9,lineCap:'round',lineJoin:'round',interactive:false};
     let segs;
     if(osm[l]){ segs=osm[l].map(p=>p.map(([x,y])=>[y,x])); L_.osm=true; }
     else { // OSM geometrisi yoksa istasyon sırasına göre düz çizgi
@@ -293,28 +457,49 @@ function drawRoutes(){
       segs=L_.seq.map(seq=>seq.map(n=>idx[n]).filter(Boolean).map(s=>[s.lat,s.lon])).filter(s=>s.length>1);
     }
     routes[l]=segs.length?[L.polyline(segs,opt)]:[];
+    // açık görünümde hattın altına koyu kılıf
+    casings[l]=segs.length?[L.polyline(segs,Object.assign({},opt,{color:INK,weight:opt.weight+2,opacity:.6}))]:[];
   });
 }
 drawRoutes();
 
 function styleFor(l){
   const dim = focusLine && focusLine!==l;
-  return {route:dim?.08:.75, fill:dim?.07:.72, stroke:dim?.12:.95};
+  return {route:dim?.08:.9, fill:dim?.07:.72, stroke:dim?.12:.95};
 }
 
+/* ---------- Açılır pencere ayarları: panel, alt sayfa ve araç düğmelerinden uzak dur ---------- */
+function peekPx(){return mobile()&&pin.offsetHeight+1||112}
+function liftPx(){return sheet==='peek'?peekPx():innerHeight*.5}
+function popOpts(){
+  if(mobile()){const w=Math.max(180,Math.min(320,innerWidth-104));
+    return {maxWidth:w,minWidth:Math.min(230,w),maxHeight:Math.max(180,innerHeight-peekPx()-(focusLine?190:130)),autoPanPaddingTopLeft:[10,focusLine?72:10],autoPanPaddingBottomRight:[62,peekPx()+40]}}
+  return {maxWidth:320,minWidth:230,maxHeight:Math.max(200,innerHeight-150),autoPanPaddingTopLeft:[panelOff?64:364,64],autoPanPaddingBottomRight:[60,24]};
+}
+function syncPopOpts(){const o=popOpts();markers.forEach(m=>Object.assign(m.getPopup().options,o))}
+function panelPad(){return mobile()?{paddingTopLeft:[16,focusLine?76:16],paddingBottomRight:[64,liftPx()+28]}:{paddingTopLeft:[panelOff?64:370,focusLine?60:20],paddingBottomRight:[60,24]}}
+
+/* seçili istasyonu haritada belirginleştir */
+function hiOn(m){m.sel={weight:m.options.weight,color:m.options.color,fillOpacity:m.options.fillOpacity,opacity:m.options.opacity};m.setStyle({weight:3,color:hubCol(),fillOpacity:.9,opacity:1});m.bringToFront()}
+function hiOff(m){if(!m.sel)return;const s=m.sel;m.sel=null;if(!map.hasLayer(m))return;m.setStyle(s);for(let j=drawn.indexOf(m)+1;j>0&&j<drawn.length;j++)drawn[j].bringToFront()}
+
 function render(){
-  routeLayer.clearLayers(); dotLayer.clearLayers(); markers.clear();
-  const order = focusLine ? [...ORDER.filter(l=>l!==focusLine),focusLine] : ORDER;
-  order.forEach(l=>{ if(!visible.has(l)) return; const s=styleFor(l); routes[l].forEach(p=>{p.setStyle({opacity:s.route});p.addTo(routeLayer)}) });
+  routeLayer.clearLayers(); dotLayer.clearLayers(); markers.clear(); drawn.length=0;
+  const light = theme==='light', po = popOpts();
+  const order = (focusLine ? [...ORDER.filter(l=>l!==focusLine),focusLine] : ORDER).filter(l=>visible.has(l));
+  order.forEach(l=>{const s=styleFor(l);casings[l].forEach(p=>{p.setStyle({color:light?INK:'#e6e9ee',opacity:(light?.6:.45)*s.route/.9});p.addTo(routeLayer)})});
+  order.forEach(l=>{const s=styleFor(l);routes[l].forEach(p=>{p.setStyle({opacity:s.route});p.addTo(routeLayer)})});
   const items = currentItems();
   // büyükler altta, küçükler üstte kalsın ki hepsi tıklanabilsin; odaktaki hat en üstte
   items.sort((a,b)=>(a.focus-b.focus)||(b.pax-a.pax)).forEach(it=>{
-    const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:it.color,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:it.st.fill,opacity:it.st.stroke});
-    m.bindTooltip(`<b>${esc(it.name)}</b> · ${short(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
-    m.bindPopup(()=>it.multi?hubPopup(it.hub):stationPopup(it.s),{maxWidth:320,autoPanPaddingTopLeft:innerWidth>700?[360,64]:[10,60],autoPanPaddingBottomRight:innerWidth>700?[60,20]:[10,20]});
-    m.addTo(dotLayer); markers.set(it.key,m);
+    const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:light?mix(it.color,INK):it.color,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:it.st.fill,opacity:light&&it.st.stroke>.5?1:it.st.stroke});
+    m.pax=it.pax;
+    m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${short(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
+    m.bindPopup(()=>it.multi?hubPopup(it.hub):stationPopup(it.s),po);
+    m.on('popupopen',()=>hiOn(m)).on('popupclose',()=>hiOff(m));
+    m.addTo(dotLayer); markers.set(it.key,m); drawn.push(m);
   });
-  updateStats(items); updateTop(items); updateLabels(); updateLegend();
+  updateStats(items); updateTop(items); updateLabels(); updateKey();
 }
 
 function currentItems(){
@@ -322,8 +507,8 @@ function currentItems(){
     return hubs.map(h=>{
       const mem=h.members.filter(m=>visible.has(m.line)); if(!mem.length) return null;
       const pax=mem.reduce((a,m)=>a+m.pax,0), lead=mem.reduce((a,b)=>b.pax>a.pax?b:a);
-      const inFocus = !focusLine || mem.some(m=>m.line===focusLine), st=inFocus?{route:.75,fill:.72,stroke:.95}:{route:.08,fill:.07,stroke:.12};
-      const color = mem.length>1 ? '#f8fafc' : LINES[lead.line].color;
+      const inFocus = !focusLine || mem.some(m=>m.line===focusLine), st=inFocus?{route:.9,fill:.72,stroke:.95}:{route:.08,fill:.07,stroke:.12};
+      const color = mem.length>1 ? hubCol() : LINES[lead.line].color;
       return {key:'h'+h.id,hub:h,s:mem.length===1?lead:null,multi:mem.length>1,members:mem,name:lead.name,lat:h.lat,lon:h.lon,pax,color,st,focus:inFocus?1:0,line:lead.line};
     }).filter(Boolean);
   }
@@ -333,160 +518,247 @@ function currentItems(){
 /* ---------- Açılır pencereler ---------- */
 function transfers(s){return s.hub.members.filter(m=>m!==s)}
 function stationPopup(s){
-  const L_=LINES[s.line], share=s.pax/lineTotal[s.line]*100, tr=transfers(s);
+  const L_=LINES[s.line], share=s.pax/lineTotal[s.line]*100, tr=transfers(s), fixed=s.fixes&&s.fixes.length;
   const cityRank=[...STATIONS].sort((a,b)=>b.pax-a.pax).indexOf(s)+1;
-  let h=`<div class="pp-title">${esc(s.name)}</div><div class="pp-town">${badge(s.line)} ${esc(L_.name)} · ${esc(s.town||'—')}</div>
+  let h=`<h2 class="pp-title">${esc(s.name)}</h2><div class="pp-town">${badge(s.line)} ${esc(L_.name)} · ${esc(s.town||'—')}</div>
   <div class="pp-big">${fmt(s.pax)} <small>yolcu / yıl</small></div>
-  <div style="color:var(--muted);font-size:12px;margin-bottom:8px">Günlük ort. ≈ ${fmt(Math.round(s.pax/365))}</div>
+  <div class="pp-day">Günlük ort. ≈ ${fmt(Math.round(s.pax/365))}</div>
   <div class="pp-row"><span>Hat içindeki sıra</span><b>${s.rank} / ${byLine[s.line].length}</b></div>
   <div class="pp-row"><span>Hat yolcusundaki payı</span><b>%${share.toLocaleString('tr-TR',{maximumFractionDigits:1})}</b></div>
   <div class="pp-row"><span>Şehir genelindeki sıra</span><b>${cityRank} / ${STATIONS.length}</b></div>`;
   if(tr.length) h+=`<div class="pp-row"><span>Aktarma</span><b>${tr.map(t=>badge(t.line)).join(' ')}</b></div>`;
-  h+=`<div class="pp-row"><span>Koordinat kaynağı</span><b>${esc(s.src)}</b></div>`;
+  // kaynak satırı yalnızca not, düzeltme ya da farklı bir kaynak varsa
+  if(s.note||fixed||!String(s.src).startsWith(SRC0)) h+=`<div class="pp-row"><span>Koordinat kaynağı</span><b>${esc(s.src)}</b></div>`;
   if(s.note) h+=`<div class="pp-note">${esc(s.note)}</div>`;
-  if(s.fixes&&s.fixes.length) h+=`<div class="pp-fix"><b>Düzeltildi:</b> ${s.fixes.map(esc).join(' ')}</div>`;
-  h+=`<div class="pp-actions"><button onclick="focusOn('${s.line}')">Hatta odaklan</button>${tr.length?`<button onclick="showHub(${s.hub.id})">Aktarma merkezi</button>`:''}</div>`;
+  if(fixed) h+=`<div class="pp-fix"><b>Düzeltildi:</b> ${s.fixes.map(esc).join(' ')}</div>`;
+  h+=`<div class="pp-actions"><button type="button" onclick="focusOn('${s.line}',true,true)">Hatta odaklan</button>${tr.length?`<button type="button" onclick="showHub(${s.hub.id})">Aktarma merkezini göster</button>`:''}</div>`;
   return h;
 }
 function hubPopup(h){
   const mem=h.members.filter(m=>visible.has(m.line)).sort((a,b)=>b.pax-a.pax), tot=mem.reduce((a,m)=>a+m.pax,0), max=mem[0].pax;
   const names=[...new Set(mem.map(m=>m.name))].join(' / ');
-  return `<div class="pp-title">${esc(names)}</div><div class="pp-town">Aktarma merkezi · ${mem.length} hat</div>
+  return `<h2 class="pp-title">${esc(names)}</h2><div class="pp-town">Aktarma merkezi · ${mem.length} hat</div>
   <div class="pp-big">${fmt(tot)} <small>yolcu / yıl</small></div>
-  <div class="pp-lines">${mem.map(m=>`<div class="pp-line">${badge(m.line)}<div class="track"><div class="fill" style="width:${m.pax/max*100}%;background:${LINES[m.line].color}"></div></div><span style="font-variant-numeric:tabular-nums">${short(m.pax)}</span></div>`).join('')}</div>
+  <div class="pp-lines">${mem.map(m=>`<div class="pp-line">${badge(m.line)}<div class="track"><div class="fill" style="width:${m.pax/max*100}%;background:${LINES[m.line].color}"></div></div><span>${short(m.pax)}</span></div>`).join('')}</div>
   <div class="pp-note">Toplam; hatlar arası aktarma yapan yolcular her hatta ayrı sayılmış olabilir.</div>`;
+}
+map.on('popupopen',e=>{
+  const el=e.popup.getElement(); if(!el) return;
+  const x=el.querySelector('.leaflet-popup-close-button'), t=el.querySelector('.pp-title');
+  if(x){x.setAttribute('aria-label','Kapat');x.title='Kapat'}
+  el.setAttribute('role','dialog'); el.setAttribute('aria-label',t?t.textContent:'İstasyon');
+  if(mobile()){$('key').hidden=true;if(sheet!=='peek')setSheet('peek')}   // pencere alt sayfanın ya da göstergenin altında kalmasın
+});
+map.on('popupclose',()=>{const r=ret;ret=null;$('key').hidden=false;setTimeout(()=>{if(document.activeElement===document.body&&r&&r.isConnected&&r.offsetParent)r.focus({preventScroll:true})},0)});
+
+/* ---------- Hareket: tek yardımcı; "hareketi azalt" açıkken animasyonsuz ---------- */
+let pend=null, ret=null;
+function goTo(ll,z,then){
+  if(pend){map.off('moveend',pend);pend=null}
+  const at=()=>Math.abs(map.getZoom()-z)<.01&&map.latLngToContainerPoint(ll).distanceTo(map.getSize().divideBy(2))<2;
+  if(at()){if(then)then();return}
+  if(then){pend=()=>{if(!at())return;map.off('moveend',pend);pend=null;then()};map.on('moveend',pend)}   // pencere varışta açılır
+  RM.matches?map.setView(ll,z,{animate:false}):map.flyTo(ll,z,{duration:.5});
+}
+function goBounds(b){const o=panelPad();RM.matches?map.fitBounds(b,Object.assign(o,{animate:false,maxZoom:14})):map.flyToBounds(b,Object.assign(o,{maxZoom:14,duration:.6}))}
+function openPop(m,from){
+  if(!map.hasLayer(m)) return; m.openPopup();
+  const el=m.getPopup().getElement(), t=el&&(el.querySelector('.pp-actions button')||el.querySelector('.leaflet-popup-close-button'));
+  if(t){t.focus({preventScroll:true});ret=from||null}
+}
+function flyToMarker(key,from){
+  const m=markers.get(key); if(!m) return; from=from||document.activeElement;
+  if(mobile()) setSheet('peek');
+  goTo(m.getLatLng(),Math.max(Math.round(map.getZoom()*4)/4,14),()=>openPop(m,from));
 }
 
 /* ---------- Odak ---------- */
-function focusOn(l,fit=true){
-  focusLine=l; if(!visible.has(l)){visible.add(l);syncChecks()}
-  document.getElementById('chip-text').innerHTML=`${badge(l)} ${esc(LINES[l].name)}`;
-  document.getElementById('chip').classList.add('show');
-  document.querySelectorAll('.line').forEach(e=>e.classList.toggle('focus',e.dataset.line===l));
-  map.closePopup(); render();
-  if(fit){const b=L.latLngBounds(byLine[l].map(s=>[s.lat,s.lon]));map.flyToBounds(b.pad(.15),{maxZoom:14,paddingTopLeft:panelPad(),duration:.6})}
+function syncFocus(){
+  document.querySelectorAll('.line').forEach(r=>{const on=r.dataset.line===focusLine,b=r.querySelector('.lfocus');
+    b.setAttribute('aria-pressed',on);b.querySelector('.go').textContent=on?'Odakta':'Odaklan';if(on)r.closest('details').open=true});
+  $('chip').classList.toggle('show',!!focusLine);
+  if(focusLine)$('chip-text').innerHTML=`${badge(focusLine)}<span class="cn">${esc(LINES[focusLine].name)}</span><span class="tot">· ${short(lineTotal[focusLine])}</span>`;
 }
-function clearFocus(){focusLine=null;map.closePopup();document.getElementById('chip').classList.remove('show');document.querySelectorAll('.line').forEach(e=>e.classList.remove('focus'));render()}
+function focusOn(l,fit=true,toChip=false){
+  focusLine=l; if(!visible.has(l)){visible.add(l);syncChecks()}
+  map.closePopup(); syncFocus(); render();
+  if(mobile()&&fit) setSheet(toChip?'peek':sheet==='large'?'medium':sheet);
+  if(fit&&byLine[l].length) goBounds(L.latLngBounds(byLine[l].map(s=>[s.lat,s.lon])).pad(.15));
+  if(toChip) $('chip-x').focus({preventScroll:true});
+  say(`${code(l)} hattı odakta`);
+}
+function clearFocus(){const had=focusLine,a=document.activeElement,onChip=a===$('chip-x');focusLine=null;map.closePopup();syncFocus();render();
+  if(had){say('Odak kaldırıldı');if(onChip||a===document.body){const b=document.querySelector(`.line[data-line="${had}"] .lfocus`);(b&&b.offsetParent&&!b.closest('[inert]')?b:mobile()?$('map'):q).focus({preventScroll:true})}}}
 window.focusOn=focusOn;
-window.showHub=id=>{setMode('hub');const m=markers.get('h'+id);if(m){map.flyTo(m.getLatLng(),Math.max(map.getZoom(),14),{duration:.5});setTimeout(()=>m.openPopup(),550)}};
-function panelPad(){return innerWidth>700?[370,20]:[20,20]}
+window.showHub=id=>{setMode('hub');flyToMarker('h'+id)};
 
 /* ---------- Panel: hat listesi ---------- */
-const linesEl=document.getElementById('lines');
+const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+const linesEl=$('lines');
 TYPES.forEach(t=>{
-  const ls=ORDER.filter(l=>LINES[l].type===t);
-  const gh=document.createElement('label');gh.className='group-head';
-  gh.innerHTML=`<input type="checkbox" checked data-type="${t}"> ${t} <span style="margin-left:auto;font-size:11px;color:var(--faint)">${ls.length} hat</span>`;
-  linesEl.appendChild(gh);
-  gh.querySelector('input').addEventListener('change',e=>{ls.forEach(l=>e.target.checked?visible.add(l):visible.delete(l));if(focusLine&&!visible.has(focusLine))focusLine=null,clearFocus();syncChecks();render()});
+  const ls=ORDER.filter(l=>LINES[l].type===t), g=document.createElement('div'); g.className='grp';
+  g.innerHTML=`<label class="cb"><input type="checkbox" checked data-type="${t}" aria-label="${t} hatlarını göster"></label><details${OPEN_TYPES.includes(t)?' open':''}><summary><span class="gname">${t}</span><span class="gcount">${ls.length} hat</span>${CHEV}</summary></details>`;
+  linesEl.appendChild(g);
+  const box=g.querySelector('details');
+  g.querySelector('input').addEventListener('change',e=>{ls.forEach(l=>e.target.checked?visible.add(l):visible.delete(l));syncChecks();focusLine&&!visible.has(focusLine)?clearFocus():render()});
   ls.forEach(l=>{
-    const row=document.createElement('div');row.className='line';row.dataset.line=l;
-    row.innerHTML=`<input type="checkbox" checked>${badge(l)}<span class="lname" title="${esc(LINES[l].name)}">${esc(LINES[l].name)}</span><span class="lpax">${short(lineTotal[l])}</span>`;
+    const row=document.createElement('div'), nm=esc(LINES[l].name); row.className='line'; row.dataset.line=l;
+    row.innerHTML=`<label class="cb"><input type="checkbox" checked aria-label="${code(l)} ${nm} hattını göster"></label><button type="button" class="lfocus" aria-pressed="false" aria-label="${code(l)} ${nm}, ${short(lineTotal[l])} yolcu: hatta odaklan">${badge(l)}<span class="lname">${nm}</span><span class="lpax">${short(lineTotal[l])}</span><span class="go" aria-hidden="true">Odaklan</span></button>`;
     const cb=row.querySelector('input');
-    cb.addEventListener('click',e=>e.stopPropagation());
-    cb.addEventListener('change',()=>{cb.checked?visible.add(l):visible.delete(l);if(!cb.checked&&focusLine===l){clearFocus()}syncChecks();render()});
-    row.addEventListener('click',()=>focusLine===l?clearFocus():focusOn(l));
-    linesEl.appendChild(row);
+    cb.addEventListener('change',()=>{cb.checked?visible.add(l):visible.delete(l);syncChecks();!cb.checked&&focusLine===l?clearFocus():render()});
+    row.querySelector('.lfocus').addEventListener('click',()=>focusLine===l?clearFocus():focusOn(l));
+    box.appendChild(row);
   });
 });
 function syncChecks(){
   document.querySelectorAll('.line').forEach(r=>{const on=visible.has(r.dataset.line);r.querySelector('input').checked=on;r.classList.toggle('off',!on)});
   document.querySelectorAll('[data-type]').forEach(g=>{const ls=ORDER.filter(l=>LINES[l].type===g.dataset.type),n=ls.filter(l=>visible.has(l)).length;g.checked=n===ls.length;g.indeterminate=n>0&&n<ls.length});
 }
-document.getElementById('all').onclick=()=>{ORDER.forEach(l=>visible.add(l));syncChecks();render()};
-document.getElementById('none').onclick=()=>{visible.clear();focusLine=null;clearFocus();syncChecks();render()};
-document.getElementById('chip-x').onclick=clearFocus;
+function showAll(){ORDER.forEach(l=>visible.add(l));syncChecks();render()}
+$('all').onclick=showAll;
+$('none').onclick=()=>{visible.clear();syncChecks();focusLine?clearFocus():render()};
+$('chip-x').onclick=clearFocus;
 
 /* ---------- Mod ---------- */
-function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));map.closePopup();render()}
-document.querySelectorAll('#mode button').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>{const on=b.dataset.mode===m;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1});map.closePopup();render()}
+document.querySelectorAll('#mode button').forEach(b=>{
+  b.onclick=()=>setMode(b.dataset.mode);
+  b.onkeydown=e=>{if(!/^Arrow/.test(e.key))return;e.preventDefault();const o=[...document.querySelectorAll('#mode button')].find(x=>x!==b);setMode(o.dataset.mode);o.focus()};
+});
 
-/* ---------- İstatistik ve sıralama ---------- */
+/* ---------- Özet satırı ve sıralama ---------- */
+let lastSum='';
 function updateStats(items){
   const st=STATIONS.filter(s=>visible.has(s.line));
-  document.getElementById('s-pax').textContent=short(st.reduce((a,s)=>a+s.pax,0));
-  document.getElementById('s-st').textContent=fmt(mode==='hub'?items.length:st.length);
-  document.getElementById('s-ln').textContent=visible.size;
+  const t=`${short(st.reduce((a,s)=>a+s.pax,0))} yolcu · ${fmt(mode==='hub'?items.length:st.length)} ${mode==='hub'?'nokta':'istasyon'} · ${visible.size} hat`;
+  $('sum-t').textContent=t; if(lastSum&&lastSum!==t)say('Görünen: '+t); lastSum=t;
 }
 function updateTop(items){
   const pool=(focusLine?items.filter(i=>mode==='hub'?i.members.some(m=>m.line===focusLine):i.line===focusLine):items).sort((a,b)=>b.pax-a.pax).slice(0,10);
-  const max=pool[0]?.pax||1, el=document.getElementById('top');
+  const max=pool[0]?.pax||1, el=$('top');
   el.innerHTML=pool.map(it=>{
     const lines=it.multi?it.members.map(m=>m.line):[it.line];
     const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name;
-    return `<div class="top-item" data-key="${it.key}"><div class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><div class="bar" style="width:${it.pax/max*100}%;background:${it.multi?'var(--accent)':LINES[it.line].color}"></div></div><span class="v">${short(it.pax)}</span></div>`;
-  }).join('') || '<div style="font-size:12px;color:var(--faint)">Görünen hat yok.</div>';
-  el.querySelectorAll('.top-item').forEach(e=>e.onclick=()=>flyToMarker(e.dataset.key));
+    return `<li><button type="button" class="top-item" data-key="${it.key}"><span class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><span class="bar" style="width:${it.pax/max*100}%;background:${it.multi?'var(--hub)':LINES[it.line].color}"></span></span><span class="v">${short(it.pax)}</span></button></li>`;
+  }).join('') || '<li class="empty">Hiç hat seçili değil. <button type="button" class="link" id="top-all">Tümünü göster</button></li>';
+  el.querySelectorAll('.top-item').forEach(e=>e.onclick=()=>flyToMarker(e.dataset.key,e));
+  const a=$('top-all'); if(a) a.onclick=()=>{showAll();$('all').focus()};
 }
-function flyToMarker(key){const m=markers.get(key);if(!m)return;map.flyTo(m.getLatLng(),Math.max(map.getZoom(),14),{duration:.5});setTimeout(()=>m.openPopup(),550);if(innerWidth<=700)document.getElementById('panel').classList.add('collapsed')}
 
-/* ---------- Boyut göstergesi ---------- */
-function updateLegend(){
-  document.getElementById('legend').innerHTML=[1e6,5e6,15e6,25e6].map(v=>{const r=radius(v);return `<div class="c"><div class="dot" style="width:${2*r}px;height:${2*r}px"></div>${short(v)}</div>`}).join('')+
-  `<div class="c" style="margin-left:auto;align-items:flex-start;font-size:11px">yakınlaştıkça<br>daireler büyür</div>`;
+/* ---------- Boyut göstergesi: iç içe daireler, yakınlaştıkça güncellenir ---------- */
+function updateKey(){
+  const fit=[25e6,15e6,5e6,1e6,2.5e5,1e5].filter(v=>radius(v)<=(mobile()?30:46)), vs=(fit.length?fit:[1e5]).slice(0,4), rs=vs.map(radius);
+  const R=rs[0], B=2*R+8, cx=R+2, lh=mobile()?15:13, lx=2*R+16;
+  let y=0; const ys=rs.map((r,i)=>y=Math.max(B-2*r+4,i?y+lh:0));
+  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+(mobile()?52:46));
+  const s=$('key-svg'); s.setAttribute('width',W); s.setAttribute('height',H); s.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-4} ${lx-3},${ys[i]-4}"/><text x="${lx}" y="${ys[i]}">${short(vs[i])}</text>`).join('');
+  $('key').setAttribute('aria-label',`Daire boyutu göstergesi, yıllık yolcu: ${vs.map(short).join(', ')}`);
 }
 
 /* ---------- Etiketler ---------- */
+const lblMin = () => focusLine?11.5:13;
 function updateLabels(){
-  labelLayer.clearLayers(); if(!labelsOn || map.getZoom()<(focusLine?11.75:13)) return;
-  const b=map.getBounds().pad(.1), seen=new Set();
-  currentItems().filter(it=>b.contains([it.lat,it.lon]) && (!focusLine||it.focus)).sort((a,b)=>b.pax-a.pax).forEach(it=>{
-    const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name, k=nm+'|'+it.lat.toFixed(3)+it.lon.toFixed(3);
-    if(seen.has(k))return; seen.add(k);
+  const b=$('b-lbl'), low=map.getZoom()<lblMin(), tip=!labelsOn?'İstasyon adlarını göster':low?'İstasyon adları yakınlaşınca görünür':'İstasyon adlarını gizle';
+  b.setAttribute('aria-pressed',labelsOn); b.title=tip; b.setAttribute('aria-label',labelsOn&&low?'İstasyon adları (yakınlaşınca görünür)':'İstasyon adları');
+  labelLayer.clearLayers(); if(!labelsOn || low) return;
+  const bb=map.getBounds().pad(.1), kutular=[], cw=parseFloat(getComputedStyle(document.documentElement).fontSize)*.42;
+  currentItems().filter(it=>bb.contains([it.lat,it.lon]) && (!focusLine||it.focus)).sort((a,b)=>b.pax-a.pax).forEach(it=>{
+    const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name, pt=map.latLngToContainerPoint([it.lat,it.lon]), r=radius(it.pax);
+    const k={x:pt.x+r+2,y:pt.y-8,w:nm.length*cw+6,h:16,nm,px:pt.x,py:pt.y};
+    if(kutular.some(o=>(o.nm===nm&&Math.hypot(o.px-k.px,o.py-k.py)<60)||(k.x<o.x+o.w&&o.x<k.x+k.w&&k.y<o.y+o.h&&o.y<k.y+k.h)))return; kutular.push(k);
     L.tooltip({permanent:true,direction:'right',className:'lbl',offset:[radius(it.pax)+2,0],interactive:false}).setLatLng([it.lat,it.lon]).setContent(esc(nm)).addTo(labelLayer);
   });
 }
 
-/* ---------- Arama ---------- */
-const q=document.getElementById('q'), res=document.getElementById('results'); let hits=[], sel=0;
-q.addEventListener('input',()=>{
-  const t=norm(q.value.trim()); if(!t){res.classList.remove('open');return}
+/* ---------- Arama (combobox + listbox) ---------- */
+const q=$('q'), res=$('results'); let hits=[], sel=0;
+function closeRes(){res.classList.remove('open');q.setAttribute('aria-expanded','false');q.removeAttribute('aria-activedescendant')}
+function search(){
+  const t=norm(q.value.trim()); if(!t){closeRes();return}
   const lineHits=ORDER.filter(l=>norm(l+' '+code(l)+' '+LINES[l].name).includes(t)).map(l=>({kind:'line',l}));
   const stHits=STATIONS.filter(s=>norm(s.name+' '+(s.town||'')).includes(t)).sort((a,b)=>(norm(b.name).startsWith(t)-norm(a.name).startsWith(t))||b.pax-a.pax).slice(0,12).map(s=>({kind:'st',s}));
-  hits=[...lineHits.slice(0,4),...stHits]; sel=0; drawHits();
-});
+  const tam=lineHits.some(h=>norm(code(h.l))===t||norm(h.l)===t);
+  hits=tam?[...lineHits.slice(0,4),...stHits]:[...stHits,...lineHits.slice(0,4)]; sel=0; drawHits();
+  say(hits.length?`${hits.length} sonuç`:`“${q.value.trim()}” için sonuç yok`);
+}
+q.addEventListener('input',search);
 function drawHits(){
-  res.innerHTML=hits.length?hits.map((h,i)=>h.kind==='line'
-    ?`<div class="result${i===sel?' sel':''}" data-i="${i}">${badge(h.l)} ${esc(LINES[h.l].name)}<span class="meta">hat</span></div>`
-    :`<div class="result${i===sel?' sel':''}" data-i="${i}">${badge(h.s.line)} ${esc(h.s.name)}<span class="meta">${esc(h.s.town||'')} · ${short(h.s.pax)}</span></div>`).join('')
-    :'<div class="result" style="color:var(--faint);cursor:default">Sonuç yok</div>';
-  res.classList.add('open');
+  res.innerHTML=hits.length?hits.map((h,i)=>{const a=`class="result${i===sel?' sel':''}" role="option" id="r-${i}" aria-selected="${i===sel}" data-i="${i}"`;return h.kind==='line'
+    ?`<div ${a}>${badge(h.l)}<span class="rn">${esc(LINES[h.l].name)}</span><span class="meta">hat</span></div>`
+    :`<div ${a}>${badge(h.s.line)}<span class="rn">${esc(h.s.name)}</span><span class="meta">${esc(h.s.town||'')} · ${short(h.s.pax)}</span></div>`}).join('')
+    :`<div class="result none" role="option" aria-disabled="true" aria-selected="false">“${esc(q.value.trim())}” için sonuç yok. İstasyon adı, hat kodu (M2) veya ilçe deneyin.</div>`;
+  res.classList.add('open'); q.setAttribute('aria-expanded','true');
+  if(hits.length){q.setAttribute('aria-activedescendant','r-'+sel);const e=$('r-'+sel);if(e&&res.scrollHeight>res.clientHeight)res.scrollTop=Math.max(0,e.offsetTop-res.clientHeight/2)}
+  else q.removeAttribute('aria-activedescendant');
   res.querySelectorAll('[data-i]').forEach(e=>e.onmousedown=ev=>{ev.preventDefault();pick(+e.dataset.i)});
 }
 function pick(i){
-  const h=hits[i]; if(!h) return; res.classList.remove('open'); q.blur();
-  if(h.kind==='line'){focusOn(h.l);return}
+  const h=hits[i]; if(!h) return; closeRes(); q.blur();
+  if(h.kind==='line'){focusOn(h.l,true,true);return}
   const s=h.s; if(!visible.has(s.line)){visible.add(s.line);syncChecks()}
+  if(focusLine&&focusLine!==s.line) focusLine=null,syncFocus();
   if(mode==='hub') setMode('station'); else render();
-  flyToMarker('s'+s.id);
+  flyToMarker('s'+s.id,q);
 }
 q.addEventListener('keydown',e=>{
-  if(!res.classList.contains('open'))return;
+  const open=res.classList.contains('open');
+  if(e.key==='Escape'){e.stopPropagation();if(open)closeRes();else{q.value='';q.blur()}return}
+  if(!open){if(e.key==='ArrowDown'&&q.value.trim()){search();e.preventDefault()}return}
   if(e.key==='ArrowDown'){sel=Math.min(sel+1,hits.length-1);drawHits();e.preventDefault()}
   else if(e.key==='ArrowUp'){sel=Math.max(sel-1,0);drawHits();e.preventDefault()}
-  else if(e.key==='Enter'){pick(sel)}
-  else if(e.key==='Escape'){res.classList.remove('open')}
+  else if(e.key==='Enter'){e.preventDefault();pick(sel)}   // odak düğmeye geçince aynı tuş onu tetiklemesin
 });
-q.addEventListener('blur',()=>setTimeout(()=>res.classList.remove('open'),120));
+let kapat=0;
+q.addEventListener('focus',()=>{clearTimeout(kapat);if(mobile()&&sheet!=='large')setSheet('large');if(q.value.trim())search()});
+q.addEventListener('blur',()=>{kapat=setTimeout(closeRes,120)});
+
+/* ---------- Alt sayfa (dar ekran) ve panel (geniş ekran) ---------- */
+function syncPeek(){root.style.setProperty('--peek',peekPx()+'px')}
+function setSheet(s){
+  sheet=s; root.dataset.sheet=s; const pk=mobile()&&s==='peek';
+  grab.setAttribute('aria-label',s==='large'?'Paneli küçült':'Paneli büyüt'); grab.setAttribute('aria-expanded',s!=='peek');
+  [$('panel-head'),$('panel-body')].forEach(e=>{e.inert=pk});
+  if(mobile()&&s!=='large') panel.scrollTop=0;
+}
+grab.onclick=()=>setSheet(SHEETS[(SHEETS.indexOf(sheet)+1)%3]);
+function setPanel(off){
+  panelOff=off; root.dataset.panel=off?'off':'on';
+  const b=$('collapse'), t=off?'Paneli göster':'Paneli gizle'; b.setAttribute('aria-expanded',!off); b.setAttribute('aria-label',t); b.title=t;
+  map.invalidateSize(); syncPopOpts();
+}
+$('collapse').onclick=()=>setPanel(!panelOff);
 
 /* ---------- Kontroller ---------- */
-function fitAll(){const pts=STATIONS.filter(s=>visible.has(s.line)&&s.lon<29.35).map(s=>[s.lat,s.lon]);if(pts.length)map.flyToBounds(L.latLngBounds(pts).pad(.05),{paddingTopLeft:panelPad(),duration:.6})}
-function applyTheme(){document.documentElement.dataset.theme=theme;base.setUrl(TILES[theme][0]);ref.setUrl(TILES[theme][1]);try{localStorage.setItem('ist-theme',theme)}catch(e){}}
-document.getElementById('b-fit').onclick=fitAll;
-document.getElementById('b-theme').onclick=()=>{theme=theme==='dark'?'light':'dark';applyTheme()};
-document.getElementById('b-lbl').onclick=()=>{labelsOn=!labelsOn;updateLabels()};
-document.getElementById('collapse').onclick=e=>{const p=document.getElementById('panel');p.classList.toggle('collapsed');e.target.textContent=p.classList.contains('collapsed')?'Göster':'Gizle'};
+function fitAll(){const pts=STATIONS.filter(s=>visible.has(s.line)&&s.lon<29.35).map(s=>[s.lat,s.lon]);if(pts.length){const o=panelPad(),b=L.latLngBounds(pts).pad(.05);RM.matches?map.fitBounds(b,Object.assign(o,{animate:false})):map.flyToBounds(b,Object.assign(o,{duration:.6}))}}
+function applyTheme(redraw){
+  root.dataset.theme=theme; base.setUrl(TILES[theme][0]); ref.setUrl(TILES[theme][1]);
+  const b=$('b-theme'), t=theme==='dark'?'Açık görünüme geç':'Koyu görünüme geç';
+  b.setAttribute('aria-label',t); b.title=t; $('i-theme').innerHTML=ICON[theme==='dark'?'sun':'moon'];
+  if(redraw){map.closePopup();render()}
+}
+$('b-fit').onclick=fitAll;
+$('b-theme').onclick=()=>{
+  theme=theme==='dark'?'light':'dark';
+  try{theme===sysTheme()?localStorage.removeItem('ist-gorunum'):localStorage.setItem('ist-gorunum',theme)}catch(e){}
+  applyTheme(true);
+};
+LQ.addEventListener('change',()=>{if(!stored()){theme=sysTheme();applyTheme(true)}});
+$('b-lbl').onclick=()=>{labelsOn=!labelsOn;updateLabels();if(labelsOn&&map.getZoom()<lblMin())toast('İstasyon adları yakınlaşınca görünür')};
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&document.activeElement!==q){map.closePopup();if(focusLine)clearFocus()}
-  if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus()}
+  if(e.key==='Escape'){const r=ret;map.closePopup();if(focusLine)clearFocus();if(r&&r.isConnected&&r.offsetParent)r.focus()}
+  else if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&document.activeElement!==q){e.preventDefault();q.focus()}
 });
-map.on('zoomend',()=>{markers.forEach((m,k)=>{const it=k[0]==='s'?STATIONS[+k.slice(1)]:null;m.setRadius(radius(it?it.pax:hubs[+k.slice(1)].members.filter(x=>visible.has(x.line)).reduce((a,x)=>a+x.pax,0)))});updateLabels();updateLegend()});
+map.on('zoomend',()=>{markers.forEach(m=>m.setRadius(radius(m.pax)));updateLabels();updateKey()});
 map.on('moveend',updateLabels);
 
-if(innerWidth<=700){document.getElementById('panel').classList.add('collapsed');document.getElementById('collapse').textContent='Göster'}
-applyTheme(); syncChecks(); render();
-map.setView(innerWidth>700?[41.03,28.93]:[41.02,29.0],innerWidth>700?10.75:10);
-addEventListener('resize',()=>map.invalidateSize());
+/* ---------- Başlangıç ve yeniden yerleşim ---------- */
+function relayout(){syncPeek();map.invalidateSize();syncPopOpts();updateKey()}
+setSheet('peek'); setPanel(false); applyTheme(); syncChecks(); syncFocus(); render(); syncPeek();
+map.setView(mobile()?[41.02,29.0]:[41.03,28.93],mobile()?10:10.75);
+addEventListener('resize',relayout);
+addEventListener('load',relayout);
+MQ.addEventListener('change',()=>{setSheet('peek');render();relayout()});   // 700 px eşiği aşılınca durumu yeniden kur
 </script>
 </body>
 </html>
