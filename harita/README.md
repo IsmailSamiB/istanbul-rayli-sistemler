@@ -27,7 +27,16 @@ OSM verilerini Overpass API'den yeniden indirmek isterseniz:
 python harita/build_map.py --yenile
 ```
 
-Projede yalnızca Python'un standart kütüphanesi kullanılıyor. Bu nedenle çalıştırmak için ek bir Python paketi kurmaya gerek yok.
+`build_map.py` yalnızca Python'un standart kütüphanesini kullanıyor; çalıştırmak için ek bir paket kurmaya gerek yok.
+
+Haritadaki ay, gün türü ve yaş dağılımı bilgileri `data/istasyon_detay.json` dosyasından geliyor. Yolcu verisi değiştiğinde yeniden üretmek için (pandas ve proje kökünde `passenger_clean.csv` gerekir):
+
+```bash
+python harita/build_detay.py
+python harita/build_map.py
+```
+
+`build_detay.py`, CSV'deki giriş adlarını istasyon adına indirger ve her istasyonu haritadaki kaydıyla hat ve yıllık toplam üzerinden eşleştirir. Eşleşmeyen bir istasyon kalırsa ya da toplamlar tutmazsa durur.
 
 ## Dosyalar
 
@@ -36,6 +45,8 @@ Projede yalnızca Python'un standart kütüphanesi kullanılıyor. Bu nedenle ç
 | `build_map.py` | OSM verilerini alır, ray geometrilerini ayıklar ve sadeleştirir, ardından harita HTML'ini oluşturur. |
 | `template.html` | Haritanın Leaflet arayüzünü içerir. Veriler ve hat geometrileri oluşturma sırasında şablona eklenir. |
 | `data/istasyonlar.json` | İstasyon adı, hat, ilçe, yıllık yolcu sayısı, koordinat ve yapılan düzeltmeler gibi bilgileri içerir. |
+| `build_detay.py` | Yolcu verisinden istasyon başına ay × gün türü toplamlarını ve yaş grubu toplamlarını çıkarır. |
+| `data/istasyon_detay.json` | `build_detay.py` çıktısı; harita oluşturulurken sayfaya gömülür. Yoksa harita yalnızca yıllık toplamla çalışır. |
 | `data/hatlar_osm.geojson` | Hatlara ait sadeleştirilmiş ray geometrilerini içerir. Harita oluşturulurken üretilir. |
 | `data/osm_ham.json` | Overpass API'den alınan ham OSM verilerinin önbelleğidir. Git'e eklenmez. |
 | `istasyon_kullanim_haritasi.html` | Kullanıma hazır etkileşimli harita. |

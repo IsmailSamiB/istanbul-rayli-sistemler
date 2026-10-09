@@ -5,7 +5,7 @@ Adımlar:
      (data/osm_ham.json; varsa önbellekten okur, --yenile ile yeniden indirir).
   2. Her hat için ilgili OSM rotasının ray parçalarını ayıklar, sadeleştirir ve
      data/hatlar_osm.geojson dosyasına yazar.
-  3. data/istasyonlar.json + hat geometrisini template.html içine gömerek
+  3. data/istasyonlar.json + hat geometrisini (ve varsa build_detay.py çıktısı data/istasyon_detay.json'u) template.html içine gömerek
      istasyon_kullanim_haritasi.html dosyasını oluşturur (tek dosya, sunucu gerekmez).
 
 Kullanım:
@@ -24,6 +24,7 @@ VERI = KOK / "data"
 OSM_HAM = VERI / "osm_ham.json"
 HATLAR_GEOJSON = VERI / "hatlar_osm.geojson"
 ISTASYONLAR = VERI / "istasyonlar.json"
+DETAY = VERI / "istasyon_detay.json"   # build_detay.py üretir; yoksa harita yalnızca yıllık toplamla çalışır
 SABLON = KOK / "template.html"
 CIKTI = KOK / "istasyon_kullanim_haritasi.html"
 
@@ -146,6 +147,21 @@ def hat_geometrileri():
     return geojson
 
 
+def detay_oku(istasyonlar):
+    """istasyon_detay.json'u okur; istasyon sırası ve toplamlar tutmuyorsa gömmez (harita yıllık toplamla çalışır)."""
+    if not DETAY.exists():
+        return "null"
+    detay = json.loads(DETAY.read_text(encoding="utf-8"))
+    kayitlar = detay.get("ist", [])
+    uyumlu = len(kayitlar) == len(istasyonlar) and all(
+        sum(a + b for a, b in k["m"]) == s["pax"] == sum(k["y"]) for k, s in zip(kayitlar, istasyonlar))
+    if not uyumlu:
+        print("  UYARI: istasyon_detay.json istasyonlar.json ile uyuşmuyor; ay/gün/yaş verisi gömülmedi. "
+              "build_detay.py yeniden çalıştırılmalı.")
+        return "null"
+    return json.dumps(detay, ensure_ascii=False, separators=(",", ":"))
+
+
 def main():
     if "--yenile" in sys.argv or not OSM_HAM.exists():
         osm_indir()
@@ -156,6 +172,7 @@ def main():
     html = html.replace("__DATA__", istasyonlar).replace(
         "__ROUTES__", json.dumps(geojson, ensure_ascii=False, separators=(",", ":"))
     )
+    html = html.replace("__DETAIL__", detay_oku(json.loads(istasyonlar)))
     CIKTI.write_text(html, encoding="utf-8")
     print(f"Harita yazıldı: {CIKTI} ({CIKTI.stat().st_size / 1e3:.0f} KB)")
 

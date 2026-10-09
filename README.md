@@ -59,7 +59,9 @@ Diğer grafikler (hat payları, en yoğun 10 istasyon, aylık seyir, yaş dağı
 
 **[Haritayı aç](https://ismailsamib.github.io/istanbul-rayli-sistemler/harita/istasyon_kullanim_haritasi.html)**
 
-293 istasyonun 2025 yılı yolcu sayılarını gösteren etkileşimli harita. Dairelerin büyüklüğü yolcu sayısını (karekök ölçeği), renkler ise hatları gösteriyor. Hat adına tıklayarak yalnızca o hattı görebilirsiniz. Hat güzergâhları, duraklar arasındaki gerçek ray geometrileri kullanılarak OpenStreetMap verilerinden oluşturuldu.
+291 istasyonun 2025 yılı yolcu sayılarını gösteren etkileşimli harita. Dairelerin büyüklüğü yolcu sayısını (karekök ölçeği), renkler ise hatları gösteriyor. Bir hattın adına tıklayınca harita o hatta odaklanır ve diğer hatlar soluklaşır; yanındaki kutucuk hattı tamamen gizler. Hat güzergâhları, duraklar arasındaki gerçek ray geometrileri kullanılarak OpenStreetMap verilerinden oluşturuldu.
+
+Harita yalnızca yıllık toplamı değil, ayları ve gün türünü de gösteriyor: dönem (yıl ya da tek bir ay) ve gün türü (tümü, hafta içi, hafta sonu) seçildiğinde daireler o seçimin günlük ortalamasına göre yeniden boyutlanıyor. Bir istasyona tıklayınca açılan pencerede 12 aylık seyir, hafta sonu / hafta içi oranı ve yolcuların yaş dağılımı görünüyor. Seçili hat, dönem, gün türü ve görünüm adres çubuğuna yazıldığı için bağlantıyla paylaşılabiliyor (gizlenen hatlar ve harita konumu bağlantıya yazılmıyor). Günlük ortalamalar takvimdeki gün sayısına bölünerek hesaplanıyor; yıl içinde açılan istasyonlarda bu yüzden düşük çıkıyor. "Aktarma merkezleri" görünümü, birbirine yakın farklı hat istasyonlarını tek dairede topluyor.
 
 İstasyon koordinatlarının çoğu İBB verisindeki orijinal koordinatlardan alındı. Ray güzergâhından 140 metreden fazla sapan 9 istasyonun konumu, OpenStreetMap'teki durak noktalarına göre düzeltildi. En büyük fark M9 Ataköy'de yaklaşık 800 metreydi. İstasyon adlarındaki yazım hatları ve mükerrer kayıtlar da ayrıca düzeltildi.
 
@@ -122,7 +124,7 @@ clean_data.py      yolcu verisini temizler, passenger_clean.csv üretir
 clean_trips.py     sefer verisini temizler, trips_clean.csv üretir
 analiz.ipynb       tüm analizler ve grafikler
 figures/           grafikler
-harita/            istasyon kullanım haritası ve onu oluşturan script
+harita/            istasyon kullanım haritası ve onu oluşturan scriptler
 ogretici/          etkileşimli Python öğreticisi (GitHub Pages)
 requirements.txt   gerekli Python paketleri
 ```

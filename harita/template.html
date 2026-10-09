@@ -39,7 +39,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font
 #map{background:var(--bg)}
 .leaflet-container{font-family:inherit}
 button{font:inherit;color:inherit}
-:where(button,input,summary,a,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+:where(button,input,select,summary,a,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 #map:focus-visible,#map .leaflet-bar a:focus-visible,#map a.leaflet-popup-close-button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 .vh{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .fail{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;margin:0;padding:24px;text-align:center;font-size:1rem;line-height:1.5;background:var(--bg);color:var(--text)}
@@ -76,10 +76,19 @@ button{font:inherit;color:inherit}
 .result.none:hover{background:none}
 
 .seg{display:flex;gap:2px;background:var(--hover);border-radius:9px;padding:3px}
-.seg button{flex:1;border:0;background:transparent;padding:6px 8px;min-height:var(--hit);border-radius:7px;font-size:var(--fs-sec);line-height:1.2;cursor:pointer;color:var(--muted)}
+.seg button{flex:1;min-width:0;overflow-wrap:anywhere;border:0;background:transparent;padding:6px 8px;min-height:var(--hit);border-radius:7px;font-size:var(--fs-sec);line-height:1.2;cursor:pointer;color:var(--muted)}
 .seg button[aria-checked="true"]{background:var(--panel-solid);color:var(--text);font-weight:600;box-shadow:0 0 0 1px var(--control)}
 
+/* dönem ve gün seçimi, bağlantı */
+.flt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin-top:8px}
+.fl{font-size:var(--fs-sec);color:var(--muted)}
+.flt select,.copy-url{width:100%;min-height:max(30px,var(--hit));padding:0 8px;border:1px solid var(--control);border-radius:9px;background:var(--panel-solid);color:var(--text);font:inherit;font-size:var(--fs-body)}
+.flt select{cursor:pointer}
+.share{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;margin-top:4px}
+.unit{font-size:var(--fs-cap);color:var(--faint)}
+
 .section-title{display:flex;align-items:center;justify-content:space-between;min-height:var(--hit);margin:12px 0 2px}
+.share+.section-title{margin-top:0}
 .section-title h2{margin:0;font-size:var(--fs-cap);text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
 .link{border:0;background:none;color:var(--accent);font-size:var(--fs-sec);cursor:pointer;padding:6px 8px;min-height:var(--hit);border-radius:7px}
 .link:hover{background:var(--hover);text-decoration:underline}
@@ -175,10 +184,33 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 .pp-town{color:var(--muted);font-size:var(--fs-sec);margin-bottom:8px}
 .pp-big{font-size:var(--fs-fig);font-weight:700;font-variant-numeric:tabular-nums}
 .pp-big small,.pp-day{font-size:var(--fs-sec);font-weight:400;color:var(--muted)}
+.pp-big small{white-space:nowrap}
+.leaflet-popup-scrolled{padding-inline:3px}
 .pp-day{margin-bottom:8px;font-variant-numeric:tabular-nums}
 .pp-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--border);font-size:var(--fs-sec)}
 .pp-row>span:first-child{color:var(--muted)}
 .pp-row b{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.pp-rank{padding:4px 0;border-top:1px solid var(--border);font-size:var(--fs-sec);color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-rank span{white-space:nowrap}
+.pp-rank b,.pp-mm b,.pp-leg b{color:var(--text);font-weight:600}
+.pp-cap{padding-top:5px;border-top:1px solid var(--border);font-size:var(--fs-cap);color:var(--muted)}
+.pp-bars{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;align-items:end;height:26px;margin-top:4px;border-bottom:1px solid var(--control)}
+.pp-bars i{display:block;min-height:1px;border-radius:2px 2px 0 0;background:var(--control)}
+.pp-bars i.on{background:var(--text)}
+.pp-ini{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;font-size:var(--fs-cap);line-height:1.3;color:var(--muted);text-align:center}
+.pp-ini .on{color:var(--text);font-weight:700;text-decoration:underline}
+.pp-mm{margin-bottom:5px;font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-age{display:flex;gap:1px;height:8px;margin-top:2px}
+.pp-age i{display:block;min-width:1px}
+.pp-leg{display:flex;flex-wrap:wrap;gap:1px 10px;margin:3px 0 5px;font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-leg span{white-space:nowrap}
+.pp-leg i{display:inline-block;width:8px;height:8px;margin-right:4px}
+/* yaş grupları: hat rengi değil, nötr mürekkep tonları ve desen */
+.a0{background:var(--text)}
+.a1{background:repeating-linear-gradient(90deg,var(--text) 0 1.5px,transparent 1.5px 4px);box-shadow:inset 0 0 0 1px var(--text)}
+.a2{background:var(--muted)}
+.a3{background:repeating-linear-gradient(135deg,var(--muted) 0 1.5px,transparent 1.5px 3.5px);box-shadow:inset 0 0 0 1px var(--muted)}
+.a4{box-shadow:inset 0 0 0 1px var(--control)}
 .pp-lines{display:flex;flex-direction:column;gap:5px;margin:8px 0}
 .pp-line{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:var(--fs-sec);font-variant-numeric:tabular-nums}
 .pp-line .track{height:6px;background:var(--hover);border-radius:3px;overflow:hidden}
@@ -226,17 +258,21 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
   .grab:focus-visible{outline-offset:-4px}
   .collapse-btn{display:none}
   .search input{min-height:44px}
-  .sum{order:0;margin:4px 0 0;font-size:var(--fs-sec);line-height:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sum{order:0;margin:4px 0 0;font-size:var(--fs-sec);line-height:20px}
   .notice{margin:4px 0 8px}
   .panel-head{padding:12px 16px 0}
   .panel-body{flex:none;overflow:visible;padding:10px 16px 20px}
   .lfocus{grid-template-rows:auto auto;padding:6px}
   .lfocus .badge{grid-row:1/3}
-  .lname{display:block;margin-top:0}
+  .lname{display:block;margin-top:0;grid-column:2/4}
   .lpax{grid-area:2/2;justify-self:start;visibility:visible!important}
-  .go{grid-area:1/3/3/4;visibility:visible;font-size:var(--fs-sec)}
+  .go{grid-area:2/3;visibility:visible;font-size:var(--fs-sec)}
+  .seg button{padding:6px 4px}
   .cb{align-self:flex-start}
-  .chip{top:10px;font-size:var(--fs-sec);padding:3px 3px 3px 12px}
+  .chip{top:10px;left:10px;right:66px;transform:none;margin:0 auto;width:fit-content;max-width:none;font-size:var(--fs-sec);padding:3px 3px 3px 12px;border-radius:22px}
+  #chip-text{display:block}
+  .chip .cn{white-space:normal;overflow:visible}
+  .chip .badge{margin-right:6px}
   .chip button svg{width:14px;height:14px}
   .toast{top:74px}
   .key{left:8px;bottom:calc(var(--lift) + 48px);transition:bottom .2s ease}
@@ -259,10 +295,13 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 @media (prefers-contrast: more){
   :root,:root[data-theme="light"]{--muted:var(--text);--faint:var(--text);--border:var(--control);--border-strong:var(--text);--control:var(--text)}
   .panel,.chip,.key,.ctl button,.leaflet-popup-content-wrapper{border-color:var(--text)}
+  .a1{background:repeating-linear-gradient(90deg,var(--text) 0 3px,transparent 3px 4px)}
+  .a2{background:repeating-linear-gradient(90deg,var(--text) 0 1px,transparent 1px 3px)}
 }
 @media (prefers-reduced-transparency: reduce){.pp-fix,.notice{background:var(--panel-solid)}}
 @media (pointer:coarse){:root{--hit:44px;--ctl:44px}}
-@media (forced-colors: active){.cb input{appearance:auto;-webkit-appearance:auto}.cb input::after{display:none}}
+@media (forced-colors: active){.cb input{appearance:auto;-webkit-appearance:auto}.cb input::after{display:none}
+  .pp-bars i,.pp-age i,.pp-leg i{forced-color-adjust:none;background:GrayText;box-shadow:none}.pp-bars i.on,.pp-age i.a0,.pp-leg i.a0{background:CanvasText}.pp-age i.a1,.pp-leg i.a1,.pp-age i.a3,.pp-leg i.a3{background:none;box-shadow:inset 0 0 0 2px GrayText}.pp-age i.a4,.pp-leg i.a4{background:none;box-shadow:inset 0 0 0 1px CanvasText}}
 </style>
 </head>
 <body>
@@ -272,7 +311,7 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 <aside class="panel" id="panel" aria-label="Hatlar ve arama">
   <div class="panel-head" id="panel-head">
     <h1>İstanbul raylı sistem istasyonları</h1>
-    <p class="sub">2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı</p>
+    <p class="sub"><span id="sub-t">2025 yıllık yolcu sayısı</span> · daire alanı yolcu sayısıyla yaklaşık orantılı</p>
     <button class="collapse-btn" id="collapse" type="button" aria-expanded="true" aria-controls="panel-body" aria-label="Paneli gizle" title="Paneli gizle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
   </div>
   <div class="pin" id="pin">
@@ -290,8 +329,25 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
       <button type="button" role="radio" aria-checked="true" data-mode="station" title="Her hat için ayrı daire">Ayrı istasyonlar</button>
       <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="hub" title="Aktarma istasyonlarını tek dairede topla">Aktarma merkezleri</button>
     </div>
+    <div class="flt" id="flt" hidden>
+      <label class="fl" for="ay">Dönem</label>
+      <select id="ay">
+        <option value="0">Tüm yıl (2025)</option><option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option><option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
+        <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option><option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+      </select>
+      <span class="fl" id="l-gun">Gün</span>
+      <div class="seg" id="gun" role="radiogroup" aria-labelledby="l-gun">
+        <button type="button" role="radio" aria-checked="true" data-gun="all">Tümü</button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hi">Hafta içi</button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hs">Hafta sonu</button>
+      </div>
+    </div>
+    <div class="share">
+      <button class="link" id="copy" type="button" title="Seçili hat, dönem, gün ve görünümü içeren bağlantı">Bağlantıyı kopyala</button>
+      <input class="copy-url" id="copy-url" type="text" readonly hidden aria-label="Bu görünümün bağlantısı; kopyalamak için Ctrl+C">
+    </div>
 
-    <div class="section-title"><h2 id="h-top">En yoğun istasyonlar</h2></div>
+    <div class="section-title"><h2 id="h-top">En yoğun istasyonlar</h2><span class="unit" id="u-top">yolcu / yıl</span></div>
     <ol class="top" id="top" aria-labelledby="h-top"></ol>
 
     <div class="section-title"><h2>Hatlar</h2><span class="links"><button class="link" id="all" type="button">Tümü</button><button class="link" id="none" type="button">Hiçbiri</button></span></div>
@@ -299,7 +355,7 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 
     <details class="info">
       <summary><span class="gname">Veri ve kullanım</span><svg class="chev" style="margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
-      <p><b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer.</p>
+      <p><b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer. Dönem ya da gün seçilince daireler ve sayılar <b>günlük ortalamayı</b> gösterir; “Bağlantıyı kopyala” seçili hattı, dönemi, gün türünü ve görünümü paylaşır (gizlenen hatlar ve harita konumu bağlantıya yazılmaz). Günlük ortalama, takvimdeki gün sayısına bölünerek hesaplanır; yıl içinde açılan istasyonlarda bu yüzden düşük çıkar.</p>
       <p>Hat çizgileri OpenStreetMap’teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.</p>
       <p><b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı kaynak, istasyon penceresinde yazar.</p>
       <p><b>Zemin harita:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.</p>
@@ -311,7 +367,7 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
   <div class="chip" id="chip"><span id="chip-text"></span><button id="chip-x" type="button" aria-label="Odağı kaldır" title="Odağı kaldır (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="toast" id="toast" role="status"></div>
   <div id="map" role="application" aria-label="İstasyon haritası"></div>
-  <div class="key" id="key" role="img" aria-label="Daire boyutu göstergesi"><div class="key-t">Yıllık yolcu</div><svg id="key-svg" aria-hidden="true"></svg></div>
+  <div class="key" id="key" role="img" aria-label="Daire boyutu göstergesi"><div class="key-t" id="key-t">Yıllık yolcu</div><svg id="key-svg" aria-hidden="true"></svg></div>
 </main>
 <div class="vh" id="live" role="status" aria-live="polite"></div>
 
@@ -321,6 +377,10 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 const STATIONS = __DATA__;
 /* OpenStreetMap'ten alınmış gerçek ray geometrisi (build_map.py üretir) */
 const ROUTES = __ROUTES__;
+/* Aylık (hafta içi / hafta sonu) ve yaş grubu dökümü (build_detay.py üretir); dosya yoksa null */
+const DETAIL = __DETAIL__;
+
+if(window.L){   /* kitaplık yüklenemediyse yalnızca uyarı görünür */
 
 /* ---------- Hat tanımları: renk, tür, uçlar ve istasyon sırası ---------- */
 const LINES = {
@@ -371,6 +431,7 @@ const INK = '#18202b', SRC0 = 'İBB Açık Veri Portalı';
 const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('tr-TR').format(n);
 const short = n => n>=1e9 ? (n/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' mr' : n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:n>=1e7?0:1})+' mn' : Math.round(n/1e3).toLocaleString('tr-TR')+' bin';
+const shortD = n => n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:1})+' mn' : n>=1e5 ? Math.round(n/1e3).toLocaleString('tr-TR')+' bin' : n>=1e3 ? (n/1e3).toLocaleString('tr-TR',{maximumFractionDigits:1})+' bin' : fmt(Math.round(n));   // günlük değerler
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => s.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ı/g,'i');
 const code = l => l==='Marmaray'?'B1':l;
@@ -392,8 +453,30 @@ const visible = new Set(ORDER);
 let focusLine = null, mode = 'station';
 const byLine = {}; ORDER.forEach(l=>byLine[l]=[]);
 STATIONS.forEach((s,i)=>{s.id=i;(byLine[s.line]||(byLine[s.line]=[])).push(s)});
-const lineTotal = {}; ORDER.forEach(l=>lineTotal[l]=byLine[l].reduce((a,s)=>a+s.pax,0));
-ORDER.forEach(l=>{byLine[l].sort((a,b)=>b.pax-a.pax).forEach((s,i)=>s.rank=i+1)});
+const lineTotal = {};
+ORDER.forEach(l=>byLine[l].sort((a,b)=>b.pax-a.pax));
+
+/* ---------- Dönem ve gün seçimi: değer = seçimdeki toplam ÷ gün sayısı (günlük ortalama) ---------- */
+const HAS = !!(DETAIL && DETAIL.gun && Array.isArray(DETAIL.ist) && DETAIL.ist.length===STATIONS.length);
+const AY = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const AYK = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const GUNAD = {all:'tüm günler',hi:'hafta içi',hs:'hafta sonu'};
+let ay = 0, gun = 'all';   // ay: 0 = tüm yıl, 1–12; gun: all / hi / hs
+const isDef = () => !ay && gun==='all';
+const gunSay = (m,g) => {const G=DETAIL.gun;return g==='hi'?G.hi[m]:g==='hs'?G.hs[m]:G.hi[m]+G.hs[m]};
+const ayTop = (s,m,g) => {const x=DETAIL.ist[s.id].m[m];return g==='hi'?x[0]:g==='hs'?x[1]:x[0]+x[1]};
+function gunluk(list,a,g){let t=0,n=0;for(let m=0;m<12;m++)if(!a||a===m+1){n+=gunSay(m,g);for(const s of list)t+=ayTop(s,m,g)}return n>0?t/n:0}
+/* s.d: günlük ortalama; s.v: daire boyutu ve sıralama için yıla ölçeklenmiş değer (varsayılan görünümde yıllık toplamın kendisi) */
+function recalc(){
+  STATIONS.forEach(s=>{s.d=HAS?gunluk([s],ay,gun):s.pax/365;s.v=isDef()?s.pax:s.d*365});
+  ORDER.forEach(l=>{lineTotal[l]=isDef()||!HAS?byLine[l].reduce((a,s)=>a+s.v,0):gunluk(byLine[l],ay,gun)*365;[...byLine[l]].sort((a,b)=>b.v-a.v).forEach((s,i)=>s.rank=i+1)});
+  [...STATIONS].sort((a,b)=>b.v-a.v).forEach((s,i)=>s.crank=i+1);
+}
+recalc();
+const val = v => isDef()?short(v):shortD(v/365+1e-7);         // v: yıla ölçeklenmiş değer (1e-7: ×365÷365 kayan nokta kaybına karşı)
+const valU = v => isDef()?short(v):shortD(v/365+1e-7)+'/gün';
+const bos = v => !(Math.round(isDef()?v:v/365+1e-7)>0);        // seçimde (yuvarlanınca) yolcu yok
+const donem = () => [ay?AY[ay-1]:'Tüm yıl',gun==='all'?'':GUNAD[gun]].filter(Boolean).join(' · ');
 
 /* ---------- Aktarma merkezleri: farklı hatların 350 m içindeki istasyonları ---------- */
 const hubs = [];
@@ -442,7 +525,7 @@ new Tools().addTo(map);
 
 const routeLayer = L.layerGroup().addTo(map), dotLayer = L.layerGroup().addTo(map), labelLayer = L.layerGroup().addTo(map);
 const routes = {}, casings = {}, markers = new Map(), drawn = [];
-let labelsOn = true;
+let labelsOn = true, openKey = null;
 
 function radius(pax){const z=map.getZoom();const k=Math.pow(1.28,z-11);return Math.max(2.5,(1.6+Math.sqrt(pax/1e6)*2.7)*k)}
 
@@ -470,14 +553,15 @@ function styleFor(l){
 
 /* ---------- Açılır pencere ayarları: panel, alt sayfa ve araç düğmelerinden uzak dur ---------- */
 function peekPx(){return mobile()&&pin.offsetHeight+1||112}
+function chipB(){const c=$('chip');return focusLine&&c.offsetHeight?c.offsetTop+c.offsetHeight+8:0}   // odak etiketinin alt kenarı
 function liftPx(){return sheet==='peek'?peekPx():innerHeight*.5}
 function popOpts(){
   if(mobile()){const w=Math.max(180,Math.min(320,innerWidth-104));
-    return {maxWidth:w,minWidth:Math.min(230,w),maxHeight:Math.max(180,innerHeight-peekPx()-(focusLine?190:130)),autoPanPaddingTopLeft:[10,focusLine?72:10],autoPanPaddingBottomRight:[62,peekPx()+40]}}
-  return {maxWidth:320,minWidth:230,maxHeight:Math.max(200,innerHeight-150),autoPanPaddingTopLeft:[panelOff?64:364,64],autoPanPaddingBottomRight:[60,24]};
+    return {maxWidth:w,minWidth:Math.min(230,w),maxHeight:Math.max(180,innerHeight-peekPx()-(focusLine?190:130)),autoPanPaddingTopLeft:[10,focusLine?Math.max(72,chipB()):10],autoPanPaddingBottomRight:[62,peekPx()+40]}}
+  return {maxWidth:320,minWidth:HAS?300:230,maxHeight:Math.max(200,innerHeight-150),autoPanPaddingTopLeft:[panelOff?64:364,64],autoPanPaddingBottomRight:[60,24]};
 }
 function syncPopOpts(){const o=popOpts();markers.forEach(m=>Object.assign(m.getPopup().options,o))}
-function panelPad(){return mobile()?{paddingTopLeft:[16,focusLine?76:16],paddingBottomRight:[64,liftPx()+28]}:{paddingTopLeft:[panelOff?64:370,focusLine?60:20],paddingBottomRight:[60,24]}}
+function panelPad(){return mobile()?{paddingTopLeft:[16,focusLine?Math.max(76,chipB()+4):16],paddingBottomRight:[64,liftPx()+28]}:{paddingTopLeft:[panelOff?64:370,focusLine?60:20],paddingBottomRight:[60,24]}}
 
 /* seçili istasyonu haritada belirginleştir */
 function hiOn(m){m.sel={weight:m.options.weight,color:m.options.color,fillOpacity:m.options.fillOpacity,opacity:m.options.opacity};m.setStyle({weight:3,color:hubCol(),fillOpacity:.9,opacity:1});m.bringToFront()}
@@ -492,40 +576,64 @@ function render(){
   const items = currentItems();
   // büyükler altta, küçükler üstte kalsın ki hepsi tıklanabilsin; odaktaki hat en üstte
   items.sort((a,b)=>(a.focus-b.focus)||(b.pax-a.pax)).forEach(it=>{
-    const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:light?mix(it.color,INK):it.color,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:it.st.fill,opacity:light&&it.st.stroke>.5?1:it.st.stroke});
+    const zero=bos(it.pax);   // seçimde yolcusu olmayan istasyon: küçük, içi boş daire
+    const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:light?mix(it.color,INK):it.color,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:zero?0:it.st.fill,opacity:light&&it.st.stroke>.5?1:it.st.stroke});
     m.pax=it.pax;
-    m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${short(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
+    m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${zero?'bu seçimde yolcu yok':valU(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
     m.bindPopup(()=>it.multi?hubPopup(it.hub):stationPopup(it.s),po);
-    m.on('popupopen',()=>hiOn(m)).on('popupclose',()=>hiOff(m));
+    m.on('popupopen',()=>{openKey=it.key;hiOn(m)}).on('popupclose',()=>{if(openKey===it.key)openKey=null;hiOff(m)});
     m.addTo(dotLayer); markers.set(it.key,m); drawn.push(m);
   });
-  updateStats(items); updateTop(items); updateLabels(); updateKey();
+  updateStats(items); updateTop(items); updateLabels(); updateKey(); writeHash();
 }
 
 function currentItems(){
   if(mode==='hub'){
     return hubs.map(h=>{
       const mem=h.members.filter(m=>visible.has(m.line)); if(!mem.length) return null;
-      const pax=mem.reduce((a,m)=>a+m.pax,0), lead=mem.reduce((a,b)=>b.pax>a.pax?b:a);
+      const pax=mem.reduce((a,m)=>a+m.v,0), lead=mem.reduce((a,b)=>b.pax>a.pax?b:a);
       const inFocus = !focusLine || mem.some(m=>m.line===focusLine), st=inFocus?{route:.9,fill:.72,stroke:.95}:{route:.08,fill:.07,stroke:.12};
       const color = mem.length>1 ? hubCol() : LINES[lead.line].color;
       return {key:'h'+h.id,hub:h,s:mem.length===1?lead:null,multi:mem.length>1,members:mem,name:lead.name,lat:h.lat,lon:h.lon,pax,color,st,focus:inFocus?1:0,line:lead.line};
     }).filter(Boolean);
   }
-  return STATIONS.filter(s=>visible.has(s.line)).map(s=>({key:'s'+s.id,s,name:s.name,lat:s.lat,lon:s.lon,pax:s.pax,color:LINES[s.line].color,st:styleFor(s.line),focus:focusLine===s.line?1:0,line:s.line}));
+  return STATIONS.filter(s=>visible.has(s.line)).map(s=>({key:'s'+s.id,s,name:s.name,lat:s.lat,lon:s.lon,pax:s.v,color:LINES[s.line].color,st:styleFor(s.line),focus:focusLine===s.line?1:0,line:s.line}));
 }
 
 /* ---------- Açılır pencereler ---------- */
 function transfers(s){return s.hub.members.filter(m=>m!==s)}
+/* 12 aylık küçük grafik: seçili gün türünde aylık günlük ortalama */
+function ayGrafik(list){
+  if(!HAS) return '';
+  const v=AY.map((_,m)=>gunluk(list,m+1,gun)), max=Math.max(...v); if(!(Math.round(max)>0)) return '';
+  const p=v.map((x,i)=>[x,i]).filter(a=>Math.round(a[0])>0), lo=p.reduce((a,b)=>b[0]<a[0]?b:a), hi=p.reduce((a,b)=>b[0]>a[0]?b:a), yok=12-p.length;
+  return `<div class="pp-cap">Aylara göre günlük ortalama · ${GUNAD[gun]}</div>
+  <div role="img" aria-label="Aylara göre günlük ortalama yolcu, ${GUNAD[gun]}: ${v.map((x,i)=>AY[i]+' '+fmt(Math.round(x))).join(', ')}${ay?'. Seçili ay: '+AY[ay-1]:''}"><div class="pp-bars">${v.map((x,i)=>`<i${ay===i+1?' class="on"':''} style="height:${(x/max*100).toFixed(1)}%"></i>`).join('')}</div><div class="pp-ini">${AYK.map((k,i)=>`<span${ay===i+1?' class="on"':''}>${k[0]}</span>`).join('')}</div></div>
+  <div class="pp-mm">En düşük <b>${AYK[lo[1]]} ${shortD(lo[0])}</b> · en yüksek <b>${AYK[hi[1]]} ${shortD(hi[0])}</b>${yok?` · ${yok} ayda veri yok`:''}</div>`;
+}
+/* sayıdan sonra gelen iyelik eki: %62’si, %70’i, %100’ü */
+const ek = n => {const b=['','i','si','ü','ü','i','sı','si','i','u'], o=['','u','si','u','ı','si','ı','i','i','ı'];return n===0?'ı':n%10?b[n%10]:n%100?o[n%100/10]:n%1000?'ü':'i'};
+function oran(list){
+  if(!HAS) return '';
+  const hi=gunluk(list,ay,'hi'), hs=gunluk(list,ay,'hs'); if(!(Math.round(hi)>0)) return '';
+  const p=Math.round(hs/hi*100);
+  return `<div class="pp-rank">${ay?AY[ay-1]+': h':'H'}afta sonu, hafta içinin <b>%${fmt(p)}’${ek(p)}</b></div>`;
+}
+function yasDagilimi(s){
+  if(!HAS) return '';
+  const y=DETAIL.ist[s.id].y, t=y.reduce((a,b)=>a+b,0); if(!(t>0)) return '';
+  const pc=x=>{const p=x/t*100;return p>0&&p<.5?'&lt;%1':'%'+Math.round(p)};
+  return `<div class="pp-age" aria-hidden="true">${y.map((x,i)=>`<i class="a${i}" style="flex:${(x/t*100).toFixed(2)} 1 0"></i>`).join('')}</div>
+  <div class="pp-leg" role="group" aria-label="Yaş gruplarının payı, 2025 geneli"><span>Yaş (2025):</span>${DETAIL.yas.map((n,i)=>`<span><i class="a${i}" aria-hidden="true"></i>${esc(n)} <b>${pc(y[i])}</b></span>`).join('')}</div>`;
+}
 function stationPopup(s){
-  const L_=LINES[s.line], share=s.pax/lineTotal[s.line]*100, tr=transfers(s), fixed=s.fixes&&s.fixes.length;
-  const cityRank=[...STATIONS].sort((a,b)=>b.pax-a.pax).indexOf(s)+1;
+  const L_=LINES[s.line], share=lineTotal[s.line]>0?s.v/lineTotal[s.line]*100:0, tr=transfers(s), fixed=s.fixes&&s.fixes.length, def=isDef();
   let h=`<h2 class="pp-title">${esc(s.name)}</h2><div class="pp-town">${badge(s.line)} ${esc(L_.name)} · ${esc(s.town||'—')}</div>
-  <div class="pp-big">${fmt(s.pax)} <small>yolcu / yıl</small></div>
-  <div class="pp-day">Günlük ort. ≈ ${fmt(Math.round(s.pax/365))}</div>
-  <div class="pp-row"><span>Hat içindeki sıra</span><b>${s.rank} / ${byLine[s.line].length}</b></div>
-  <div class="pp-row"><span>Hat yolcusundaki payı</span><b>%${share.toLocaleString('tr-TR',{maximumFractionDigits:1})}</b></div>
-  <div class="pp-row"><span>Şehir genelindeki sıra</span><b>${cityRank} / ${STATIONS.length}</b></div>`;
+  <div class="pp-big">${fmt(def?s.pax:Math.round(s.d))} <small>${def?'yolcu / yıl':'yolcu / gün (ortalama)'}</small></div>
+  <div class="pp-day">${def?`Günlük ort. ≈ ${fmt(Math.round(s.pax/365))}`:`${donem()} · 2025 toplamı ${fmt(s.pax)}`}</div>`;
+  h+=s.v>0?`<div class="pp-rank"><span>Hat içinde <b>${s.rank} / ${byLine[s.line].length}</b></span> · <span>hat payı <b>%${share.toLocaleString('tr-TR',{maximumFractionDigits:1})}</b></span> · <span>şehirde <b>${s.crank} / ${STATIONS.length}</b></span></div>`
+    :`<div class="pp-rank">Bu seçimde yolcu kaydı yok.</div>`;
+  h+=ayGrafik([s])+oran([s])+yasDagilimi(s);
   if(tr.length) h+=`<div class="pp-row"><span>Aktarma</span><b>${tr.map(t=>badge(t.line)).join(' ')}</b></div>`;
   // kaynak satırı yalnızca not, düzeltme ya da farklı bir kaynak varsa
   if(s.note||fixed||!String(s.src).startsWith(SRC0)) h+=`<div class="pp-row"><span>Koordinat kaynağı</span><b>${esc(s.src)}</b></div>`;
@@ -535,12 +643,12 @@ function stationPopup(s){
   return h;
 }
 function hubPopup(h){
-  const mem=h.members.filter(m=>visible.has(m.line)).sort((a,b)=>b.pax-a.pax), tot=mem.reduce((a,m)=>a+m.pax,0), max=mem[0].pax;
+  const mem=h.members.filter(m=>visible.has(m.line)).sort((a,b)=>b.v-a.v), tot=mem.reduce((a,m)=>a+m.v,0), max=mem[0].v||1, def=isDef();
   const names=[...new Set(mem.map(m=>m.name))].join(' / ');
   return `<h2 class="pp-title">${esc(names)}</h2><div class="pp-town">Aktarma merkezi · ${mem.length} hat</div>
-  <div class="pp-big">${fmt(tot)} <small>yolcu / yıl</small></div>
-  <div class="pp-lines">${mem.map(m=>`<div class="pp-line">${badge(m.line)}<div class="track"><div class="fill" style="width:${m.pax/max*100}%;background:${LINES[m.line].color}"></div></div><span>${short(m.pax)}</span></div>`).join('')}</div>
-  <div class="pp-note">Toplam; hatlar arası aktarma yapan yolcular her hatta ayrı sayılmış olabilir.</div>`;
+  <div class="pp-big">${fmt(def?tot:Math.round(tot/365))} <small>${def?'yolcu / yıl':'yolcu / gün (ortalama)'}</small></div>${def?'':`<div class="pp-day" style="margin-bottom:0">${donem()}</div>`}
+  <div class="pp-lines">${mem.map(m=>`<div class="pp-line">${badge(m.line)}<div class="track"><div class="fill" style="width:${m.v/max*100}%;background:${LINES[m.line].color}"></div></div><span>${val(m.v)}</span></div>`).join('')}</div>
+  ${ayGrafik(mem)}<div class="pp-note">Toplam; hatlar arası aktarma yapan yolcular her hatta ayrı sayılmış olabilir.</div>`;
 }
 map.on('popupopen',e=>{
   const el=e.popup.getElement(); if(!el) return;
@@ -563,7 +671,7 @@ function goTo(ll,z,then){
 function goBounds(b){const o=panelPad();RM.matches?map.fitBounds(b,Object.assign(o,{animate:false,maxZoom:14})):map.flyToBounds(b,Object.assign(o,{maxZoom:14,duration:.6}))}
 function openPop(m,from){
   if(!map.hasLayer(m)) return; m.openPopup();
-  const el=m.getPopup().getElement(), t=el&&(el.querySelector('.pp-actions button')||el.querySelector('.leaflet-popup-close-button'));
+  const el=m.getPopup().getElement(), kay=el&&el.querySelector('.leaflet-popup-scrolled'), t=el&&((!kay&&el.querySelector('.pp-actions button'))||el.querySelector('.leaflet-popup-close-button'));
   if(t){t.focus({preventScroll:true});ret=from||null}
 }
 function flyToMarker(key,from){
@@ -577,7 +685,7 @@ function syncFocus(){
   document.querySelectorAll('.line').forEach(r=>{const on=r.dataset.line===focusLine,b=r.querySelector('.lfocus');
     b.setAttribute('aria-pressed',on);b.querySelector('.go').textContent=on?'Odakta':'Odaklan';if(on)r.closest('details').open=true});
   $('chip').classList.toggle('show',!!focusLine);
-  if(focusLine)$('chip-text').innerHTML=`${badge(focusLine)}<span class="cn">${esc(LINES[focusLine].name)}</span><span class="tot">· ${short(lineTotal[focusLine])}</span>`;
+  if(focusLine)$('chip-text').innerHTML=`${badge(focusLine)}<span class="cn">${esc(LINES[focusLine].name)}</span> <span class="tot">· ${valU(lineTotal[focusLine])}</span>`;
 }
 function focusOn(l,fit=true,toChip=false){
   focusLine=l; if(!visible.has(l)){visible.add(l);syncChecks()}
@@ -603,7 +711,7 @@ TYPES.forEach(t=>{
   g.querySelector('input').addEventListener('change',e=>{ls.forEach(l=>e.target.checked?visible.add(l):visible.delete(l));syncChecks();focusLine&&!visible.has(focusLine)?clearFocus():render()});
   ls.forEach(l=>{
     const row=document.createElement('div'), nm=esc(LINES[l].name); row.className='line'; row.dataset.line=l;
-    row.innerHTML=`<label class="cb"><input type="checkbox" checked aria-label="${code(l)} ${nm} hattını göster"></label><button type="button" class="lfocus" aria-pressed="false" aria-label="${code(l)} ${nm}, ${short(lineTotal[l])} yolcu: hatta odaklan">${badge(l)}<span class="lname">${nm}</span><span class="lpax">${short(lineTotal[l])}</span><span class="go" aria-hidden="true">Odaklan</span></button>`;
+    row.innerHTML=`<label class="cb"><input type="checkbox" checked aria-label="${code(l)} ${nm} hattını göster"></label><button type="button" class="lfocus" aria-pressed="false" >${badge(l)}<span class="lname">${nm}</span><span class="lpax"></span><span class="go" aria-hidden="true">Odaklan</span></button>`;
     const cb=row.querySelector('input');
     cb.addEventListener('change',()=>{cb.checked?visible.add(l):visible.delete(l);syncChecks();!cb.checked&&focusLine===l?clearFocus():render()});
     row.querySelector('.lfocus').addEventListener('click',()=>focusLine===l?clearFocus():focusOn(l));
@@ -620,53 +728,118 @@ $('none').onclick=()=>{visible.clear();syncChecks();focusLine?clearFocus():rende
 $('chip-x').onclick=clearFocus;
 
 /* ---------- Mod ---------- */
-function setMode(m){mode=m;document.querySelectorAll('#mode button').forEach(b=>{const on=b.dataset.mode===m;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1});map.closePopup();render()}
-document.querySelectorAll('#mode button').forEach(b=>{
-  b.onclick=()=>setMode(b.dataset.mode);
-  b.onkeydown=e=>{if(!/^Arrow/.test(e.key))return;e.preventDefault();const o=[...document.querySelectorAll('#mode button')].find(x=>x!==b);setMode(o.dataset.mode);o.focus()};
-});
+function syncMode(){document.querySelectorAll('#mode button').forEach(b=>{const on=b.dataset.mode===mode;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1})}
+function setMode(m){mode=m;syncMode();map.closePopup();render()}
+/* seçenek grubu: ok tuşları, Home ve End seçimi taşır */
+function radios(id,key,set){
+  const bs=[...document.querySelectorAll('#'+id+' button')];
+  bs.forEach((b,i)=>{
+    b.onclick=()=>set(b.dataset[key]);
+    b.onkeydown=e=>{const d={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key], j=e.key==='Home'?0:e.key==='End'?bs.length-1:d?(i+d+bs.length)%bs.length:-1;
+      if(j<0)return;e.preventDefault();set(bs[j].dataset[key]);bs[j].focus()};
+  });
+}
+radios('mode','mode',setMode);
+
+/* ---------- Dönem ve gün ---------- */
+function syncSel(){
+  $('ay').value=String(ay);
+  document.querySelectorAll('#gun button').forEach(b=>{const on=b.dataset.gun===gun;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1});
+  const d=isDef(); $('sub-t').textContent=d?'2025 yıllık yolcu sayısı':'2025 günlük ortalama yolcu sayısı'; $('u-top').textContent=d?'yolcu / yıl':'günlük ortalama';
+  document.querySelectorAll('.line').forEach(r=>{const l=r.dataset.line,v=val(lineTotal[l]);r.querySelector('.lpax').textContent=v;
+    r.querySelector('.lfocus').setAttribute('aria-label',`${code(l)} ${LINES[l].name}, ${d?'':'günlük ortalama '}${v} yolcu: hatta odaklan`)});
+}
+function setSel(a,g){
+  if(!HAS) return; const k=openKey;
+  ay=a; gun=g; recalc(); syncSel(); map.closePopup(); syncFocus(); render(); syncPopOpts();
+  if(k&&!mobile()&&markers.has(k)) markers.get(k).openPopup();   // açık pencere yeni seçimle yenilenir
+}
+$('ay').onchange=e=>setSel(+e.target.value||0,gun);
+radios('gun','gun',g=>setSel(ay,g));
+
+/* ---------- Paylaşılabilir durum: #hat=M5&ay=3&gun=hs&mod=hub ---------- */
+let hashLock=false;
+function readHash(){
+  const o={hat:null,ay:0,gun:'all',mod:'station'}; let p;
+  try{p=new URLSearchParams(location.hash.replace(/^#/,''))}catch(e){return o}
+  const h=(p.get('hat')||'').toLowerCase(), a=p.get('ay')||'', g=p.get('gun');
+  if(h) o.hat=ORDER.find(l=>l.toLowerCase()===h||code(l).toLowerCase()===h)||null;
+  if(HAS&&/^\d{1,2}$/.test(a)&&+a>=1&&+a<=12) o.ay=+a;
+  if(HAS&&(g==='hi'||g==='hs')) o.gun=g;
+  if(p.get('mod')==='hub') o.mod='hub';
+  return o;
+}
+function writeHash(){
+  if(hashLock) return;
+  const h=[focusLine&&'hat='+encodeURIComponent(focusLine),ay&&'ay='+ay,gun!=='all'&&'gun='+gun,mode==='hub'&&'mod=hub'].filter(Boolean).join('&');
+  if(h===location.hash.replace(/^#/,'')) return;
+  try{history.replaceState(null,'',location.pathname+location.search+(h?'#'+h:''))}catch(e){}
+}
+function applyHash(first){
+  const o=readHash(), yeni=o.hat&&(first||o.hat!==focusLine);
+  hashLock=true;
+  ay=o.ay; gun=o.gun; mode=o.mod; focusLine=o.hat; if(o.hat) visible.add(o.hat);
+  recalc(); syncSel(); syncMode(); syncChecks(); map.closePopup(); syncFocus(); render(); syncPopOpts();
+  hashLock=false;
+  if(yeni&&byLine[o.hat].length){const b=L.latLngBounds(byLine[o.hat].map(s=>[s.lat,s.lon])).pad(.15);first?map.fitBounds(b,Object.assign(panelPad(),{maxZoom:14,animate:false})):goBounds(b)}
+}
+let copyT=0;
+$('copy').onclick=()=>{
+  const b=$('copy'), i=$('copy-url'), u=location.href;
+  const ok=()=>{i.hidden=true;toast('Bağlantı kopyalandı');b.textContent='Bağlantı kopyalandı';clearTimeout(copyT);copyT=setTimeout(()=>{b.textContent='Bağlantıyı kopyala'},2500)};
+  const elle=()=>{i.hidden=false;i.value=u;i.focus();i.select();toast('Bağlantı seçildi; kopyalayabilirsiniz')};   // pano kullanılamıyorsa
+  try{navigator.clipboard.writeText(u).then(ok,elle)}catch(e){elle()}
+};
+$('copy-url').onkeydown=e=>{if(e.key==='Escape'){e.stopPropagation();$('copy').focus();$('copy-url').hidden=true}};
+$('copy-url').onblur=()=>{$('copy-url').hidden=true};
 
 /* ---------- Özet satırı ve sıralama ---------- */
 let lastSum='';
 function updateStats(items){
-  const st=STATIONS.filter(s=>visible.has(s.line));
-  const t=`${short(st.reduce((a,s)=>a+s.pax,0))} yolcu · ${fmt(mode==='hub'?items.length:st.length)} ${mode==='hub'?'nokta':'istasyon'} · ${visible.size} hat`;
-  $('sum-t').textContent=t; if(lastSum&&lastSum!==t)say('Görünen: '+t); lastSum=t;
+  const st=STATIONS.filter(s=>visible.has(s.line)), tot=st.reduce((a,s)=>a+s.v,0);
+  const t=`${isDef()?short(tot):donem()+' · günlük ort. '+shortD(tot/365)} yolcu · ${fmt(mode==='hub'?items.length:st.length)} ${mode==='hub'?'nokta':'istasyon'} · ${visible.size} hat`;
+  if(lastSum===t) return;
+  $('sum-t').textContent=t; if(lastSum)say('Görünen: '+t); lastSum=t; syncPeek();
 }
 function updateTop(items){
-  const pool=(focusLine?items.filter(i=>mode==='hub'?i.members.some(m=>m.line===focusLine):i.line===focusLine):items).sort((a,b)=>b.pax-a.pax).slice(0,10);
+  const pool=(focusLine?items.filter(i=>mode==='hub'?i.members.some(m=>m.line===focusLine):i.line===focusLine):items).filter(i=>i.pax>0).sort((a,b)=>b.pax-a.pax).slice(0,10);
   const max=pool[0]?.pax||1, el=$('top');
   el.innerHTML=pool.map(it=>{
     const lines=it.multi?it.members.map(m=>m.line):[it.line];
     const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name;
-    return `<li><button type="button" class="top-item" data-key="${it.key}"><span class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><span class="bar" style="width:${it.pax/max*100}%;background:${it.multi?'var(--hub)':LINES[it.line].color}"></span></span><span class="v">${short(it.pax)}</span></button></li>`;
-  }).join('') || '<li class="empty">Hiç hat seçili değil. <button type="button" class="link" id="top-all">Tümünü göster</button></li>';
+    return `<li><button type="button" class="top-item" data-key="${it.key}"><span class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><span class="bar" style="width:${it.pax/max*100}%;background:${it.multi?'var(--hub)':LINES[it.line].color}"></span></span><span class="v">${val(it.pax)}</span></button></li>`;
+  }).join('') || (items.length?'<li class="empty">Bu seçimde yolcu kaydı yok.</li>':'<li class="empty">Hiç hat seçili değil. <button type="button" class="link" id="top-all">Tümünü göster</button></li>');
   el.querySelectorAll('.top-item').forEach(e=>e.onclick=()=>flyToMarker(e.dataset.key,e));
   const a=$('top-all'); if(a) a.onclick=()=>{showAll();$('all').focus()};
 }
 
 /* ---------- Boyut göstergesi: iç içe daireler, yakınlaştıkça güncellenir ---------- */
 function updateKey(){
-  const fit=[25e6,15e6,5e6,1e6,2.5e5,1e5].filter(v=>radius(v)<=(mobile()?30:46)), vs=(fit.length?fit:[1e5]).slice(0,4), rs=vs.map(radius);
-  const R=rs[0], B=2*R+8, cx=R+2, lh=mobile()?15:13, lx=2*R+16;
-  let y=0; const ys=rs.map((r,i)=>y=Math.max(B-2*r+4,i?y+lh:0));
-  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+(mobile()?52:46));
+  const def=isDef(), cls=def?[25e6,15e6,5e6,1e6,2.5e5,1e5]:[1e5,5e4,2e4,5e3,1e3,250], yr=v=>def?v:v*365, ad=def?short:shortD;   // günlük sınıflar yıla ölçeklenerek çizilir
+  const fit=cls.filter(v=>radius(yr(v))<=(mobile()?30:46)), vs=(fit.length?fit:[cls[cls.length-1]]).slice(0,4), rs=vs.map(v=>radius(yr(v)));
+  $('key-t').textContent=def?'Yıllık yolcu':'Günlük ortalama';
+  const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, lh=Math.max(mobile()?15:13,Math.round(fs*1.2)), up=Math.round(fs*.36);   // satır yüksekliği yazı boyutuna bağlı
+  const R=rs[0], B=2*R+8, cx=R+2, lx=2*R+16;
+  let y=0; const ys=rs.map((r,i)=>y=Math.max(B-2*r+4,i?y+lh:Math.round(fs)));
+  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+fs*4.3);
   const s=$('key-svg'); s.setAttribute('width',W); s.setAttribute('height',H); s.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-4} ${lx-3},${ys[i]-4}"/><text x="${lx}" y="${ys[i]}">${short(vs[i])}</text>`).join('');
-  $('key').setAttribute('aria-label',`Daire boyutu göstergesi, yıllık yolcu: ${vs.map(short).join(', ')}`);
+  s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-up} ${lx-3},${ys[i]-up}"/><text x="${lx}" y="${ys[i]}">${ad(vs[i])}</text>`).join('');
+  $('key').setAttribute('aria-label',`Daire boyutu göstergesi, ${def?'yıllık yolcu':'günlük ortalama yolcu'}: ${vs.map(ad).join(', ')}`);
 }
 
 /* ---------- Etiketler ---------- */
-const lblMin = () => focusLine?11.5:13;
+const olc = document.createElement('canvas').getContext('2d');
+const lblMin = () => focusLine?-Infinity:13;   // odaktaki hat her yakınlıkta etiketlenir
 function updateLabels(){
   const b=$('b-lbl'), low=map.getZoom()<lblMin(), tip=!labelsOn?'İstasyon adlarını göster':low?'İstasyon adları yakınlaşınca görünür':'İstasyon adlarını gizle';
   b.setAttribute('aria-pressed',labelsOn); b.title=tip; b.setAttribute('aria-label',labelsOn&&low?'İstasyon adları (yakınlaşınca görünür)':'İstasyon adları');
   labelLayer.clearLayers(); if(!labelsOn || low) return;
-  const bb=map.getBounds().pad(.1), kutular=[], cw=parseFloat(getComputedStyle(document.documentElement).fontSize)*.42;
+  const bb=map.getBounds().pad(.1), kutular=[], enCok=focusLine&&map.getZoom()<11.5?12:Infinity;
+  const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, kh=Math.round(fs*1.5); olc.font=`600 ${fs}px ${getComputedStyle(document.body).fontFamily}`;   // etiket kutusu gerçek yazı genişliğiyle ölçülür
   currentItems().filter(it=>bb.contains([it.lat,it.lon]) && (!focusLine||it.focus)).sort((a,b)=>b.pax-a.pax).forEach(it=>{
     const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name, pt=map.latLngToContainerPoint([it.lat,it.lon]), r=radius(it.pax);
-    const k={x:pt.x+r+2,y:pt.y-8,w:nm.length*cw+6,h:16,nm,px:pt.x,py:pt.y};
-    if(kutular.some(o=>(o.nm===nm&&Math.hypot(o.px-k.px,o.py-k.py)<60)||(k.x<o.x+o.w&&o.x<k.x+k.w&&k.y<o.y+o.h&&o.y<k.y+k.h)))return; kutular.push(k);
+    const k={x:pt.x+r+2,y:pt.y-kh/2,w:olc.measureText(nm).width+6,h:kh,nm,px:pt.x,py:pt.y};
+    if(kutular.some(o=>(o.nm===nm&&Math.hypot(o.px-k.px,o.py-k.py)<60)||(k.x<o.x+o.w&&o.x<k.x+k.w&&k.y<o.y+o.h&&o.y<k.y+k.h))||kutular.length>=enCok)return; kutular.push(k);
     L.tooltip({permanent:true,direction:'right',className:'lbl',offset:[radius(it.pax)+2,0],interactive:false}).setLatLng([it.lat,it.lon]).setContent(esc(nm)).addTo(labelLayer);
   });
 }
@@ -686,7 +859,7 @@ q.addEventListener('input',search);
 function drawHits(){
   res.innerHTML=hits.length?hits.map((h,i)=>{const a=`class="result${i===sel?' sel':''}" role="option" id="r-${i}" aria-selected="${i===sel}" data-i="${i}"`;return h.kind==='line'
     ?`<div ${a}>${badge(h.l)}<span class="rn">${esc(LINES[h.l].name)}</span><span class="meta">hat</span></div>`
-    :`<div ${a}>${badge(h.s.line)}<span class="rn">${esc(h.s.name)}</span><span class="meta">${esc(h.s.town||'')} · ${short(h.s.pax)}</span></div>`}).join('')
+    :`<div ${a}>${badge(h.s.line)}<span class="rn">${esc(h.s.name)}</span><span class="meta">${esc(h.s.town||'')} · ${bos(h.s.v)?'yolcu yok':valU(h.s.v)}</span></div>`}).join('')
     :`<div class="result none" role="option" aria-disabled="true" aria-selected="false">“${esc(q.value.trim())}” için sonuç yok. İstasyon adı, hat kodu (M2) veya ilçe deneyin.</div>`;
   res.classList.add('open'); q.setAttribute('aria-expanded','true');
   if(hits.length){q.setAttribute('aria-activedescendant','r-'+sel);const e=$('r-'+sel);if(e&&res.scrollHeight>res.clientHeight)res.scrollTop=Math.max(0,e.offsetTop-res.clientHeight/2)}
@@ -754,11 +927,15 @@ map.on('moveend',updateLabels);
 
 /* ---------- Başlangıç ve yeniden yerleşim ---------- */
 function relayout(){syncPeek();map.invalidateSize();syncPopOpts();updateKey()}
-setSheet('peek'); setPanel(false); applyTheme(); syncChecks(); syncFocus(); render(); syncPeek();
-map.setView(mobile()?[41.02,29.0]:[41.03,28.93],mobile()?10:10.75);
+$('flt').hidden=!HAS;
+setSheet('peek'); setPanel(false); applyTheme(); syncPeek();
+map.setView(mobile()?[41.02,29.0]:[41.03,28.93],mobile()?10:10.75,{animate:false});   // bağlantıdaki hatta sığdırma bunun üstüne gelir
+applyHash(true);
+addEventListener('hashchange',()=>applyHash(false));
 addEventListener('resize',relayout);
 addEventListener('load',relayout);
 MQ.addEventListener('change',()=>{setSheet('peek');render();relayout()});   // 700 px eşiği aşılınca durumu yeniden kur
+}   /* if(window.L) */
 </script>
 </body>
 </html>
