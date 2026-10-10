@@ -1,5 +1,7 @@
 # İstanbul Raylı Sistemler 2025 Analizi
 
+**Türkçe** · [English](README.en.md)
+
 ## Projenin amacı
 
 Bu projede, İstanbul'daki raylı sistemlerin 2025 yılı kullanımını yolcu verileri üzerinden incelemeyi amaçladım. Metro, tramvay, füniküler, teleferik ve Marmaray hatlarını karşılaştırarak hangi hatların daha yoğun olduğunu, kullanımın yıl boyunca nasıl değiştiğini ve farklı hatların yolcu profillerinin nasıl ayrıştığını anlamaya çalıştım.
@@ -59,9 +61,13 @@ Diğer grafikler (hat payları, en yoğun 10 istasyon, aylık seyir, yaş dağı
 
 **[Haritayı aç](https://ismailsamib.github.io/istanbul-rayli-sistemler/harita/istasyon_kullanim_haritasi.html)**
 
+![İstasyon kullanım haritası](figures/harita-onizleme.png)
+
 291 istasyonun 2025 yılı yolcu sayılarını gösteren etkileşimli harita. Dairelerin büyüklüğü yolcu sayısını (karekök ölçeği), renkler ise hatları gösteriyor. Bir hattın adına tıklayınca harita o hatta odaklanır ve diğer hatlar soluklaşır; yanındaki kutucuk hattı tamamen gizler. Hat güzergâhları, duraklar arasındaki gerçek ray geometrileri kullanılarak OpenStreetMap verilerinden oluşturuldu.
 
-Harita yalnızca yıllık toplamı değil, ayları ve gün türünü de gösteriyor: dönem (yıl ya da tek bir ay) ve gün türü (tümü, hafta içi, hafta sonu) seçildiğinde daireler o seçimin günlük ortalamasına göre yeniden boyutlanıyor. Bir istasyona tıklayınca açılan pencerede 12 aylık seyir, hafta sonu / hafta içi oranı ve yolcuların yaş dağılımı görünüyor. Seçili hat, dönem, gün türü ve görünüm adres çubuğuna yazıldığı için bağlantıyla paylaşılabiliyor (gizlenen hatlar ve harita konumu bağlantıya yazılmıyor). Günlük ortalamalar takvimdeki gün sayısına bölünerek hesaplanıyor; yıl içinde açılan istasyonlarda bu yüzden düşük çıkıyor. "Aktarma merkezleri" görünümü, birbirine yakın farklı hat istasyonlarını tek dairede topluyor.
+Harita yalnızca yıllık toplamı değil, ayları ve gün türünü de gösteriyor: dönem (yıl ya da tek bir ay) ve gün türü (tümü, hafta içi, hafta sonu) seçildiğinde daireler o seçimin günlük ortalamasına göre yeniden boyutlanıyor. Bir istasyona tıklayınca açılan pencerede 12 aylık seyir, hafta sonu / hafta içi oranı ve yolcuların yaş dağılımı görünüyor. Bir hatta odaklanınca o hattın profili açılıyor: istasyonlar güzergâh sırasıyla ve yolcu sayılarıyla listeleniyor. "Aktarma merkezleri" görünümü, birbirine yakın farklı hat istasyonlarını tek dairede topluyor.
+
+Seçili hat, dönem, gün türü, görünüm, gizlenen hatlar ve dil adres çubuğuna yazıldığı için her görünüm bağlantıyla paylaşılabiliyor. Günlük ortalamalar takvimdeki gün sayısına bölünerek hesaplanıyor; yıl içinde açılan istasyonlarda bu yüzden düşük çıkıyor. Arayüz Türkçe ve İngilizce kullanılabiliyor.
 
 İstasyon koordinatlarının çoğu İBB verisindeki orijinal koordinatlardan alındı. Ray güzergâhından 140 metreden fazla sapan 9 istasyonun konumu, OpenStreetMap'teki durak noktalarına göre düzeltildi. En büyük fark M9 Ataköy'de yaklaşık 800 metreydi. İstasyon adlarındaki yazım hatları ve mükerrer kayıtlar da ayrıca düzeltildi.
 

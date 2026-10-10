@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>İstanbul Raylı Sistemler — İstasyon Kullanım Haritası</title>
+<meta name="description" content="İstanbul'daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="İstanbul Raylı Sistemler — İstasyon Kullanım Haritası">
+<meta property="og:description" content="İstanbul'daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
+<meta property="og:url" content="https://ismailsamib.github.io/istanbul-rayli-sistemler/harita/istasyon_kullanim_haritasi.html">
+<meta property="og:image" content="https://ismailsamib.github.io/istanbul-rayli-sistemler/figures/harita-onizleme.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2322c55e'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='system-ui,Arial,sans-serif' font-size='20' font-weight='700' fill='%230b0f14'%3EM%3C/text%3E%3C/svg%3E">
 <script>
 /* Görünüm: kullanıcı seçimi yoksa sistem ayarı izlenir; boyamadan önce uygulanır */
 (function(){var t=null;try{localStorage.removeItem('ist-theme');t=localStorage.getItem('ist-gorunum')}catch(e){}
@@ -125,14 +139,27 @@ details[open]>summary .chev{transform:rotate(90deg)}
 .lfocus:hover .go,.lfocus:focus-visible .go,.lfocus[aria-pressed="true"] .go{visibility:visible}
 
 .top{counter-reset:r;list-style:none;margin:0;padding:0}
-.top-item{counter-increment:r;display:flex;align-items:center;gap:8px;width:100%;min-height:var(--hit);border:0;background:none;text-align:left;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:var(--fs-body)}
-.top-item:hover{background:var(--hover)}
+.top-item,.pf-item{display:flex;align-items:center;gap:8px;width:100%;min-height:var(--hit);border:0;background:none;text-align:left;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:var(--fs-body)}
+.top-item{counter-increment:r}
+.top-item:hover,.pf-item:hover{background:var(--hover)}
 .top-item::before{content:counter(r);width:16px;flex:none;color:var(--faint);font-size:var(--fs-cap);text-align:right;font-variant-numeric:tabular-nums}
-.top-item .nm{flex:1;min-width:0;display:block}
-.top-item .t{display:block;line-height:1.5}
-.top-item .t .badge{margin-left:2px}
-.bar{display:block;height:3px;border-radius:2px;margin-top:3px}
-.top-item .v{font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+:is(.top-item,.pf-item) .nm{flex:1;min-width:0;display:block}
+:is(.top-item,.pf-item) .t{display:block;line-height:1.5;overflow-wrap:anywhere}
+:is(.top-item,.pf-item) .t .badge{margin-left:2px}
+/* çubuk hat renginde; açık görünümde soluk renkler kaybolmasın diye koyu karışımlı ince kenar (haritadaki dairelerle aynı yaklaşım) */
+.bar{display:block;height:3px;border-radius:2px;margin-top:3px;background:var(--c,var(--hub));forced-color-adjust:none}
+:root[data-theme="light"] .bar{box-shadow:0 0 0 1px var(--ck,transparent)}
+:is(.top-item,.pf-item) .v{font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* hat profili: odaktaki hattın istasyonları güzergâh sırasıyla */
+.pf-head{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:0 0 4px;padding:0 6px;font-size:var(--fs-body);line-height:1.35}
+.pf-head .pn{flex:1 1 60%;min-width:0;font-weight:600}
+.pf-head .pt{font-size:var(--fs-sec);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pf-head .pt b{color:var(--text);font-weight:600}
+.pf-sub{margin:10px 6px 2px;font-size:var(--fs-sec);font-weight:600;color:var(--muted);line-height:1.35}
+.pf{list-style:none;margin:0;padding:0}
+.pf-item .bar{height:4px}
+.pf-item .v.yok{color:var(--faint)}
 
 .info{margin-top:12px;border-top:1px solid var(--border);padding-top:6px}
 .info summary{padding-left:6px}
@@ -166,6 +193,7 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 .ctl button:hover{background:var(--hover)}
 .ctl button[aria-pressed="true"]{background:var(--active);border-color:var(--control)}
 .ctl svg{width:17px;height:17px}
+.ctl .dil{font-size:var(--fs-sec);font-weight:700;line-height:1}
 .leaflet-bar{border:0!important;border-radius:9px!important;overflow:hidden;box-shadow:var(--shadow)!important}
 #map .leaflet-bar a{width:var(--ctl);height:var(--ctl);line-height:var(--ctl);background:var(--panel);color:var(--text);border-color:var(--border)}
 #map .leaflet-bar a:hover{background:var(--hover)}
@@ -194,12 +222,18 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 .pp-rank span{white-space:nowrap}
 .pp-rank b,.pp-mm b,.pp-leg b{color:var(--text);font-weight:600}
 .pp-cap{padding-top:5px;border-top:1px solid var(--border);font-size:var(--fs-cap);color:var(--muted)}
-.pp-bars{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;align-items:end;height:26px;margin-top:4px;border-bottom:1px solid var(--control)}
-.pp-bars i{display:block;min-height:1px;border-radius:2px 2px 0 0;background:var(--control)}
-.pp-bars i.on{background:var(--text)}
+/* aylık seyir: ortadaki çizgi istasyonun kendi ortalaması; çubuk yukarı = ortalamanın üstü, aşağı = altı */
+.pp-dv{position:relative;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;height:36px;margin-top:4px}
+.pp-dv::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;margin-top:-.5px;background:var(--muted)}
+.pp-dv span{position:relative}
+.pp-dv i{position:absolute;left:0;right:0;min-height:1px;background:var(--control)}
+.pp-dv i.up{bottom:50%;border-radius:2px 2px 0 0}
+.pp-dv i.dn{top:50%;border-radius:0 0 2px 2px}
+.pp-dv i.on{background:var(--text)}
 .pp-ini{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:2px;font-size:var(--fs-cap);line-height:1.3;color:var(--muted);text-align:center}
 .pp-ini .on{color:var(--text);font-weight:700;text-decoration:underline}
 .pp-mm{margin-bottom:5px;font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-mm span{white-space:nowrap}
 .pp-age{display:flex;gap:1px;height:8px;margin-top:2px}
 .pp-age i{display:block;min-width:1px}
 .pp-leg{display:flex;flex-wrap:wrap;gap:1px 10px;margin:3px 0 5px;font-size:var(--fs-cap);color:var(--muted);font-variant-numeric:tabular-nums}
@@ -221,6 +255,11 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 .pp-actions{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
 .pp-actions button{border:1px solid var(--control);background:transparent;border-radius:7px;padding:5px 12px;min-height:var(--hit);font-size:var(--fs-sec);cursor:pointer}
 .pp-actions button:hover{background:var(--hover)}
+/* dar ekranda ikincil bilgiler tek bir açılır bölümde */
+.pp-more{margin-top:6px;border-top:1px solid var(--border)}
+.pp-more summary{padding:0 2px;gap:6px;font-size:var(--fs-sec);line-height:1.2;border-radius:7px}
+.pp-more summary .chev{margin-left:auto}
+.pp-more>:nth-child(2){border-top:0}
 
 /* etiketler */
 .lbl{background:transparent!important;border:0!important;box-shadow:none!important;color:var(--text)!important;font-size:var(--fs-cap);font-weight:600;padding:0 0 0 2px!important;
@@ -241,6 +280,14 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
   :root[data-panel="off"] .key{left:12px}
 }
 @media(min-width:701px) and (max-width:880px){.key{bottom:48px}}
+/* dar masaüstü: odak etiketinde uzun hat adı kırpılmaz, ikinci satıra geçer */
+@media(min-width:701px) and (max-width:900px){
+  .chip{left:calc(var(--pl) + 8px);right:64px;transform:none;margin:0 auto;width:fit-content;max-width:none;border-radius:18px;padding-block:5px}
+  #chip-text{display:block}
+  .chip .cn{white-space:normal;overflow:visible}
+  .chip .badge{margin-right:6px}
+  .toast{top:74px}
+}
 
 /* ---------- Dar ekran: üç yükseklikli alt sayfa ---------- */
 @media(max-width:700px){
@@ -279,6 +326,31 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
   .leaflet-bottom{bottom:var(--lift);transition:bottom .2s ease}
   .leaflet-control-attribution a{padding:14px 5px;margin:-14px -5px}
   .pp-title{margin-right:36px}
+  /* istasyon penceresi: dar ekranda sıkı dikey aralıklar */
+  .leaflet-popup-content{margin:10px 12px;line-height:1.3}
+  .pp-town{margin-bottom:4px}
+  .pp-big{line-height:1.2}
+  .pp-day{margin-bottom:5px}
+  .pp-cap{padding-top:4px}
+  .pp-mm{margin-bottom:4px}
+  .pp-rank{padding:3px 0}
+  .pp-leg{margin:3px 0 0}
+  .pp-lines{margin:6px 0}
+  .pp-actions{margin-top:7px;flex-wrap:nowrap}
+  .pp-actions button{flex:1 1 auto;min-width:0;padding:4px 8px;line-height:1.2}
+  .pp-dv{height:32px}
+}
+/* kısa telefon ekranı: pencere düğmelerine kadar kaydırmadan sığsın */
+@media(max-width:700px) and (max-height:600px){
+  .leaflet-popup-content{margin:8px 12px}
+  .pp-dv{height:28px}
+  .pp-rank{padding:2px 0}
+  .pp-town,.pp-day,.pp-mm{margin-bottom:3px}
+  .pp-cap{padding-top:3px}
+  .pp-leg{margin-top:2px}
+  .pp-actions{margin-top:6px}
+  .pp-title{margin-bottom:0}
+  .pp-age{margin-top:1px}
 }
 @media(max-width:400px){.sum .pre{display:none}}
 @media(min-width:701px) and (hover:none){
@@ -297,77 +369,84 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
   .panel,.chip,.key,.ctl button,.leaflet-popup-content-wrapper{border-color:var(--text)}
   .a1{background:repeating-linear-gradient(90deg,var(--text) 0 3px,transparent 3px 4px)}
   .a2{background:repeating-linear-gradient(90deg,var(--text) 0 1px,transparent 1px 3px)}
+  .pp-dv i:not(.on){background:transparent;box-shadow:inset 0 0 0 1px var(--text)}   /* seçili ay dolu, diğerleri çerçeve */
 }
 @media (prefers-reduced-transparency: reduce){.pp-fix,.notice{background:var(--panel-solid)}}
 @media (pointer:coarse){:root{--hit:44px;--ctl:44px}}
 @media (forced-colors: active){.cb input{appearance:auto;-webkit-appearance:auto}.cb input::after{display:none}
-  .pp-bars i,.pp-age i,.pp-leg i{forced-color-adjust:none;background:GrayText;box-shadow:none}.pp-bars i.on,.pp-age i.a0,.pp-leg i.a0{background:CanvasText}.pp-age i.a1,.pp-leg i.a1,.pp-age i.a3,.pp-leg i.a3{background:none;box-shadow:inset 0 0 0 2px GrayText}.pp-age i.a4,.pp-leg i.a4{background:none;box-shadow:inset 0 0 0 1px CanvasText}}
+  .pp-dv i,.pp-age i,.pp-leg i{forced-color-adjust:none;background:GrayText;box-shadow:none}.pp-dv i.on,.pp-age i.a0,.pp-leg i.a0{background:CanvasText}.pp-dv::after{forced-color-adjust:none;background:CanvasText}.pp-age i.a1,.pp-leg i.a1,.pp-age i.a3,.pp-leg i.a3{background:none;box-shadow:inset 0 0 0 2px GrayText}.pp-age i.a4,.pp-leg i.a4{background:none;box-shadow:inset 0 0 0 1px CanvasText}}
 </style>
 </head>
 <body>
-<noscript><p class="fail">Bu harita JavaScript ile çalışır. Tarayıcınızda JavaScript’i etkinleştirip sayfayı yenileyin.</p></noscript>
-<p class="fail" id="nolib" hidden>Harita kitaplığı yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
+<noscript><p class="fail">Bu harita JavaScript ile çalışır. Tarayıcınızda JavaScript’i etkinleştirip sayfayı yenileyin.<br><span lang="en">This map requires JavaScript. Enable JavaScript in your browser and reload the page.</span></p></noscript>
+<p class="fail" id="nolib" data-i18n="kitaplikYok" hidden>Harita kitaplığı yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
 
-<aside class="panel" id="panel" aria-label="Hatlar ve arama">
+<aside class="panel" id="panel" aria-label="Hatlar ve arama" data-i18n-attr="aria-label:panelEtiket">
   <div class="panel-head" id="panel-head">
-    <h1>İstanbul raylı sistem istasyonları</h1>
-    <p class="sub"><span id="sub-t">2025 yıllık yolcu sayısı</span> · daire alanı yolcu sayısıyla yaklaşık orantılı</p>
-    <button class="collapse-btn" id="collapse" type="button" aria-expanded="true" aria-controls="panel-body" aria-label="Paneli gizle" title="Paneli gizle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+    <h1 data-i18n="ustBaslik">İstanbul raylı sistem istasyonları</h1>
+    <p class="sub" id="sub" data-i18n="altYil">2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı</p>
+    <button class="collapse-btn" id="collapse" type="button" aria-expanded="true" aria-controls="panel-body" aria-label="Paneli gizle" title="Paneli gizle" data-i18n-attr="aria-label:panelGizle;title:panelGizle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
   </div>
   <div class="pin" id="pin">
-    <button class="grab" id="grab" type="button" aria-expanded="false" aria-controls="panel-body" aria-label="Paneli büyüt"><span></span></button>
+    <button class="grab" id="grab" type="button" aria-expanded="false" aria-controls="panel-body" aria-label="Paneli büyüt" data-i18n-attr="aria-label:panelBuyut"><span></span></button>
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" role="combobox" aria-label="İstasyon, hat veya ilçe ara" aria-expanded="false" aria-controls="results" aria-autocomplete="list" placeholder="İstasyon, hat veya ilçe ara…" autocomplete="off" spellcheck="false" enterkeyhint="search">
-      <div class="results" id="results" role="listbox" aria-label="Arama sonuçları"></div>
+      <input id="q" type="search" role="combobox" aria-label="İstasyon, hat veya ilçe ara" aria-expanded="false" aria-controls="results" aria-autocomplete="list" placeholder="İstasyon, hat veya ilçe ara…" data-i18n-attr="aria-label:araEtiket;placeholder:araIpucu" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      <div class="results" id="results" role="listbox" aria-label="Arama sonuçları" data-i18n-attr="aria-label:araSonuclar"></div>
     </div>
-    <p class="sum" id="sum"><span class="pre">Görünen: </span><span id="sum-t">–</span></p>
-    <p class="notice" id="notice" role="alert" hidden>Zemin harita yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
+    <p class="sum" id="sum"><span class="pre" id="sum-pre" data-i18n="gorunen">Görünen: </span><span id="sum-t">–</span></p>
+    <p class="notice" id="notice" role="alert" data-i18n="zeminYok" hidden>Zemin harita yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.</p>
   </div>
   <div class="panel-body" id="panel-body">
-    <div class="seg" id="mode" role="radiogroup" aria-label="Görünüm">
-      <button type="button" role="radio" aria-checked="true" data-mode="station" title="Her hat için ayrı daire">Ayrı istasyonlar</button>
-      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="hub" title="Aktarma istasyonlarını tek dairede topla">Aktarma merkezleri</button>
+    <div class="seg" id="mode" role="radiogroup" aria-label="Görünüm" data-i18n-attr="aria-label:gorunum">
+      <button type="button" role="radio" aria-checked="true" data-mode="station" title="Her hat için ayrı daire" data-i18n="modAyri" data-i18n-attr="title:modAyriIpucu">Ayrı istasyonlar</button>
+      <button type="button" role="radio" aria-checked="false" tabindex="-1" data-mode="hub" title="Aktarma istasyonlarını tek dairede topla" data-i18n="modMerkez" data-i18n-attr="title:modMerkezIpucu">Aktarma merkezleri</button>
     </div>
     <div class="flt" id="flt" hidden>
-      <label class="fl" for="ay">Dönem</label>
+      <label class="fl" for="ay" data-i18n="donem">Dönem</label>
       <select id="ay">
-        <option value="0">Tüm yıl (2025)</option><option value="1">Ocak</option><option value="2">Şubat</option><option value="3">Mart</option><option value="4">Nisan</option><option value="5">Mayıs</option><option value="6">Haziran</option>
-        <option value="7">Temmuz</option><option value="8">Ağustos</option><option value="9">Eylül</option><option value="10">Ekim</option><option value="11">Kasım</option><option value="12">Aralık</option>
+        <option value="0" data-i18n="tumYilSecenek">Tüm yıl (2025)</option><option value="1" data-i18n="aylar.0">Ocak</option><option value="2" data-i18n="aylar.1">Şubat</option><option value="3" data-i18n="aylar.2">Mart</option><option value="4" data-i18n="aylar.3">Nisan</option><option value="5" data-i18n="aylar.4">Mayıs</option><option value="6" data-i18n="aylar.5">Haziran</option>
+        <option value="7" data-i18n="aylar.6">Temmuz</option><option value="8" data-i18n="aylar.7">Ağustos</option><option value="9" data-i18n="aylar.8">Eylül</option><option value="10" data-i18n="aylar.9">Ekim</option><option value="11" data-i18n="aylar.10">Kasım</option><option value="12" data-i18n="aylar.11">Aralık</option>
       </select>
-      <span class="fl" id="l-gun">Gün</span>
+      <span class="fl" id="l-gun" data-i18n="gun">Gün</span>
       <div class="seg" id="gun" role="radiogroup" aria-labelledby="l-gun">
-        <button type="button" role="radio" aria-checked="true" data-gun="all">Tümü</button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hi">Hafta içi</button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hs">Hafta sonu</button>
+        <button type="button" role="radio" aria-checked="true" data-gun="all" data-i18n="gunTumu">Tümü</button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hi" data-i18n="gunHi">Hafta içi</button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gun="hs" data-i18n="gunHs">Hafta sonu</button>
       </div>
     </div>
     <div class="share">
-      <button class="link" id="copy" type="button" title="Seçili hat, dönem, gün ve görünümü içeren bağlantı">Bağlantıyı kopyala</button>
-      <input class="copy-url" id="copy-url" type="text" readonly hidden aria-label="Bu görünümün bağlantısı; kopyalamak için Ctrl+C">
+      <button class="link" id="copy" type="button" title="Seçili hat, gizlenen hatlar, dönem, gün ve görünümü içeren bağlantı" data-i18n="kopyala" data-i18n-attr="title:kopyalaIpucu">Bağlantıyı kopyala</button>
+      <input class="copy-url" id="copy-url" type="text" readonly hidden aria-label="Bu görünümün bağlantısı; kopyalamak için Ctrl+C" data-i18n-attr="aria-label:kopyaAlan">
     </div>
 
-    <div class="section-title"><h2 id="h-top">En yoğun istasyonlar</h2><span class="unit" id="u-top">yolcu / yıl</span></div>
-    <ol class="top" id="top" aria-labelledby="h-top"></ol>
+    <div id="sec-top">
+      <div class="section-title"><h2 id="h-top" data-i18n="enYogun">En yoğun istasyonlar</h2><span class="unit" id="u-top" data-i18n="birimYil">yolcu / yıl</span></div>
+      <ol class="top" id="top" aria-labelledby="h-top"></ol>
+    </div>
+    <section id="sec-prof" aria-labelledby="h-prof" hidden>
+      <div class="section-title"><h2 id="h-prof" data-i18n="hatProfili">Hat profili</h2><span class="unit" id="u-prof" data-i18n="birimYil">yolcu / yıl</span></div>
+      <div id="prof"></div>
+    </section>
 
-    <div class="section-title"><h2>Hatlar</h2><span class="links"><button class="link" id="all" type="button">Tümü</button><button class="link" id="none" type="button">Hiçbiri</button></span></div>
+    <div class="section-title"><h2 data-i18n="hatlar">Hatlar</h2><span class="links"><button class="link" id="all" type="button" data-i18n="tumu">Tümü</button><button class="link" id="none" type="button" data-i18n="hicbiri">Hiçbiri</button></span></div>
     <div id="lines"></div>
 
     <details class="info">
-      <summary><span class="gname">Veri ve kullanım</span><svg class="chev" style="margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
-      <p><b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer. Dönem ya da gün seçilince daireler ve sayılar <b>günlük ortalamayı</b> gösterir; “Bağlantıyı kopyala” seçili hattı, dönemi, gün türünü ve görünümü paylaşır (gizlenen hatlar ve harita konumu bağlantıya yazılmaz). Günlük ortalama, takvimdeki gün sayısına bölünerek hesaplanır; yıl içinde açılan istasyonlarda bu yüzden düşük çıkar.</p>
-      <p>Hat çizgileri OpenStreetMap’teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.</p>
-      <p><b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı kaynak, istasyon penceresinde yazar.</p>
-      <p><b>Zemin harita:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.</p>
+      <summary><span class="gname" data-i18n="veriKullanim">Veri ve kullanım</span><svg class="chev" style="margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></summary>
+      <p data-i18n-html="bilgi1"></p>
+      <p data-i18n-html="bilgi2"></p>
+      <p data-i18n-html="bilgi3"></p>
+      <p data-i18n-html="bilgi4"></p>
     </details>
   </div>
 </aside>
 
 <main>
-  <div class="chip" id="chip"><span id="chip-text"></span><button id="chip-x" type="button" aria-label="Odağı kaldır" title="Odağı kaldır (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chip" id="chip"><span id="chip-text"></span><button id="chip-x" type="button" aria-label="Odağı kaldır" title="Odağı kaldır (Esc)" data-i18n-attr="aria-label:odagiKaldir;title:odagiKaldirEsc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="toast" id="toast" role="status"></div>
-  <div id="map" role="application" aria-label="İstasyon haritası"></div>
-  <div class="key" id="key" role="img" aria-label="Daire boyutu göstergesi"><div class="key-t" id="key-t">Yıllık yolcu</div><svg id="key-svg" aria-hidden="true"></svg></div>
+  <div id="map" role="application" aria-label="İstasyon haritası" data-i18n-attr="aria-label:haritaEtiket"></div>
+  <div class="key" id="key" role="img" aria-label="Daire boyutu göstergesi"><div class="key-t" id="key-t" data-i18n="anahtarYil">Yıllık yolcu</div><svg id="key-svg" aria-hidden="true"></svg></div>
 </main>
 <div class="vh" id="live" role="status" aria-live="polite"></div>
 
@@ -379,6 +458,212 @@ const STATIONS = __DATA__;
 const ROUTES = __ROUTES__;
 /* Aylık (hafta içi / hafta sonu) ve yaş grubu dökümü (build_detay.py üretir); dosya yoksa null */
 const DETAIL = __DETAIL__;
+
+/* ---------- Dil: arayüzdeki bütün metinler tek sözlükte ----------
+   t('anahtar',{ad:değer}) metindeki {ad} yerlerini doldurur; 'aylar.2' gibi noktalı anahtar iç içe değere gider;
+   {one,other} biçimindeki girdide {n} sayısına göre tekil/çoğul seçilir. Her cümle, dilin kendi söz dizimiyle bütün bir kalıptır.
+   Sabit HTML: data-i18n (metin), data-i18n-html (biçimli metin), data-i18n-attr="özellik:anahtar;…" (aria-label, title, placeholder).
+   Çevrilmeyenler: istasyon, ilçe ve hat adları ile veriden gelen not, düzeltme ve koordinat kaynağı metinleri. */
+const METIN = {
+tr:{
+  yerel:'tr-TR',
+  baslik:'İstanbul Raylı Sistemler — İstasyon Kullanım Haritası',
+  dilKisa:'EN', dilHedef:'en', dilGec:'Switch to English', dilDuyuru:'Dil: Türkçe',
+  /* sayı ve birimler */
+  birimBin:'{n} bin', birimMn:'{n} mn', birimMr:'{n} mr', gunBasi:'{d}/gün', yuzde:'%{n}', yuzdeAz:'&lt;%1',
+  aylar:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
+  aylarK:['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],
+  aylarH:['O','Ş','M','N','M','H','T','A','E','E','K','A'],
+  gunAd:{all:'tüm günler',hi:'hafta içi',hs:'hafta sonu'},
+  tur:{'Metro':'Metro','Banliyö':'Banliyö','Tramvay':'Tramvay','Füniküler / Teleferik':'Füniküler / Teleferik'},
+  nostaljik:'(nostaljik)',
+  /* uyarılar */
+  kitaplikYok:'Harita kitaplığı yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.',
+  zeminYok:'Zemin harita yüklenemedi. Bağlantınızı kontrol edip sayfayı yenileyin.',
+  /* panel */
+  panelEtiket:'Hatlar ve arama',
+  ustBaslik:'İstanbul raylı sistem istasyonları',
+  altYil:'2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı',
+  altGun:'2025 günlük ortalama yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı',
+  panelGizle:'Paneli gizle', panelGoster:'Paneli göster', panelBuyut:'Paneli büyüt', panelKucult:'Paneli küçült',
+  araEtiket:'İstasyon, hat veya ilçe ara', araIpucu:'İstasyon, hat veya ilçe ara…', araSonuclar:'Arama sonuçları',
+  sonucSayisi:'{n} sonuç', sonucYok:'“{q}” için sonuç yok',
+  sonucYokUzun:'“{q}” için sonuç yok. İstasyon adı, hat kodu (M2) veya ilçe deneyin.',
+  aramaHat:'hat', yolcuYok:'yolcu yok',
+  gorunen:'Görünen: ', gorunenDuyuru:'Görünen: {ozet}',
+  ozet:'{yolcu} yolcu · {yer} · {hat}',
+  ozetGun:'{donem} · günlük ort. {yolcu} yolcu · {yer} · {hat}',
+  sayIstasyon:'{n} istasyon', sayNokta:'{n} nokta', hatSayisi:'{n} hat',
+  hatYok:'Hiç hat seçili değil', hatYokCumle:'Hiç hat seçili değil.', tumunuGoster:'Tümünü göster',
+  gorunum:'Görünüm',
+  modAyri:'Ayrı istasyonlar', modAyriIpucu:'Her hat için ayrı daire',
+  modMerkez:'Aktarma merkezleri', modMerkezIpucu:'Aktarma istasyonlarını tek dairede topla',
+  donem:'Dönem', tumYilSecenek:'Tüm yıl (2025)', tumYil:'Tüm yıl',
+  gun:'Gün', gunTumu:'Tümü', gunHi:'Hafta içi', gunHs:'Hafta sonu',
+  kopyala:'Bağlantıyı kopyala', kopyalaIpucu:'Seçili hat, gizlenen hatlar, dönem, gün ve görünümü içeren bağlantı',
+  kopyaAlan:'Bu görünümün bağlantısı; kopyalamak için Ctrl+C',
+  kopyalandi:'Bağlantı kopyalandı', kopyaSecildi:'Bağlantı seçildi; kopyalayabilirsiniz',
+  enYogun:'En yoğun istasyonlar', birimYil:'yolcu / yıl', gunlukOrtalama:'günlük ortalama',
+  kayitYok:'Bu seçimde yolcu kaydı yok.',
+  hatlar:'Hatlar', tumu:'Tümü', hicbiri:'Hiçbiri',
+  turGoster:'{tur} hatlarını göster', hatGoster:'{kod} {ad} hattını göster',
+  hatEtiket:'{kod} {ad}, {v} yolcu: hatta odaklan',
+  hatEtiketGun:'{kod} {ad}, günlük ortalama {v} yolcu: hatta odaklan',
+  odaklan:'Odaklan', odakta:'Odakta',
+  odakDuyuru:'{kod} hattı odakta', odakKalkti:'Odak kaldırıldı',
+  odagiKaldir:'Odağı kaldır', odagiKaldirEsc:'Odağı kaldır (Esc)',
+  /* hat profili */
+  hatProfili:'Hat profili', profilToplam:'Toplam <b>{v}</b>', profilDiger:'Diğer', profilYok:'yolcu yok',
+  profilSatir:'{ad}, {d} yolcu: istasyona git',
+  profilSatirAkt:'{ad}, {d} yolcu, aktarma {k}: istasyona git',
+  profilSatirGun:'{ad}, günlük ortalama {d} yolcu: istasyona git',
+  profilSatirGunAkt:'{ad}, günlük ortalama {d} yolcu, aktarma {k}: istasyona git',
+  profilSatirYok:'{ad}, yolcu yok: istasyona git',
+  profilSatirYokAkt:'{ad}, yolcu yok, aktarma {k}: istasyona git',
+  /* veri ve kullanım */
+  veriKullanim:'Veri ve kullanım',
+  bilgi1:'<b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer. Dönem ya da gün seçilince daireler ve sayılar <b>günlük ortalamayı</b> gösterir; “Bağlantıyı kopyala” seçili hattı, gizlenen hatları, dönemi, gün türünü ve görünümü paylaşır (harita konumu bağlantıya yazılmaz). Günlük ortalama, takvimdeki gün sayısına bölünerek hesaplanır; yıl içinde açılan istasyonlarda bu yüzden düşük çıkar.',
+  bilgi2:'Hat çizgileri OpenStreetMap’teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.',
+  bilgi3:'<b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı kaynak, istasyon penceresinde yazar.',
+  bilgi4:'<b>Zemin harita:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.',
+  /* harita */
+  haritaEtiket:'İstasyon haritası', yakinlastir:'Yakınlaştır', uzaklastir:'Uzaklaştır',
+  tumHatlar:'Tüm hatları göster', temaAcik:'Açık görünüme geç', temaKoyu:'Koyu görünüme geç',
+  adGoster:'İstasyon adlarını göster', adGizle:'İstasyon adlarını gizle', adYakin:'İstasyon adları yakınlaşınca görünür',
+  adlar:'İstasyon adları', adlarYakin:'İstasyon adları (yakınlaşınca görünür)',
+  atif:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap katkıcıları',
+  ipucuYok:'bu seçimde yolcu yok',
+  anahtarYil:'Yıllık yolcu', anahtarGun:'Günlük ortalama',
+  anahtarEtiketYil:'Daire boyutu göstergesi, yıllık yolcu: {liste}',
+  anahtarEtiketGun:'Daire boyutu göstergesi, günlük ortalama yolcu: {liste}',
+  /* istasyon ve aktarma merkezi pencereleri */
+  kapat:'Kapat', istasyon:'İstasyon',
+  birimGunOrt:'yolcu / gün (ortalama)',
+  gunlukOrtYaklasik:'Günlük ort. ≈ {n}', donemToplam:'{donem} · 2025 toplamı {n}',
+  siraSatir:'<span>Hat içinde <b>{sira} / {hat}</b></span> · <span>hat payı <b>{pay}</b></span> · <span>şehirde <b>{sehir} / {toplam}</b></span>',
+  grafikBaslik:'Aylık seyir · yıllık ortalamaya göre · {gun}',
+  grafikAlt:'Aylık günlük ortalama yolcu, {gun}; yıllık ortalamaya göre. Yıllık ortalama {ort}. {liste}',
+  grafikAltSecili:'Aylık günlük ortalama yolcu, {gun}; yıllık ortalamaya göre. Yıllık ortalama {ort}. {liste}. Seçili ay: {ay}',
+  grafikAy:'{ay} {deger}', grafikAyYok:'{ay} veri yok',
+  enDusukYuksek:'<span>En düşük <b>{dusukAy} {dusuk}</b> ({dusukFark})</span> · <span>en yüksek <b>{yuksekAy} {yuksek}</b> ({yuksekFark})</span>',
+  ayYok:'{n} ayda veri yok',
+  oran:'Hafta sonu, hafta içinin <b>{yuzde}’{ek}</b>',
+  oranAy:'{ay}: hafta sonu, hafta içinin <b>{yuzde}’{ek}</b>',
+  yasEtiket:'Yaş gruplarının payı, 2025 geneli', yasBaslik:'Yaş (2025):', bilinmiyor:'Bilinmiyor',
+  aktarma:'Aktarma', koordinat:'Koordinat kaynağı',
+  notKutu:'{metin}', duzeltildi:'<b>Düzeltildi:</b> {metin}',
+  hattaOdaklan:'Hatta odaklan', merkeziGoster:'Aktarma merkezini göster',
+  diger:'Diğer bilgiler', digerDuzeltme:'Diğer bilgiler · düzeltme notu var', digerNot:'Diğer bilgiler · not var',
+  merkezAlt:'Aktarma merkezi · {n} hat',
+  merkezNot:'Toplam; hatlar arası aktarma yapan yolcular her hatta ayrı sayılmış olabilir.',
+},
+en:{
+  yerel:'en-US',
+  baslik:'Istanbul Rail Systems — Station Ridership Map',
+  dilKisa:'TR', dilHedef:'tr', dilGec:'Türkçe’ye geç', dilDuyuru:'Language: English',
+  birimBin:'{n}k', birimMn:'{n}M', birimMr:'{n}B', gunBasi:'{d}/day', yuzde:'{n}%', yuzdeAz:'&lt;1%',
+  aylar:['January','February','March','April','May','June','July','August','September','October','November','December'],
+  aylarK:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  aylarH:['J','F','M','A','M','J','J','A','S','O','N','D'],
+  gunAd:{all:'all days',hi:'weekdays',hs:'weekends'},
+  tur:{'Metro':'Metro','Banliyö':'Commuter rail','Tramvay':'Tram','Füniküler / Teleferik':'Funicular / Cable car'},
+  nostaljik:'(heritage)',
+  kitaplikYok:'The map library could not be loaded. Check your connection and reload the page.',
+  zeminYok:'The basemap could not be loaded. Check your connection and reload the page.',
+  panelEtiket:'Lines and search',
+  ustBaslik:'Istanbul rail stations',
+  altYil:'2025 annual passengers · circle area is roughly proportional to passengers',
+  altGun:'2025 daily average passengers · circle area is roughly proportional to passengers',
+  panelGizle:'Hide panel', panelGoster:'Show panel', panelBuyut:'Expand panel', panelKucult:'Collapse panel',
+  araEtiket:'Search station, line or district', araIpucu:'Search station, line or district…', araSonuclar:'Search results',
+  sonucSayisi:{one:'{n} result',other:'{n} results'}, sonucYok:'No results for “{q}”',
+  sonucYokUzun:'No results for “{q}”. Try a station name, a line code (M2) or a district.',
+  aramaHat:'line', yolcuYok:'no passengers',
+  gorunen:'Shown: ', gorunenDuyuru:'Shown: {ozet}',
+  ozet:'{yolcu} passengers · {yer} · {hat}',
+  ozetGun:'{donem} · daily avg. {yolcu} passengers · {yer} · {hat}',
+  sayIstasyon:{one:'{n} station',other:'{n} stations'}, sayNokta:{one:'{n} location',other:'{n} locations'}, hatSayisi:{one:'{n} line',other:'{n} lines'},
+  hatYok:'No line selected', hatYokCumle:'No line selected.', tumunuGoster:'Show all',
+  gorunum:'View',
+  modAyri:'Separate stations', modAyriIpucu:'One circle per line',
+  modMerkez:'Transfer hubs', modMerkezIpucu:'Combine transfer stations into one circle',
+  donem:'Period', tumYilSecenek:'Whole year (2025)', tumYil:'Whole year',
+  gun:'Day', gunTumu:'All days', gunHi:'Weekdays', gunHs:'Weekends',
+  kopyala:'Copy link', kopyalaIpucu:'Link with the focused line, hidden lines, period, day type and view',
+  kopyaAlan:'Link to this view; press Ctrl+C to copy',
+  kopyalandi:'Link copied', kopyaSecildi:'Link selected; you can copy it',
+  enYogun:'Busiest stations', birimYil:'passengers / year', gunlukOrtalama:'daily average',
+  kayitYok:'No passengers in this selection.',
+  hatlar:'Lines', tumu:'Show all', hicbiri:'None',
+  turGoster:'Show {tur} lines', hatGoster:'Show line {kod} {ad}',
+  hatEtiket:'{kod} {ad}, {v} passengers: focus on line',
+  hatEtiketGun:'{kod} {ad}, daily average {v} passengers: focus on line',
+  odaklan:'Focus', odakta:'Focused',
+  odakDuyuru:'Line {kod} focused', odakKalkti:'Focus cleared',
+  odagiKaldir:'Clear focus', odagiKaldirEsc:'Clear focus (Esc)',
+  hatProfili:'Line profile', profilToplam:'Total <b>{v}</b>', profilDiger:'Other', profilYok:'no passengers',
+  profilSatir:'{ad}, {d} passengers: go to station',
+  profilSatirAkt:'{ad}, {d} passengers, transfer to {k}: go to station',
+  profilSatirGun:'{ad}, daily average {d} passengers: go to station',
+  profilSatirGunAkt:'{ad}, daily average {d} passengers, transfer to {k}: go to station',
+  profilSatirYok:'{ad}, no passengers: go to station',
+  profilSatirYokAkt:'{ad}, no passengers, transfer to {k}: go to station',
+  veriKullanim:'Data and usage',
+  bilgi1:'<b>Usage:</b> The checkbox shows or hides a line. Tap or click a line name to focus on that line; the other lines fade. Tap a station to open its details. <kbd>Esc</kbd> clears the focus, <kbd>/</kbd> jumps to search. When a period or day type is selected, the circles and figures show the <b>daily average</b>; “Copy link” shares the focused line, hidden lines, period, day type and view (the map position is not saved in the link). The daily average is the total divided by the number of calendar days, so it comes out low for stations that opened during the year.',
+  bilgi2:'Line routes are the actual track geometry from OpenStreetMap (© OpenStreetMap contributors, ODbL). Dashed lines are TCDD commuter rail lines.',
+  bilgi3:'<b>Data:</b> İBB (Istanbul Metropolitan Municipality) Open Data Portal, OpenStreetMap/Wikidata. A “Corrected” note marks records that were corrected in the source data. Coordinates come from the İBB Open Data Portal unless stated otherwise; a different source is shown in the station popup.',
+  bilgi4:'<b>Basemap:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap contributors.',
+  haritaEtiket:'Station map', yakinlastir:'Zoom in', uzaklastir:'Zoom out',
+  tumHatlar:'Zoom to all lines', temaAcik:'Switch to light mode', temaKoyu:'Switch to dark mode',
+  adGoster:'Show station names', adGizle:'Hide station names', adYakin:'Station names appear when you zoom in',
+  adlar:'Station names', adlarYakin:'Station names (appear when you zoom in)',
+  atif:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
+  ipucuYok:'no passengers in this selection',
+  anahtarYil:'Passengers / year', anahtarGun:'Daily average',
+  anahtarEtiketYil:'Circle size key, passengers per year: {liste}',
+  anahtarEtiketGun:'Circle size key, daily average passengers: {liste}',
+  kapat:'Close', istasyon:'Station',
+  birimGunOrt:'passengers / day (avg.)',
+  gunlukOrtYaklasik:'Daily avg. ≈ {n}', donemToplam:'{donem} · 2025 total {n}',
+  siraSatir:'<span>Line rank <b>{sira} of {hat}</b></span> · <span>line share <b>{pay}</b></span> · <span>city rank <b>{sehir} of {toplam}</b></span>',
+  grafikBaslik:'Monthly trend · vs. annual average · {gun}',
+  grafikAlt:'Monthly daily average passengers, {gun}; relative to the annual average. Annual average {ort}. {liste}',
+  grafikAltSecili:'Monthly daily average passengers, {gun}; relative to the annual average. Annual average {ort}. {liste}. Selected month: {ay}',
+  grafikAy:'{ay} {deger}', grafikAyYok:'{ay} no data',
+  enDusukYuksek:'<span>Lowest <b>{dusukAy} {dusuk}</b> ({dusukFark})</span> · <span>highest <b>{yuksekAy} {yuksek}</b> ({yuksekFark})</span>',
+  ayYok:{one:'no data for {n} month',other:'no data for {n} months'},
+  oran:'Weekends are <b>{yuzde}</b> of weekdays',
+  oranAy:'{ay}: weekends are <b>{yuzde}</b> of weekdays',
+  yasEtiket:'Share of age groups, 2025 overall', yasBaslik:'Age (2025):', bilinmiyor:'Unknown',
+  aktarma:'Transfer', koordinat:'Coordinate source (in Turkish)',
+  notKutu:'<b>Data note (in Turkish):</b> <span lang="tr">{metin}</span>',
+  duzeltildi:'<b>Corrected (in Turkish):</b> <span lang="tr">{metin}</span>',
+  hattaOdaklan:'Focus on line', merkeziGoster:'Show transfer hub',
+  diger:'Other details', digerDuzeltme:'Other details · includes a correction note', digerNot:'Other details · includes a note',
+  merkezAlt:{one:'Transfer hub · {n} line',other:'Transfer hub · {n} lines'},
+  merkezNot:'Total; passengers transferring between lines may be counted separately on each line.',
+},
+};
+const DILLER = Object.keys(METIN);
+/* dil seçimi: bağlantıdaki dil → kayıtlı tercih → tarayıcı dili ("tr" ile başlıyorsa Türkçe, değilse İngilizce) */
+const hashDil = () => {try{const d=(new URLSearchParams(location.hash.replace(/^#/,'')).get('dil')||'').toLowerCase();return DILLER.includes(d)?d:null}catch(e){return null}};
+const kayitliDil = () => {try{const d=localStorage.getItem('ist-dil');return DILLER.includes(d)?d:null}catch(e){return null}};
+const tarayiciDil = () => String(navigator.language||'').toLowerCase().startsWith('tr')?'tr':'en';
+let dil = hashDil() || kayitliDil() || tarayiciDil();
+const cogul = {};
+function t(k,v){
+  const bul=o=>k.split('.').reduce((a,p)=>a==null?a:a[p],o);
+  let s=bul(METIN[dil]); if(s==null) s=bul(METIN.tr);
+  if(s&&s.other&&v) s=s[(cogul[dil]||(cogul[dil]=new Intl.PluralRules(dil))).select(v.n)]||s.other;
+  return typeof s==='string'&&v?s.replace(/\{(\w+)\}/g,(m,a)=>a in v?v[a]:m):s;
+}
+function metinUygula(){
+  document.querySelectorAll('[data-i18n]').forEach(e=>{e.textContent=t(e.dataset.i18n)});
+  document.querySelectorAll('[data-i18n-html]').forEach(e=>{e.innerHTML=t(e.dataset.i18nHtml)});
+  document.querySelectorAll('[data-i18n-attr]').forEach(e=>e.dataset.i18nAttr.split(';').forEach(p=>{const i=p.indexOf(':');e.setAttribute(p.slice(0,i),t(p.slice(i+1)))}));
+}
+function dilTemel(){document.documentElement.lang=dil;document.title=t('baslik');metinUygula()}
+dilTemel();
 
 if(window.L){   /* kitaplık yüklenemediyse yalnızca uyarı görünür */
 
@@ -429,9 +714,14 @@ const INK = '#18202b', SRC0 = 'İBB Açık Veri Portalı';
 
 /* ---------- Yardımcılar ---------- */
 const $ = id => document.getElementById(id);
-const fmt = n => new Intl.NumberFormat('tr-TR').format(n);
-const short = n => n>=1e9 ? (n/1e9).toLocaleString('tr-TR',{maximumFractionDigits:2})+' mr' : n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:n>=1e7?0:1})+' mn' : Math.round(n/1e3).toLocaleString('tr-TR')+' bin';
-const shortD = n => n>=1e6 ? (n/1e6).toLocaleString('tr-TR',{maximumFractionDigits:1})+' mn' : n>=1e5 ? Math.round(n/1e3).toLocaleString('tr-TR')+' bin' : n>=1e3 ? (n/1e3).toLocaleString('tr-TR',{maximumFractionDigits:1})+' bin' : fmt(Math.round(n));   // günlük değerler
+const yerel = () => METIN[dil].yerel;
+const fmt = n => new Intl.NumberFormat(yerel()).format(n);
+const sayi = (n,o) => n.toLocaleString(yerel(),o);
+const pct = n => t('yuzde',{n});   // %62 / 62%
+const short = n => n>=1e9 ? t('birimMr',{n:sayi(n/1e9,{maximumFractionDigits:2})}) : n>=1e6 ? t('birimMn',{n:sayi(n/1e6,{maximumFractionDigits:n>=1e7?0:1})}) : t('birimBin',{n:sayi(Math.round(n/1e3))});
+/* günlük değerler: 1.000 altı tam sayı; 100 bin altı her zaman bir ondalık (40,0 bin); 100 bin ve üstü ondalıksız; milyonlar bir ondalık */
+const ond1 = {minimumFractionDigits:1,maximumFractionDigits:1};
+const shortD = n => n>=999500 ? t('birimMn',{n:sayi(n/1e6,ond1)}) : n>=99950 ? t('birimBin',{n:sayi(Math.round(n/1e3))}) : n>=999.5 ? t('birimBin',{n:sayi(n/1e3,ond1)}) : fmt(Math.round(n));
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm = s => s.toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ı/g,'i');
 const code = l => l==='Marmaray'?'B1':l;
@@ -439,6 +729,9 @@ const badge = l => `<span class="badge" style="background:${LINES[l].color}">${c
 const mix = (a,b) => '#'+[1,3,5].map(i=>Math.round((parseInt(a.slice(i,i+2),16)+parseInt(b.slice(i,i+2),16))/2).toString(16).padStart(2,'0')).join('');
 function km(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lon-a.lon)*Math.PI/180,x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
 const say = t => {$('live').textContent=t};
+/* hat adı: özel ad çevrilmez, yalnızca içindeki açıklayıcı sözcük; veri notları Türkçe kalır */
+const hatAd = l => LINES[l].name.replace('(nostaljik)',t('nostaljik'));
+const TRL = () => dil==='tr'?'':' lang="tr"';
 let toastT; function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('show'),4000)}
 
 /* ---------- Sistem tercihleri ve yerleşim durumu ---------- */
@@ -458,9 +751,9 @@ ORDER.forEach(l=>byLine[l].sort((a,b)=>b.pax-a.pax));
 
 /* ---------- Dönem ve gün seçimi: değer = seçimdeki toplam ÷ gün sayısı (günlük ortalama) ---------- */
 const HAS = !!(DETAIL && DETAIL.gun && Array.isArray(DETAIL.ist) && DETAIL.ist.length===STATIONS.length);
-const AY = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-const AYK = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
-const GUNAD = {all:'tüm günler',hi:'hafta içi',hs:'hafta sonu'};
+const ayAd = i => t('aylar')[i], ayKisa = i => t('aylarK')[i];
+const yasAd = n => n==='Bilinmiyor'?t('bilinmiyor'):n;
+const gunAd = g => t('gunAd.'+g);
 let ay = 0, gun = 'all';   // ay: 0 = tüm yıl, 1–12; gun: all / hi / hs
 const isDef = () => !ay && gun==='all';
 const gunSay = (m,g) => {const G=DETAIL.gun;return g==='hi'?G.hi[m]:g==='hs'?G.hs[m]:G.hi[m]+G.hs[m]};
@@ -474,9 +767,9 @@ function recalc(){
 }
 recalc();
 const val = v => isDef()?short(v):shortD(v/365+1e-7);         // v: yıla ölçeklenmiş değer (1e-7: ×365÷365 kayan nokta kaybına karşı)
-const valU = v => isDef()?short(v):shortD(v/365+1e-7)+'/gün';
+const valU = v => isDef()?short(v):t('gunBasi',{d:shortD(v/365+1e-7)});
 const bos = v => !(Math.round(isDef()?v:v/365+1e-7)>0);        // seçimde (yuvarlanınca) yolcu yok
-const donem = () => [ay?AY[ay-1]:'Tüm yıl',gun==='all'?'':GUNAD[gun]].filter(Boolean).join(' · ');
+const donem = () => [ay?ayAd(ay-1):t('tumYil'),gun==='all'?'':gunAd(gun)].filter(Boolean).join(' · ');
 
 /* ---------- Aktarma merkezleri: farklı hatların 350 m içindeki istasyonları ---------- */
 const hubs = [];
@@ -501,10 +794,11 @@ const sysTheme = () => LQ.matches?'light':'dark';
 const stored = () => {try{const t=localStorage.getItem('ist-gorunum');return t==='light'||t==='dark'?t:null}catch(e){return null}};
 let theme = stored() || sysTheme();
 const hubCol = () => theme==='light'?INK:'#f8fafc';
-const base = L.tileLayer(TILES[theme][0],{maxZoom:19,maxNativeZoom:16,attribution:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap katkıcıları'}).addTo(map);
+const base = L.tileLayer(TILES[theme][0],{maxZoom:19,maxNativeZoom:16,attribution:t('atif')}).addTo(map);
 map.createPane('refs').style.zIndex=350;map.getPane('refs').style.pointerEvents='none';
 const ref = L.tileLayer(TILES[theme][1],{maxZoom:19,maxNativeZoom:16,pane:'refs'}).addTo(map);
-L.control.zoom({position:'topright',zoomInTitle:'Yakınlaştır',zoomOutTitle:'Uzaklaştır'}).addTo(map);
+const zoomCtl = L.control.zoom({position:'topright',zoomInTitle:t('yakinlastir'),zoomOutTitle:t('uzaklastir')}).addTo(map);
+zoomCtl._zoomInButton.dataset.i18nAttr='title:yakinlastir;aria-label:yakinlastir'; zoomCtl._zoomOutButton.dataset.i18nAttr='title:uzaklastir;aria-label:uzaklastir';
 L.control.scale({imperial:false,position:'bottomright'}).addTo(map);
 /* zemin harita yüklenemezse panelde tek satır uyarı */
 let tileErr=0;
@@ -517,11 +811,13 @@ const ICON = {
 };
 const Tools = L.Control.extend({options:{position:'topright'},onAdd(){
   const d=L.DomUtil.create('div','ctl'), svg=(id,p)=>`<svg ${id?`id="${id}" `:''}viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${p}</svg>`;
-  d.innerHTML=`<button id="b-fit" type="button" aria-label="Tüm hatları göster" title="Tüm hatları göster">${svg('','<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>')}</button>
+  d.innerHTML=`<button id="b-fit" type="button" data-i18n-attr="aria-label:tumHatlar;title:tumHatlar">${svg('','<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>')}</button>
   <button id="b-theme" type="button">${svg('i-theme','')}</button>
-  <button id="b-lbl" type="button" aria-pressed="true">${svg('','<path d="M4 7V5h16v2M9 19h6M12 5v14"/>')}</button>`;
+  <button id="b-lbl" type="button" aria-pressed="true">${svg('','<path d="M4 7V5h16v2M9 19h6M12 5v14"/>')}</button>
+  <button id="b-dil" class="dil" type="button" data-i18n="dilKisa" data-i18n-attr="aria-label:dilGec;title:dilGec;lang:dilHedef"></button>`;
   L.DomEvent.disableClickPropagation(d);return d;}});
 new Tools().addTo(map);
+metinUygula();   // sonradan oluşturulan düğmelerin metinleri
 
 const routeLayer = L.layerGroup().addTo(map), dotLayer = L.layerGroup().addTo(map), labelLayer = L.layerGroup().addTo(map);
 const routes = {}, casings = {}, markers = new Map(), drawn = [];
@@ -556,8 +852,11 @@ function peekPx(){return mobile()&&pin.offsetHeight+1||112}
 function chipB(){const c=$('chip');return focusLine&&c.offsetHeight?c.offsetTop+c.offsetHeight+8:0}   // odak etiketinin alt kenarı
 function liftPx(){return sheet==='peek'?peekPx():innerHeight*.5}
 function popOpts(){
-  if(mobile()){const w=Math.max(180,Math.min(320,innerWidth-104));
-    return {maxWidth:w,minWidth:Math.min(230,w),maxHeight:Math.max(180,innerHeight-peekPx()-(focusLine?190:130)),autoPanPaddingTopLeft:[10,focusLine?Math.max(72,chipB()):10],autoPanPaddingBottomRight:[62,peekPx()+40]}}
+  if(mobile()){
+    /* genişlik: sol 10 + sağdaki araç düğmeleri 58 + pencere kenarı ve iç boşluğu 26.
+       yükseklik: üst boşluk + alt sayfa + ok (19) + kenar (2) + iç boşluk (20; kısa ekranda 16) + pay (2) düşülür */
+    const kisa=innerHeight<=600, w=Math.max(180,Math.min(320,innerWidth-96)), ust=focusLine?Math.max(72,chipB()):kisa?2:8, alt=peekPx()+(kisa?24:40);
+    return {maxWidth:w,minWidth:Math.min(230,w),maxHeight:Math.max(160,innerHeight-ust-alt-(kisa?39:43)),autoPanPaddingTopLeft:[10,ust],autoPanPaddingBottomRight:[58,alt]}}
   return {maxWidth:320,minWidth:HAS?300:230,maxHeight:Math.max(200,innerHeight-150),autoPanPaddingTopLeft:[panelOff?64:364,64],autoPanPaddingBottomRight:[60,24]};
 }
 function syncPopOpts(){const o=popOpts();markers.forEach(m=>Object.assign(m.getPopup().options,o))}
@@ -579,7 +878,7 @@ function render(){
     const zero=bos(it.pax);   // seçimde yolcusu olmayan istasyon: küçük, içi boş daire
     const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:light?mix(it.color,INK):it.color,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:zero?0:it.st.fill,opacity:light&&it.st.stroke>.5?1:it.st.stroke});
     m.pax=it.pax;
-    m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${zero?'bu seçimde yolcu yok':valU(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
+    m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${zero?t('ipucuYok'):valU(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
     m.bindPopup(()=>it.multi?hubPopup(it.hub):stationPopup(it.s),po);
     m.on('popupopen',()=>{openKey=it.key;hiOn(m)}).on('popupclose',()=>{if(openKey===it.key)openKey=null;hiOff(m)});
     m.addTo(dotLayer); markers.set(it.key,m); drawn.push(m);
@@ -602,14 +901,20 @@ function currentItems(){
 
 /* ---------- Açılır pencereler ---------- */
 function transfers(s){return s.hub.members.filter(m=>m!==s)}
-/* 12 aylık küçük grafik: seçili gün türünde aylık günlük ortalama */
+/* 12 aylık küçük grafik: seçili gün türünde aylık günlük ortalamanın, verisi olan ayların ortalamasından sapması.
+   Ortalama gün sayısıyla ağırlıklıdır (verisi olan aylardaki toplam yolcu ÷ o ayların gün sayısı); verisi olmayan ay boş kalır */
+const yuzde = p => p>0?'+'+pct(fmt(p)):p<0?'−'+pct(fmt(-p)):pct(0);
 function ayGrafik(list){
   if(!HAS) return '';
-  const v=AY.map((_,m)=>gunluk(list,m+1,gun)), max=Math.max(...v); if(!(Math.round(max)>0)) return '';
-  const p=v.map((x,i)=>[x,i]).filter(a=>Math.round(a[0])>0), lo=p.reduce((a,b)=>b[0]<a[0]?b:a), hi=p.reduce((a,b)=>b[0]>a[0]?b:a), yok=12-p.length;
-  return `<div class="pp-cap">Aylara göre günlük ortalama · ${GUNAD[gun]}</div>
-  <div role="img" aria-label="Aylara göre günlük ortalama yolcu, ${GUNAD[gun]}: ${v.map((x,i)=>AY[i]+' '+fmt(Math.round(x))).join(', ')}${ay?'. Seçili ay: '+AY[ay-1]:''}"><div class="pp-bars">${v.map((x,i)=>`<i${ay===i+1?' class="on"':''} style="height:${(x/max*100).toFixed(1)}%"></i>`).join('')}</div><div class="pp-ini">${AYK.map((k,i)=>`<span${ay===i+1?' class="on"':''}>${k[0]}</span>`).join('')}</div></div>
-  <div class="pp-mm">En düşük <b>${AYK[lo[1]]} ${shortD(lo[0])}</b> · en yüksek <b>${AYK[hi[1]]} ${shortD(hi[0])}</b>${yok?` · ${yok} ayda veri yok`:''}</div>`;
+  const v=Array.from({length:12},(_,m)=>gunluk(list,m+1,gun)), var_=x=>Math.round(x)>0, p=v.map((x,i)=>[x,i]).filter(a=>var_(a[0])); if(!p.length) return '';
+  let T=0,N=0; p.forEach(([,m])=>{N+=gunSay(m,gun);for(const s of list)T+=ayTop(s,m,gun)});
+  const ort=T/N, lo=p.reduce((a,b)=>b[0]<a[0]?b:a), hi=p.reduce((a,b)=>b[0]>a[0]?b:a), yok=12-p.length, enb=Math.max(...p.map(a=>Math.abs(a[0]-ort)))||1;
+  const pc=x=>yuzde(Math.round((x-ort)/ort*100));
+  const liste=v.map((x,i)=>var_(x)?t('grafikAy',{ay:ayAd(i),deger:fmt(Math.round(x))}):t('grafikAyYok',{ay:ayAd(i)})).join(', ');
+  const alt=t(ay?'grafikAltSecili':'grafikAlt',{gun:gunAd(gun),ort:fmt(Math.round(ort)),liste,ay:ay?ayAd(ay-1):''});
+  return `<div class="pp-cap">${t('grafikBaslik',{gun:gunAd(gun)})}</div>
+  <div role="img" aria-label="${alt}"><div class="pp-dv">${v.map((x,i)=>`<span>${var_(x)?`<i class="${x<ort?'dn':'up'}${ay===i+1?' on':''}" style="height:${(Math.abs(x-ort)/enb*50).toFixed(1)}%"></i>`:''}</span>`).join('')}</div><div class="pp-ini">${t('aylarH').map((k,i)=>`<span${ay===i+1?' class="on"':''}>${k}</span>`).join('')}</div></div>
+  <div class="pp-mm">${t('enDusukYuksek',{dusukAy:ayKisa(lo[1]),dusuk:shortD(lo[0]),dusukFark:pc(lo[0]),yuksekAy:ayKisa(hi[1]),yuksek:shortD(hi[0]),yuksekFark:pc(hi[0])})}${yok?` · <span>${t('ayYok',{n:yok})}</span>`:''}</div>`;
 }
 /* sayıdan sonra gelen iyelik eki: %62’si, %70’i, %100’ü */
 const ek = n => {const b=['','i','si','ü','ü','i','sı','si','i','u'], o=['','u','si','u','ı','si','ı','i','i','ı'];return n===0?'ı':n%10?b[n%10]:n%100?o[n%100/10]:n%1000?'ü':'i'};
@@ -617,45 +922,57 @@ function oran(list){
   if(!HAS) return '';
   const hi=gunluk(list,ay,'hi'), hs=gunluk(list,ay,'hs'); if(!(Math.round(hi)>0)) return '';
   const p=Math.round(hs/hi*100);
-  return `<div class="pp-rank">${ay?AY[ay-1]+': h':'H'}afta sonu, hafta içinin <b>%${fmt(p)}’${ek(p)}</b></div>`;
+  return `<div class="pp-rank">${t(ay?'oranAy':'oran',{ay:ay?ayAd(ay-1):'',yuzde:pct(fmt(p)),ek:ek(p)})}</div>`;
 }
 function yasDagilimi(s){
   if(!HAS) return '';
-  const y=DETAIL.ist[s.id].y, t=y.reduce((a,b)=>a+b,0); if(!(t>0)) return '';
-  const pc=x=>{const p=x/t*100;return p>0&&p<.5?'&lt;%1':'%'+Math.round(p)};
-  return `<div class="pp-age" aria-hidden="true">${y.map((x,i)=>`<i class="a${i}" style="flex:${(x/t*100).toFixed(2)} 1 0"></i>`).join('')}</div>
-  <div class="pp-leg" role="group" aria-label="Yaş gruplarının payı, 2025 geneli"><span>Yaş (2025):</span>${DETAIL.yas.map((n,i)=>`<span><i class="a${i}" aria-hidden="true"></i>${esc(n)} <b>${pc(y[i])}</b></span>`).join('')}</div>`;
+  const y=DETAIL.ist[s.id].y, top=y.reduce((a,b)=>a+b,0); if(!(top>0)) return '';
+  const pc=x=>{const p=x/top*100;return p>0&&p<.5?t('yuzdeAz'):pct(Math.round(p))};
+  return `<div class="pp-age" aria-hidden="true">${y.map((x,i)=>`<i class="a${i}" style="flex:${(x/top*100).toFixed(2)} 1 0"></i>`).join('')}</div>
+  <div class="pp-leg" role="group" aria-label="${t('yasEtiket')}"><span>${t('yasBaslik')}</span>${DETAIL.yas.map((n,i)=>`<span><i class="a${i}" aria-hidden="true"></i>${esc(yasAd(n))} <b>${pc(y[i])}</b></span>`).join('')}</div>`;
 }
 function stationPopup(s){
-  const L_=LINES[s.line], share=lineTotal[s.line]>0?s.v/lineTotal[s.line]*100:0, tr=transfers(s), fixed=s.fixes&&s.fixes.length, def=isDef();
-  let h=`<h2 class="pp-title">${esc(s.name)}</h2><div class="pp-town">${badge(s.line)} ${esc(L_.name)} · ${esc(s.town||'—')}</div>
-  <div class="pp-big">${fmt(def?s.pax:Math.round(s.d))} <small>${def?'yolcu / yıl':'yolcu / gün (ortalama)'}</small></div>
-  <div class="pp-day">${def?`Günlük ort. ≈ ${fmt(Math.round(s.pax/365))}`:`${donem()} · 2025 toplamı ${fmt(s.pax)}`}</div>`;
-  h+=s.v>0?`<div class="pp-rank"><span>Hat içinde <b>${s.rank} / ${byLine[s.line].length}</b></span> · <span>hat payı <b>%${share.toLocaleString('tr-TR',{maximumFractionDigits:1})}</b></span> · <span>şehirde <b>${s.crank} / ${STATIONS.length}</b></span></div>`
-    :`<div class="pp-rank">Bu seçimde yolcu kaydı yok.</div>`;
-  h+=ayGrafik([s])+oran([s])+yasDagilimi(s);
-  if(tr.length) h+=`<div class="pp-row"><span>Aktarma</span><b>${tr.map(t=>badge(t.line)).join(' ')}</b></div>`;
-  // kaynak satırı yalnızca not, düzeltme ya da farklı bir kaynak varsa
-  if(s.note||fixed||!String(s.src).startsWith(SRC0)) h+=`<div class="pp-row"><span>Koordinat kaynağı</span><b>${esc(s.src)}</b></div>`;
-  if(s.note) h+=`<div class="pp-note">${esc(s.note)}</div>`;
-  if(fixed) h+=`<div class="pp-fix"><b>Düzeltildi:</b> ${s.fixes.map(esc).join(' ')}</div>`;
-  h+=`<div class="pp-actions"><button type="button" onclick="focusOn('${s.line}',true,true)">Hatta odaklan</button>${tr.length?`<button type="button" onclick="showHub(${s.hub.id})">Aktarma merkezini göster</button>`:''}</div>`;
-  return h;
+  const share=lineTotal[s.line]>0?s.v/lineTotal[s.line]*100:0, tr=transfers(s), fixed=s.fixes&&s.fixes.length, def=isDef();
+  let h=`<h2 class="pp-title">${esc(s.name)}</h2><div class="pp-town">${badge(s.line)} ${esc(hatAd(s.line))} · ${esc(s.town||'—')}</div>
+  <div class="pp-big">${fmt(def?s.pax:Math.round(s.d))} <small>${t(def?'birimYil':'birimGunOrt')}</small></div>
+  <div class="pp-day">${def?t('gunlukOrtYaklasik',{n:fmt(Math.round(s.pax/365))}):t('donemToplam',{donem:donem(),n:fmt(s.pax)})}</div>`;
+  const sira=s.v>0?`<div class="pp-rank">${t('siraSatir',{sira:s.rank,hat:byLine[s.line].length,pay:pct(sayi(share,{maximumFractionDigits:1})),sehir:s.crank,toplam:STATIONS.length})}</div>`:'';
+  const yok=s.v>0?'':`<div class="pp-rank">${t('kayitYok')}</div>`;
+  const seyir=ayGrafik([s])+oran([s])+yasDagilimi(s);
+  let ek2='';
+  if(tr.length) ek2+=`<div class="pp-row"><span>${t('aktarma')}</span><b>${tr.map(x=>badge(x.line)).join(' ')}</b></div>`;
+  // kaynak satırı yalnızca not, düzeltme ya da farklı bir kaynak varsa; kaynak, not ve düzeltme metinleri veriden gelir (Türkçe)
+  if(s.note||fixed||!String(s.src).startsWith(SRC0)) ek2+=`<div class="pp-row"><span>${t('koordinat')}</span><b${TRL()}>${esc(s.src)}</b></div>`;
+  if(s.note) ek2+=`<div class="pp-note">${t('notKutu',{metin:esc(s.note)})}</div>`;
+  if(fixed) ek2+=`<div class="pp-fix">${t('duzeltildi',{metin:s.fixes.map(esc).join(' ')})}</div>`;
+  const dugme=`<div class="pp-actions"><button type="button" onclick="focusOn('${s.line}',true,true)">${t('hattaOdaklan')}</button>${tr.length?`<button type="button" onclick="showHub(${s.hub.id})">${t('merkeziGoster')}</button>`:''}</div>`;
+  // dar ekran: önce sayı, grafik ve düğmeler; sıra, aktarma, kaynak ve notlar kapalı bölümde
+  if(mobile()) return h+yok+seyir+dugme+diger(sira+ek2,t(fixed?'digerDuzeltme':s.note?'digerNot':'diger'));
+  return h+sira+yok+seyir+ek2+dugme;
 }
+function diger(ic,baslik){return ic?`<details class="pp-more"><summary><span>${baslik}</span>${CHEV}</summary>${ic}</details>`:''}
 function hubPopup(h){
   const mem=h.members.filter(m=>visible.has(m.line)).sort((a,b)=>b.v-a.v), tot=mem.reduce((a,m)=>a+m.v,0), max=mem[0].v||1, def=isDef();
   const names=[...new Set(mem.map(m=>m.name))].join(' / ');
-  return `<h2 class="pp-title">${esc(names)}</h2><div class="pp-town">Aktarma merkezi · ${mem.length} hat</div>
-  <div class="pp-big">${fmt(def?tot:Math.round(tot/365))} <small>${def?'yolcu / yıl':'yolcu / gün (ortalama)'}</small></div>${def?'':`<div class="pp-day" style="margin-bottom:0">${donem()}</div>`}
+  return `<h2 class="pp-title">${esc(names)}</h2><div class="pp-town">${t('merkezAlt',{n:mem.length})}</div>
+  <div class="pp-big">${fmt(def?tot:Math.round(tot/365))} <small>${t(def?'birimYil':'birimGunOrt')}</small></div>${def?'':`<div class="pp-day" style="margin-bottom:0">${donem()}</div>`}
   <div class="pp-lines">${mem.map(m=>`<div class="pp-line">${badge(m.line)}<div class="track"><div class="fill" style="width:${m.v/max*100}%;background:${LINES[m.line].color}"></div></div><span>${val(m.v)}</span></div>`).join('')}</div>
-  ${ayGrafik(mem)}<div class="pp-note">Toplam; hatlar arası aktarma yapan yolcular her hatta ayrı sayılmış olabilir.</div>`;
+  ${ayGrafik(mem)}${mobile()?diger(hubNot(),t('diger')):hubNot()}`;
 }
+const hubNot = () => `<div class="pp-note">${t('merkezNot')}</div>`;
 map.on('popupopen',e=>{
   const el=e.popup.getElement(); if(!el) return;
-  const x=el.querySelector('.leaflet-popup-close-button'), t=el.querySelector('.pp-title');
-  if(x){x.setAttribute('aria-label','Kapat');x.title='Kapat'}
-  el.setAttribute('role','dialog'); el.setAttribute('aria-label',t?t.textContent:'İstasyon');
+  const x=el.querySelector('.leaflet-popup-close-button'), bas=el.querySelector('.pp-title');
+  if(x){x.setAttribute('aria-label',t('kapat'));x.title=t('kapat')}
+  el.setAttribute('role','dialog'); el.setAttribute('aria-label',bas?bas.textContent:t('istasyon'));
   if(mobile()){$('key').hidden=true;if(sheet!=='peek')setSheet('peek')}   // pencere alt sayfanın ya da göstergenin altında kalmasın
+  // "Diğer bilgiler" açılıp kapanınca pencere yüksekliği yeniden ölçülür (içerik yeniden üretilmeden)
+  const d=el.querySelector('.pp-more'), p=e.popup;
+  if(d) d.addEventListener('toggle',()=>{
+    if(!p.isOpen()) return;
+    p._updateLayout(); p._updatePosition(); p._adjustPan();
+    const c=p._contentNode; if(d.open&&c.scrollHeight>c.clientHeight) c.scrollTop+=d.getBoundingClientRect().top-c.getBoundingClientRect().top;
+  });
 });
 map.on('popupclose',()=>{const r=ret;ret=null;$('key').hidden=false;setTimeout(()=>{if(document.activeElement===document.body&&r&&r.isConnected&&r.offsetParent)r.focus({preventScroll:true})},0)});
 
@@ -671,7 +988,9 @@ function goTo(ll,z,then){
 function goBounds(b){const o=panelPad();RM.matches?map.fitBounds(b,Object.assign(o,{animate:false,maxZoom:14})):map.flyToBounds(b,Object.assign(o,{maxZoom:14,duration:.6}))}
 function openPop(m,from){
   if(!map.hasLayer(m)) return; m.openPopup();
-  const el=m.getPopup().getElement(), kay=el&&el.querySelector('.leaflet-popup-scrolled'), t=el&&((!kay&&el.querySelector('.pp-actions button'))||el.querySelector('.leaflet-popup-close-button'));
+  const el=m.getPopup().getElement(), c=el&&el.querySelector('.leaflet-popup-content'), b=el&&el.querySelector('.pp-actions button');
+  const gor=b&&b.getBoundingClientRect().bottom<=c.getBoundingClientRect().bottom+1;   // düğme kaydırmadan görünüyorsa odak ona, yoksa kapatma düğmesine
+  const t=el&&((gor&&b)||el.querySelector('.leaflet-popup-close-button'));
   if(t){t.focus({preventScroll:true});ret=from||null}
 }
 function flyToMarker(key,from){
@@ -683,9 +1002,9 @@ function flyToMarker(key,from){
 /* ---------- Odak ---------- */
 function syncFocus(){
   document.querySelectorAll('.line').forEach(r=>{const on=r.dataset.line===focusLine,b=r.querySelector('.lfocus');
-    b.setAttribute('aria-pressed',on);b.querySelector('.go').textContent=on?'Odakta':'Odaklan';if(on)r.closest('details').open=true});
+    b.setAttribute('aria-pressed',on);b.querySelector('.go').textContent=t(on?'odakta':'odaklan');if(on)r.closest('details').open=true});
   $('chip').classList.toggle('show',!!focusLine);
-  if(focusLine)$('chip-text').innerHTML=`${badge(focusLine)}<span class="cn">${esc(LINES[focusLine].name)}</span> <span class="tot">· ${valU(lineTotal[focusLine])}</span>`;
+  if(focusLine)$('chip-text').innerHTML=`${badge(focusLine)}<span class="cn">${esc(hatAd(focusLine))}</span> <span class="tot">· ${valU(lineTotal[focusLine])}</span>`;
 }
 function focusOn(l,fit=true,toChip=false){
   focusLine=l; if(!visible.has(l)){visible.add(l);syncChecks()}
@@ -693,31 +1012,40 @@ function focusOn(l,fit=true,toChip=false){
   if(mobile()&&fit) setSheet(toChip?'peek':sheet==='large'?'medium':sheet);
   if(fit&&byLine[l].length) goBounds(L.latLngBounds(byLine[l].map(s=>[s.lat,s.lon])).pad(.15));
   if(toChip) $('chip-x').focus({preventScroll:true});
-  say(`${code(l)} hattı odakta`);
+  say(t('odakDuyuru',{kod:code(l)}));
 }
 function clearFocus(){const had=focusLine,a=document.activeElement,onChip=a===$('chip-x');focusLine=null;map.closePopup();syncFocus();render();
-  if(had){say('Odak kaldırıldı');if(onChip||a===document.body){const b=document.querySelector(`.line[data-line="${had}"] .lfocus`);(b&&b.offsetParent&&!b.closest('[inert]')?b:mobile()?$('map'):q).focus({preventScroll:true})}}}
+  if(had){say(t('odakKalkti'));if(onChip||a===document.body){const b=document.querySelector(`.line[data-line="${had}"] .lfocus`);(b&&b.offsetParent&&!b.closest('[inert]')?b:mobile()?$('map'):q).focus({preventScroll:true})}}}
 window.focusOn=focusOn;
 window.showHub=id=>{setMode('hub');flyToMarker('h'+id)};
 
 /* ---------- Panel: hat listesi ---------- */
 const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
 const linesEl=$('lines');
-TYPES.forEach(t=>{
-  const ls=ORDER.filter(l=>LINES[l].type===t), g=document.createElement('div'); g.className='grp';
-  g.innerHTML=`<label class="cb"><input type="checkbox" checked data-type="${t}" aria-label="${t} hatlarını göster"></label><details${OPEN_TYPES.includes(t)?' open':''}><summary><span class="gname">${t}</span><span class="gcount">${ls.length} hat</span>${CHEV}</summary></details>`;
+TYPES.forEach(tur=>{
+  const ls=ORDER.filter(l=>LINES[l].type===tur), g=document.createElement('div'); g.className='grp';
+  g.innerHTML=`<label class="cb"><input type="checkbox" checked data-type="${tur}"></label><details${OPEN_TYPES.includes(tur)?' open':''}><summary><span class="gname"></span><span class="gcount"></span>${CHEV}</summary></details>`;
   linesEl.appendChild(g);
   const box=g.querySelector('details');
   g.querySelector('input').addEventListener('change',e=>{ls.forEach(l=>e.target.checked?visible.add(l):visible.delete(l));syncChecks();focusLine&&!visible.has(focusLine)?clearFocus():render()});
   ls.forEach(l=>{
-    const row=document.createElement('div'), nm=esc(LINES[l].name); row.className='line'; row.dataset.line=l;
-    row.innerHTML=`<label class="cb"><input type="checkbox" checked aria-label="${code(l)} ${nm} hattını göster"></label><button type="button" class="lfocus" aria-pressed="false" >${badge(l)}<span class="lname">${nm}</span><span class="lpax"></span><span class="go" aria-hidden="true">Odaklan</span></button>`;
+    const row=document.createElement('div'); row.className='line'; row.dataset.line=l;
+    row.innerHTML=`<label class="cb"><input type="checkbox" checked></label><button type="button" class="lfocus" aria-pressed="false" >${badge(l)}<span class="lname"></span><span class="lpax"></span><span class="go" aria-hidden="true"></span></button>`;
     const cb=row.querySelector('input');
     cb.addEventListener('change',()=>{cb.checked?visible.add(l):visible.delete(l);syncChecks();!cb.checked&&focusLine===l?clearFocus():render()});
     row.querySelector('.lfocus').addEventListener('click',()=>focusLine===l?clearFocus():focusOn(l));
     box.appendChild(row);
   });
 });
+/* hat listesindeki metinler (tür adı, hat sayısı, hat adı, kutucuk etiketleri); dil değişince yeniden yazılır */
+function hatMetinleri(){
+  document.querySelectorAll('[data-type]').forEach(g=>{const k=g.dataset.type, ad=t('tur.'+k), kutu=g.closest('.grp');
+    g.setAttribute('aria-label',t('turGoster',{tur:ad})); kutu.querySelector('.gname').textContent=ad;
+    kutu.querySelector('.gcount').textContent=t('hatSayisi',{n:ORDER.filter(l=>LINES[l].type===k).length})});
+  document.querySelectorAll('.line').forEach(r=>{const l=r.dataset.line;
+    r.querySelector('input').setAttribute('aria-label',t('hatGoster',{kod:code(l),ad:hatAd(l)})); r.querySelector('.lname').textContent=hatAd(l); r.querySelector('.go').textContent=t('odaklan')});
+}
+hatMetinleri();
 function syncChecks(){
   document.querySelectorAll('.line').forEach(r=>{const on=visible.has(r.dataset.line);r.querySelector('input').checked=on;r.classList.toggle('off',!on)});
   document.querySelectorAll('[data-type]').forEach(g=>{const ls=ORDER.filter(l=>LINES[l].type===g.dataset.type),n=ls.filter(l=>visible.has(l)).length;g.checked=n===ls.length;g.indeterminate=n>0&&n<ls.length});
@@ -745,9 +1073,9 @@ radios('mode','mode',setMode);
 function syncSel(){
   $('ay').value=String(ay);
   document.querySelectorAll('#gun button').forEach(b=>{const on=b.dataset.gun===gun;b.setAttribute('aria-checked',on);b.tabIndex=on?0:-1});
-  const d=isDef(); $('sub-t').textContent=d?'2025 yıllık yolcu sayısı':'2025 günlük ortalama yolcu sayısı'; $('u-top').textContent=d?'yolcu / yıl':'günlük ortalama';
+  const d=isDef(); $('sub').textContent=t(d?'altYil':'altGun'); $('u-top').textContent=$('u-prof').textContent=t(d?'birimYil':'gunlukOrtalama');
   document.querySelectorAll('.line').forEach(r=>{const l=r.dataset.line,v=val(lineTotal[l]);r.querySelector('.lpax').textContent=v;
-    r.querySelector('.lfocus').setAttribute('aria-label',`${code(l)} ${LINES[l].name}, ${d?'':'günlük ortalama '}${v} yolcu: hatta odaklan`)});
+    r.querySelector('.lfocus').setAttribute('aria-label',t(d?'hatEtiket':'hatEtiketGun',{kod:code(l),ad:hatAd(l),v}))});
 }
 function setSel(a,g){
   if(!HAS) return; const k=openKey;
@@ -757,37 +1085,47 @@ function setSel(a,g){
 $('ay').onchange=e=>setSel(+e.target.value||0,gun);
 radios('gun','gun',g=>setSel(ay,g));
 
-/* ---------- Paylaşılabilir durum: #hat=M5&ay=3&gun=hs&mod=hub ---------- */
+/* ---------- Paylaşılabilir durum: #hat=M5&ay=3&gun=hs&mod=hub&gizli=M1,T3&dil=en (gizli: kapatılan hatların kodları; dil yalnızca İngilizcede yazılır) ---------- */
 let hashLock=false;
 function readHash(){
-  const o={hat:null,ay:0,gun:'all',mod:'station'}; let p;
+  const o={hat:null,ay:0,gun:'all',mod:'station',gizli:[],dil:hashDil()}; let p;
   try{p=new URLSearchParams(location.hash.replace(/^#/,''))}catch(e){return o}
   const h=(p.get('hat')||'').toLowerCase(), a=p.get('ay')||'', g=p.get('gun');
   if(h) o.hat=ORDER.find(l=>l.toLowerCase()===h||code(l).toLowerCase()===h)||null;
   if(HAS&&/^\d{1,2}$/.test(a)&&+a>=1&&+a<=12) o.ay=+a;
   if(HAS&&(g==='hi'||g==='hs')) o.gun=g;
   if(p.get('mod')==='hub') o.mod='hub';
+  const kod=(p.get('gizli')||'').toLowerCase().split(',').map(x=>x.trim());   // bilinmeyen kodlar yok sayılır
+  o.gizli=ORDER.filter(l=>kod.includes(l.toLowerCase())||kod.includes(code(l).toLowerCase()));
   return o;
 }
+/* geçerli durumdan üretilen adres parçası; adres çubuğuna yazılan da kopyalanan da budur */
+function stateHash(){
+  const g=ORDER.filter(l=>!visible.has(l)).map(code).join(',');
+  return [focusLine&&'hat='+encodeURIComponent(focusLine),ay&&'ay='+ay,gun!=='all'&&'gun='+gun,mode==='hub'&&'mod=hub',g&&'gizli='+g,dil!=='tr'&&'dil='+dil].filter(Boolean).join('&');
+}
+const stateUrl = () => {const h=stateHash();return location.href.split('#')[0]+(h?'#'+h:'')};
 function writeHash(){
   if(hashLock) return;
-  const h=[focusLine&&'hat='+encodeURIComponent(focusLine),ay&&'ay='+ay,gun!=='all'&&'gun='+gun,mode==='hub'&&'mod=hub'].filter(Boolean).join('&');
+  const h=stateHash();
   if(h===location.hash.replace(/^#/,'')) return;
   try{history.replaceState(null,'',location.pathname+location.search+(h?'#'+h:''))}catch(e){}
 }
 function applyHash(first){
-  const o=readHash(), yeni=o.hat&&(first||o.hat!==focusLine);
+  const o=readHash(), yeni=o.hat&&(first||o.hat!==focusLine), d=o.dil||kayitliDil()||tarayiciDil();   // bağlantıda dil yoksa: kayıtlı tercih, sonra tarayıcı dili
   hashLock=true;
-  ay=o.ay; gun=o.gun; mode=o.mod; focusLine=o.hat; if(o.hat) visible.add(o.hat);
+  if(d!==dil){dil=d;dilStatik()}
+  ay=o.ay; gun=o.gun; mode=o.mod; focusLine=o.hat;
+  ORDER.forEach(l=>o.gizli.includes(l)&&l!==o.hat?visible.delete(l):visible.add(l));   // odaktaki hat gizlenemez
   recalc(); syncSel(); syncMode(); syncChecks(); map.closePopup(); syncFocus(); render(); syncPopOpts();
-  hashLock=false;
+  hashLock=false; writeHash();   // elle yazılmış geçersiz parça adres çubuğunda kalmasın
   if(yeni&&byLine[o.hat].length){const b=L.latLngBounds(byLine[o.hat].map(s=>[s.lat,s.lon])).pad(.15);first?map.fitBounds(b,Object.assign(panelPad(),{maxZoom:14,animate:false})):goBounds(b)}
 }
 let copyT=0;
 $('copy').onclick=()=>{
-  const b=$('copy'), i=$('copy-url'), u=location.href;
-  const ok=()=>{i.hidden=true;toast('Bağlantı kopyalandı');b.textContent='Bağlantı kopyalandı';clearTimeout(copyT);copyT=setTimeout(()=>{b.textContent='Bağlantıyı kopyala'},2500)};
-  const elle=()=>{i.hidden=false;i.value=u;i.focus();i.select();toast('Bağlantı seçildi; kopyalayabilirsiniz')};   // pano kullanılamıyorsa
+  const b=$('copy'), i=$('copy-url'), u=stateUrl();
+  const ok=()=>{i.hidden=true;toast(t('kopyalandi'));b.textContent=t('kopyalandi');clearTimeout(copyT);copyT=setTimeout(()=>{b.textContent=t('kopyala')},2500)};
+  const elle=()=>{i.hidden=false;i.value=u;i.focus();i.select();toast(t('kopyaSecildi'))};   // pano kullanılamıyorsa
   try{navigator.clipboard.writeText(u).then(ok,elle)}catch(e){elle()}
 };
 $('copy-url').onkeydown=e=>{if(e.key==='Escape'){e.stopPropagation();$('copy').focus();$('copy-url').hidden=true}};
@@ -797,42 +1135,64 @@ $('copy-url').onblur=()=>{$('copy-url').hidden=true};
 let lastSum='';
 function updateStats(items){
   const st=STATIONS.filter(s=>visible.has(s.line)), tot=st.reduce((a,s)=>a+s.v,0);
-  const t=`${isDef()?short(tot):donem()+' · günlük ort. '+shortD(tot/365)} yolcu · ${fmt(mode==='hub'?items.length:st.length)} ${mode==='hub'?'nokta':'istasyon'} · ${visible.size} hat`;
-  if(lastSum===t) return;
-  $('sum-t').textContent=t; if(lastSum)say('Görünen: '+t); lastSum=t; syncPeek();
+  const hic=!visible.size, yer=t(mode==='hub'?'sayNokta':'sayIstasyon',{n:mode==='hub'?items.length:st.length}), hat=t('hatSayisi',{n:visible.size});
+  const m=hic?t('hatYok'):isDef()?t('ozet',{yolcu:short(tot),yer,hat}):t('ozetGun',{donem:donem(),yolcu:shortD(tot/365),yer,hat});
+  if(lastSum===m) return;
+  $('sum-pre').hidden=hic; $('sum-t').textContent=m; if(lastSum)say(hic?m:t('gorunenDuyuru',{ozet:m})); lastSum=m; syncPeek();
 }
+const barCol = l => `;--c:${LINES[l].color};--ck:${mix(LINES[l].color,INK)}`;
 function updateTop(items){
+  const prof=!!(focusLine&&LINES[focusLine].seq.length);   // odakta güzergâh sırası bilinen bir hat varsa sıralama yerine hat profili
+  $('sec-top').hidden=prof; $('sec-prof').hidden=!prof; updateProfile(prof);
+  if(prof){$('top').innerHTML='';return}
   const pool=(focusLine?items.filter(i=>mode==='hub'?i.members.some(m=>m.line===focusLine):i.line===focusLine):items).filter(i=>i.pax>0).sort((a,b)=>b.pax-a.pax).slice(0,10);
   const max=pool[0]?.pax||1, el=$('top');
   el.innerHTML=pool.map(it=>{
     const lines=it.multi?it.members.map(m=>m.line):[it.line];
     const nm=it.multi?[...new Set(it.members.map(m=>m.name))].join(' / '):it.name;
-    return `<li><button type="button" class="top-item" data-key="${it.key}"><span class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><span class="bar" style="width:${it.pax/max*100}%;background:${it.multi?'var(--hub)':LINES[it.line].color}"></span></span><span class="v">${val(it.pax)}</span></button></li>`;
-  }).join('') || (items.length?'<li class="empty">Bu seçimde yolcu kaydı yok.</li>':'<li class="empty">Hiç hat seçili değil. <button type="button" class="link" id="top-all">Tümünü göster</button></li>');
+    return `<li><button type="button" class="top-item" data-key="${it.key}"><span class="nm"><span class="t">${esc(nm)} ${lines.map(badge).join(' ')}</span><span class="bar" style="width:${it.pax/max*100}%${it.multi?'':barCol(it.line)}"></span></span><span class="v">${val(it.pax)}</span></button></li>`;
+  }).join('') || (items.length?`<li class="empty">${t('kayitYok')}</li>`:`<li class="empty">${t('hatYokCumle')} <button type="button" class="link" id="top-all">${t('tumunuGoster')}</button></li>`);
   el.querySelectorAll('.top-item').forEach(e=>e.onclick=()=>flyToMarker(e.dataset.key,e));
   const a=$('top-all'); if(a) a.onclick=()=>{showAll();$('all').focus()};
+}
+
+/* ---------- Hat profili: odaktaki hattın istasyonları güzergâh sırasıyla, dallar ayrı listelerde ---------- */
+function updateProfile(on){
+  const el=$('prof'); if(!on){el.innerHTML='';return}
+  const l=focusLine, L_=LINES[l], idx=Object.fromEntries(byLine[l].map(s=>[s.name,s])), max=Math.max(...byLine[l].map(s=>s.v),1), def=isDef(), gecen=new Set();
+  const satir=s=>{
+    const zero=bos(s.v), d=val(s.v), akt=[...new Set(transfers(s).map(m=>m.line))];
+    const ad=t((zero?'profilSatirYok':def?'profilSatir':'profilSatirGun')+(akt.length?'Akt':''),{ad:s.name,d,k:akt.map(code).join(', ')});
+    return `<li><button type="button" class="pf-item" data-key="${mode==='hub'?'h'+s.hub.id:'s'+s.id}" aria-label="${esc(ad)}"><span class="nm"><span class="t">${esc(s.name)} ${akt.map(badge).join(' ')}</span>${zero?'':`<span class="bar" style="width:${s.v/max*100}%${barCol(l)}"></span>`}</span><span class="v${zero?' yok':''}">${zero?t('profilYok'):d}</span></button></li>`;
+  };
+  const dal=(ss,baslik,tek)=>ss.length?`${tek?'':`<h3 class="pf-sub">${esc(baslik)}</h3>`}<ul class="pf" role="list" aria-label="${esc(baslik)}">${ss.map(satir).join('')}</ul>`:'';
+  let h=`<p class="pf-head">${badge(l)}<span class="pn">${esc(hatAd(l))}</span><span class="pt">${t('profilToplam',{v:valU(lineTotal[l])})}</span></p>`;
+  L_.seq.forEach(q=>{const ss=q.map(n=>idx[n]).filter(Boolean); ss.forEach(s=>gecen.add(s)); h+=dal(ss,ss.length?`${ss[0].name} – ${ss[ss.length-1].name}`:'',L_.seq.length===1)});
+  h+=dal(byLine[l].filter(s=>!gecen.has(s)),t('profilDiger'),false);   // güzergâh sırasında adı geçmeyen istasyonlar
+  el.innerHTML=h;
+  el.querySelectorAll('.pf-item').forEach(e=>e.onclick=()=>flyToMarker(e.dataset.key,e));
 }
 
 /* ---------- Boyut göstergesi: iç içe daireler, yakınlaştıkça güncellenir ---------- */
 function updateKey(){
   const def=isDef(), cls=def?[25e6,15e6,5e6,1e6,2.5e5,1e5]:[1e5,5e4,2e4,5e3,1e3,250], yr=v=>def?v:v*365, ad=def?short:shortD;   // günlük sınıflar yıla ölçeklenerek çizilir
   const fit=cls.filter(v=>radius(yr(v))<=(mobile()?30:46)), vs=(fit.length?fit:[cls[cls.length-1]]).slice(0,4), rs=vs.map(v=>radius(yr(v)));
-  $('key-t').textContent=def?'Yıllık yolcu':'Günlük ortalama';
+  $('key-t').textContent=t(def?'anahtarYil':'anahtarGun');
   const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, lh=Math.max(mobile()?15:13,Math.round(fs*1.2)), up=Math.round(fs*.36);   // satır yüksekliği yazı boyutuna bağlı
   const R=rs[0], B=2*R+8, cx=R+2, lx=2*R+16;
   let y=0; const ys=rs.map((r,i)=>y=Math.max(B-2*r+4,i?y+lh:Math.round(fs)));
-  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+fs*4.3);
+  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+fs*(def?4.3:4.7));
   const s=$('key-svg'); s.setAttribute('width',W); s.setAttribute('height',H); s.setAttribute('viewBox',`0 0 ${W} ${H}`);
   s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-up} ${lx-3},${ys[i]-up}"/><text x="${lx}" y="${ys[i]}">${ad(vs[i])}</text>`).join('');
-  $('key').setAttribute('aria-label',`Daire boyutu göstergesi, ${def?'yıllık yolcu':'günlük ortalama yolcu'}: ${vs.map(ad).join(', ')}`);
+  $('key').setAttribute('aria-label',t(def?'anahtarEtiketYil':'anahtarEtiketGun',{liste:vs.map(ad).join(', ')}));
 }
 
 /* ---------- Etiketler ---------- */
 const olc = document.createElement('canvas').getContext('2d');
 const lblMin = () => focusLine?-Infinity:13;   // odaktaki hat her yakınlıkta etiketlenir
 function updateLabels(){
-  const b=$('b-lbl'), low=map.getZoom()<lblMin(), tip=!labelsOn?'İstasyon adlarını göster':low?'İstasyon adları yakınlaşınca görünür':'İstasyon adlarını gizle';
-  b.setAttribute('aria-pressed',labelsOn); b.title=tip; b.setAttribute('aria-label',labelsOn&&low?'İstasyon adları (yakınlaşınca görünür)':'İstasyon adları');
+  const b=$('b-lbl'), low=map.getZoom()<lblMin(), tip=t(!labelsOn?'adGoster':low?'adYakin':'adGizle');
+  b.setAttribute('aria-pressed',labelsOn); b.title=tip; b.setAttribute('aria-label',t(labelsOn&&low?'adlarYakin':'adlar'));
   labelLayer.clearLayers(); if(!labelsOn || low) return;
   const bb=map.getBounds().pad(.1), kutular=[], enCok=focusLine&&map.getZoom()<11.5?12:Infinity;
   const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, kh=Math.round(fs*1.5); olc.font=`600 ${fs}px ${getComputedStyle(document.body).fontFamily}`;   // etiket kutusu gerçek yazı genişliğiyle ölçülür
@@ -848,19 +1208,19 @@ function updateLabels(){
 const q=$('q'), res=$('results'); let hits=[], sel=0;
 function closeRes(){res.classList.remove('open');q.setAttribute('aria-expanded','false');q.removeAttribute('aria-activedescendant')}
 function search(){
-  const t=norm(q.value.trim()); if(!t){closeRes();return}
-  const lineHits=ORDER.filter(l=>norm(l+' '+code(l)+' '+LINES[l].name).includes(t)).map(l=>({kind:'line',l}));
-  const stHits=STATIONS.filter(s=>norm(s.name+' '+(s.town||'')).includes(t)).sort((a,b)=>(norm(b.name).startsWith(t)-norm(a.name).startsWith(t))||b.pax-a.pax).slice(0,12).map(s=>({kind:'st',s}));
-  const tam=lineHits.some(h=>norm(code(h.l))===t||norm(h.l)===t);
+  const ar=norm(q.value.trim()); if(!ar){closeRes();return}
+  const lineHits=ORDER.filter(l=>norm(l+' '+code(l)+' '+LINES[l].name+(hatAd(l)===LINES[l].name?'':' '+hatAd(l))).includes(ar)).map(l=>({kind:'line',l}));
+  const stHits=STATIONS.filter(s=>norm(s.name+' '+(s.town||'')).includes(ar)).sort((a,b)=>(norm(b.name).startsWith(ar)-norm(a.name).startsWith(ar))||b.pax-a.pax).slice(0,12).map(s=>({kind:'st',s}));
+  const tam=lineHits.some(h=>norm(code(h.l))===ar||norm(h.l)===ar);
   hits=tam?[...lineHits.slice(0,4),...stHits]:[...stHits,...lineHits.slice(0,4)]; sel=0; drawHits();
-  say(hits.length?`${hits.length} sonuç`:`“${q.value.trim()}” için sonuç yok`);
+  say(hits.length?t('sonucSayisi',{n:hits.length}):t('sonucYok',{q:q.value.trim()}));
 }
 q.addEventListener('input',search);
 function drawHits(){
   res.innerHTML=hits.length?hits.map((h,i)=>{const a=`class="result${i===sel?' sel':''}" role="option" id="r-${i}" aria-selected="${i===sel}" data-i="${i}"`;return h.kind==='line'
-    ?`<div ${a}>${badge(h.l)}<span class="rn">${esc(LINES[h.l].name)}</span><span class="meta">hat</span></div>`
-    :`<div ${a}>${badge(h.s.line)}<span class="rn">${esc(h.s.name)}</span><span class="meta">${esc(h.s.town||'')} · ${bos(h.s.v)?'yolcu yok':valU(h.s.v)}</span></div>`}).join('')
-    :`<div class="result none" role="option" aria-disabled="true" aria-selected="false">“${esc(q.value.trim())}” için sonuç yok. İstasyon adı, hat kodu (M2) veya ilçe deneyin.</div>`;
+    ?`<div ${a}>${badge(h.l)}<span class="rn">${esc(hatAd(h.l))}</span><span class="meta">${t('aramaHat')}</span></div>`
+    :`<div ${a}>${badge(h.s.line)}<span class="rn">${esc(h.s.name)}</span><span class="meta">${esc(h.s.town||'')} · ${bos(h.s.v)?t('yolcuYok'):valU(h.s.v)}</span></div>`}).join('')
+    :`<div class="result none" role="option" aria-disabled="true" aria-selected="false">${t('sonucYokUzun',{q:esc(q.value.trim())})}</div>`;
   res.classList.add('open'); q.setAttribute('aria-expanded','true');
   if(hits.length){q.setAttribute('aria-activedescendant','r-'+sel);const e=$('r-'+sel);if(e&&res.scrollHeight>res.clientHeight)res.scrollTop=Math.max(0,e.offsetTop-res.clientHeight/2)}
   else q.removeAttribute('aria-activedescendant');
@@ -888,26 +1248,28 @@ q.addEventListener('blur',()=>{kapat=setTimeout(closeRes,120)});
 
 /* ---------- Alt sayfa (dar ekran) ve panel (geniş ekran) ---------- */
 function syncPeek(){root.style.setProperty('--peek',peekPx()+'px')}
+const sheetEtiket = () => grab.setAttribute('aria-label',t(sheet==='large'?'panelKucult':'panelBuyut'));
 function setSheet(s){
   sheet=s; root.dataset.sheet=s; const pk=mobile()&&s==='peek';
-  grab.setAttribute('aria-label',s==='large'?'Paneli küçült':'Paneli büyüt'); grab.setAttribute('aria-expanded',s!=='peek');
+  sheetEtiket(); grab.setAttribute('aria-expanded',s!=='peek');
   [$('panel-head'),$('panel-body')].forEach(e=>{e.inert=pk});
   if(mobile()&&s!=='large') panel.scrollTop=0;
 }
 grab.onclick=()=>setSheet(SHEETS[(SHEETS.indexOf(sheet)+1)%3]);
+function panelEtiket(){const b=$('collapse'), e=t(panelOff?'panelGoster':'panelGizle'); b.setAttribute('aria-label',e); b.title=e}
 function setPanel(off){
   panelOff=off; root.dataset.panel=off?'off':'on';
-  const b=$('collapse'), t=off?'Paneli göster':'Paneli gizle'; b.setAttribute('aria-expanded',!off); b.setAttribute('aria-label',t); b.title=t;
+  $('collapse').setAttribute('aria-expanded',!off); panelEtiket();
   map.invalidateSize(); syncPopOpts();
 }
 $('collapse').onclick=()=>setPanel(!panelOff);
 
 /* ---------- Kontroller ---------- */
 function fitAll(){const pts=STATIONS.filter(s=>visible.has(s.line)&&s.lon<29.35).map(s=>[s.lat,s.lon]);if(pts.length){const o=panelPad(),b=L.latLngBounds(pts).pad(.05);RM.matches?map.fitBounds(b,Object.assign(o,{animate:false})):map.flyToBounds(b,Object.assign(o,{duration:.6}))}}
+function temaEtiket(){const b=$('b-theme'), e=t(theme==='dark'?'temaAcik':'temaKoyu'); b.setAttribute('aria-label',e); b.title=e}
 function applyTheme(redraw){
   root.dataset.theme=theme; base.setUrl(TILES[theme][0]); ref.setUrl(TILES[theme][1]);
-  const b=$('b-theme'), t=theme==='dark'?'Açık görünüme geç':'Koyu görünüme geç';
-  b.setAttribute('aria-label',t); b.title=t; $('i-theme').innerHTML=ICON[theme==='dark'?'sun':'moon'];
+  temaEtiket(); $('i-theme').innerHTML=ICON[theme==='dark'?'sun':'moon'];
   if(redraw){map.closePopup();render()}
 }
 $('b-fit').onclick=fitAll;
@@ -917,7 +1279,23 @@ $('b-theme').onclick=()=>{
   applyTheme(true);
 };
 LQ.addEventListener('change',()=>{if(!stored()){theme=sysTheme();applyTheme(true)}});
-$('b-lbl').onclick=()=>{labelsOn=!labelsOn;updateLabels();if(labelsOn&&map.getZoom()<lblMin())toast('İstasyon adları yakınlaşınca görünür')};
+/* ---------- Dil: metinler yerinde yeniden yazılır; odak, dönem, gün, görünüm ve gizlenen hatlar korunur ---------- */
+function dilStatik(){
+  dilTemel();
+  map.attributionControl.removeAttribution(base.options.attribution); base.options.attribution=t('atif'); map.attributionControl.addAttribution(base.options.attribution);
+  hatMetinleri(); sheetEtiket(); panelEtiket(); temaEtiket(); $('copy-url').hidden=true; lastSum='';
+}
+function dilDegistir(d){
+  if(d===dil||!METIN[d]) return;
+  const k=openKey, acik=res.classList.contains('open');
+  dil=d; try{localStorage.setItem('ist-dil',d)}catch(e){}
+  dilStatik(); syncSel(); map.closePopup(); syncFocus(); render();
+  if(acik) drawHits();
+  if(k&&!mobile()&&markers.has(k)) markers.get(k).openPopup();   // açık pencere yeni dille yenilenir
+  say(t('dilDuyuru'));
+}
+$('b-dil').onclick=()=>dilDegistir(t('dilHedef'));
+$('b-lbl').onclick=()=>{labelsOn=!labelsOn;updateLabels();if(labelsOn&&map.getZoom()<lblMin())toast(t('adYakin'))};
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){const r=ret;map.closePopup();if(focusLine)clearFocus();if(r&&r.isConnected&&r.offsetParent)r.focus()}
   else if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&document.activeElement!==q){e.preventDefault();q.focus()}
