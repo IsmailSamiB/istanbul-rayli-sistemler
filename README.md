@@ -63,13 +63,13 @@ Diğer grafikler (hat payları, en yoğun 10 istasyon, aylık seyir, yaş dağı
 
 ![İstasyon kullanım haritası](figures/harita-onizleme.png)
 
-291 istasyonun 2025 yılı yolcu sayılarını gösteren etkileşimli harita. Dairelerin büyüklüğü yolcu sayısını (karekök ölçeği), renkler ise hatları gösteriyor. Bir hattın adına tıklayınca harita o hatta odaklanır ve diğer hatlar soluklaşır; yanındaki kutucuk hattı tamamen gizler. Hat güzergâhları, duraklar arasındaki gerçek ray geometrileri kullanılarak OpenStreetMap verilerinden oluşturuldu.
+291 noktanın (288 istasyon ve istasyon bazında veri tutulmayan üç hattın toplamı) 2025 yılı yolcu sayılarını gösteren etkileşimli harita. Daire büyüklüğü yolcu sayısıyla artıyor, renkler ise hatları gösteriyor. Bir hattın adına tıklayınca harita o hatta odaklanır ve diğer hatlar soluklaşır; yanındaki kutucuk hattı tamamen gizler. Hat güzergâhları, duraklar arasındaki gerçek ray geometrileri kullanılarak OpenStreetMap verilerinden oluşturuldu.
 
-Harita yalnızca yıllık toplamı değil, ayları ve gün türünü de gösteriyor: dönem (yıl ya da tek bir ay) ve gün türü (tümü, hafta içi, hafta sonu) seçildiğinde daireler o seçimin günlük ortalamasına göre yeniden boyutlanıyor. Bir istasyona tıklayınca açılan pencerede 12 aylık seyir, hafta sonu / hafta içi oranı ve yolcuların yaş dağılımı görünüyor. Bir hatta odaklanınca o hattın profili açılıyor: istasyonlar güzergâh sırasıyla ve yolcu sayılarıyla listeleniyor. "Aktarma merkezleri" görünümü, birbirine yakın farklı hat istasyonlarını tek dairede topluyor.
+Harita yalnızca yıllık toplamı değil, ayları ve gün türünü de gösteriyor: dönem (yıl ya da tek bir ay) ve gün türü (tümü, hafta içi, hafta sonu) seçildiğinde daireler o seçimin günlük ortalamasına göre yeniden boyutlanıyor. Bir istasyona tıklayınca açılan pencerede 12 aylık seyir, hafta sonu / hafta içi oranı ve yolcuların yaş dağılımı görünüyor. Bir hatta odaklanınca o hattın profili açılıyor: istasyonlar güzergâh sırasıyla ve yolcu sayılarıyla listeleniyor (tek kayıtlı T2, T3 ve TF1 hatlarında profil yok). "Aktarma merkezleri" görünümü, birbirine yakın farklı hat istasyonlarını tek dairede topluyor.
 
-Seçili hat, dönem, gün türü, görünüm, gizlenen hatlar ve dil adres çubuğuna yazıldığı için her görünüm bağlantıyla paylaşılabiliyor. Günlük ortalamalar takvimdeki gün sayısına bölünerek hesaplanıyor; yıl içinde açılan istasyonlarda bu yüzden düşük çıkıyor. Arayüz Türkçe ve İngilizce kullanılabiliyor.
+Seçili hat, dönem, gün türü, görünüm, gizlenen hatlar ve dil adres çubuğuna yazıldığı için her görünüm bağlantıyla paylaşılabiliyor. Günlük ortalamalar, toplamın takvimdeki gün sayısına bölünmesiyle hesaplanıyor; yıl içinde açılan istasyonlarda bu yüzden düşük çıkıyor. İstasyon penceresindeki aylık grafik ise yalnızca verisi olan ayların ortalamasını temel alıyor. Arayüz Türkçe ve İngilizce kullanılabiliyor; istasyon ve hat adları Türkçe kalıyor.
 
-İstasyon koordinatlarının çoğu İBB verisindeki orijinal koordinatlardan alındı. Ray güzergâhından 140 metreden fazla sapan 9 istasyonun konumu, OpenStreetMap'teki durak noktalarına göre düzeltildi. En büyük fark M9 Ataköy'de yaklaşık 800 metreydi. İstasyon adlarındaki yazım hatları ve mükerrer kayıtlar da ayrıca düzeltildi.
+İstasyon koordinatlarının çoğu İBB verisindeki orijinal koordinatlardan alındı. Ray güzergâhından belirgin biçimde sapan 9 istasyonun konumu (düzeltmeler yaklaşık 140–800 metre arasında), OpenStreetMap'teki durak noktalarına göre düzeltildi. En büyük fark M9 Ataköy'de yaklaşık 800 metreydi. M5 Yamanevler'in koordinatı da ayrıca düzeltildi. İstasyon adlarındaki yazım hatları ve mükerrer kayıtlar da ayrıca düzeltildi.
 
 Haritanın nasıl oluşturulduğuna dair ayrıntılar `harita/README.md` dosyasında bulunuyor.
 
@@ -121,7 +121,7 @@ Muhtemelen "yolcu" değeri farklı kartları ölçüyor. Bir kartla birden fazla
 - Araç kapasitesi verisi olmadığı için sefer başına yolcu sayısı doluluk oranını göstermiyor.
 - Veri günlük olduğu için saatlik yoğunluğu inceleyemedim.
 - Anomali açıklamaları takvim ve haber taramasına dayanıyor. 19 Nisan'ı (AÖF sınavı) "olası" olarak işaretledim. 11 Kasım ile 7 ve 28 Aralık'taki anomalilerin nedenini bulamadım.
-- TCDD Halkalı-Başakşehir veride yalnızca 3 istasyonla yer alıyor.
+- Veride "TCDD Halkalı-Başakşehir" adıyla geçen hat yalnızca 3 istasyonla yer alıyor (Halkalı, Ispartakule, Bahçeşehir); harita bu hattı "Halkalı – Bahçeşehir" olarak gösteriyor.
 
 ## Proje yapısı
 

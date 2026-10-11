@@ -65,13 +65,13 @@ The other charts (line shares, the ten busiest stations, the monthly trend, age 
 
 ![Station ridership map](figures/harita-onizleme.png)
 
-An interactive map of 2025 ridership at 291 stations. Circle size shows the number of passengers (square-root scale) and colour shows the line. Clicking a line's name focuses the map on that line and fades the others; the checkbox next to it hides the line completely. Line routes are drawn from the real track geometry in OpenStreetMap.
+An interactive map of 2025 ridership at 291 points: 288 stations, plus the line totals of three lines that are not recorded per station. Circle size grows with the number of passengers, and colour shows the line. Clicking a line's name focuses the map on that line and fades the others; the checkbox next to it hides the line completely. Line routes are drawn from the real track geometry in OpenStreetMap.
 
-The map shows more than the annual total. You can choose a period (the whole year or a single month) and a day type (all days, weekdays, weekends), and the circles are resized to the daily average for that selection. Clicking a station opens a panel with its trend over the twelve months, its weekend-to-weekday ratio and the age distribution of its passengers. Focusing a line shows its profile: the stations in route order with their ridership. The "Transfer hubs" view merges nearby stations of different lines into one circle.
+The map shows more than the annual total. You can choose a period (the whole year or a single month) and a day type (all days, weekdays, weekends), and the circles are resized to the daily average for that selection. Clicking a station opens a panel with its trend over the twelve months, its weekend-to-weekday ratio and the age distribution of its passengers. Focusing a line shows its profile: the stations in route order with their ridership (the single-record lines T2, T3 and TF1 have no profile). The "Transfer hubs" view merges nearby stations of different lines into one circle.
 
-The focused line, period, day type, view, hidden lines and language are written to the address bar, so any view can be shared as a link. Daily averages are divided by the number of calendar days, so stations that opened during the year show lower figures. The interface is available in Turkish and English; station and line names are left in Turkish.
+The focused line, period, day type, view, hidden lines and language are written to the address bar, so any view can be shared as a link. Daily averages are the total divided by the number of calendar days, so stations that opened during the year show lower figures. The monthly chart in a station's panel is the exception: it is based on the average of the months that have data. The interface is available in Turkish and English; station, district and route names are left in Turkish.
 
-Most station coordinates come from the original IMM data. Nine stations that sat more than 140 metres off their track were moved to the stop positions in OpenStreetMap; the largest correction was about 800 metres, at M9 Ataköy. Misspelled station names and duplicate records were also fixed.
+Most station coordinates come from the original IMM data. Nine stations that sat clearly off their track were moved to the stop positions in OpenStreetMap (corrections of roughly 140 to 800 metres); the largest was about 800 metres, at M9 Ataköy. The coordinate of M5 Yamanevler was corrected separately. Misspelled station names and duplicate records were also fixed.
 
 Details of how the map is built are in `harita/README.md` (in Turkish).
 
@@ -123,7 +123,7 @@ The "passenger" figure probably counts distinct cards. Several people can pass o
 - There is no vehicle capacity data, so passengers per trip does not show how full the trains are.
 - The data is daily, so I could not look at hourly peaks.
 - The explanations for the anomalies come from the calendar and from news searches. I marked 19 April (an Open Education Faculty exam) as "probable". I could not find a cause for the anomalies on 11 November and on 7 and 28 December.
-- TCDD Halkalı–Başakşehir appears in the data with only 3 stations.
+- The line the data calls "TCDD Halkalı-Başakşehir" appears with only 3 stations (Halkalı, Ispartakule, Bahçeşehir); the map shows it as "Halkalı – Bahçeşehir".
 
 ## Project structure
 

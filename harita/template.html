@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>İstanbul Raylı Sistemler — İstasyon Kullanım Haritası</title>
-<meta name="description" content="İstanbul'daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
+<meta name="description" content="İstanbul’daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="İstanbul Raylı Sistemler — İstasyon Kullanım Haritası">
-<meta property="og:description" content="İstanbul'daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
+<meta property="og:description" content="İstanbul’daki 291 raylı sistem istasyonunun 2025 yolcu sayıları: ay, gün türü ve yaş dağılımıyla etkileşimli harita.">
 <meta property="og:url" content="https://ismailsamib.github.io/istanbul-rayli-sistemler/harita/istasyon_kullanim_haritasi.html">
 <meta property="og:image" content="https://ismailsamib.github.io/istanbul-rayli-sistemler/figures/harita-onizleme.png">
 <meta property="og:image:width" content="1200">
@@ -375,6 +375,10 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 @media (pointer:coarse){:root{--hit:44px;--ctl:44px}}
 @media (forced-colors: active){.cb input{appearance:auto;-webkit-appearance:auto}.cb input::after{display:none}
   .pp-dv i,.pp-age i,.pp-leg i{forced-color-adjust:none;background:GrayText;box-shadow:none}.pp-dv i.on,.pp-age i.a0,.pp-leg i.a0{background:CanvasText}.pp-dv::after{forced-color-adjust:none;background:CanvasText}.pp-age i.a1,.pp-leg i.a1,.pp-age i.a3,.pp-leg i.a3{background:none;box-shadow:inset 0 0 0 2px GrayText}.pp-age i.a4,.pp-leg i.a4{background:none;box-shadow:inset 0 0 0 1px CanvasText}}
+@media(max-width:700px){
+  .leaflet-popup-scrolled .pp-actions{position:sticky;bottom:0;z-index:1;margin-top:0;padding-top:6px;background:var(--panel-solid)}
+  :root.pop .leaflet-control-scale{display:none}
+}
 </style>
 </head>
 <body>
@@ -450,15 +454,7 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 </main>
 <div class="vh" id="live" role="status" aria-live="polite"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>if(!window.L)document.getElementById('nolib').hidden=false</script>
 <script>
-const STATIONS = __DATA__;
-/* OpenStreetMap'ten alınmış gerçek ray geometrisi (build_map.py üretir) */
-const ROUTES = __ROUTES__;
-/* Aylık (hafta içi / hafta sonu) ve yaş grubu dökümü (build_detay.py üretir); dosya yoksa null */
-const DETAIL = __DETAIL__;
-
 /* ---------- Dil: arayüzdeki bütün metinler tek sözlükte ----------
    t('anahtar',{ad:değer}) metindeki {ad} yerlerini doldurur; 'aylar.2' gibi noktalı anahtar iç içe değere gider;
    {one,other} biçimindeki girdide {n} sayısına göre tekil/çoğul seçilir. Her cümle, dilin kendi söz dizimiyle bütün bir kalıptır.
@@ -470,7 +466,7 @@ tr:{
   baslik:'İstanbul Raylı Sistemler — İstasyon Kullanım Haritası',
   dilKisa:'EN', dilHedef:'en', dilGec:'Switch to English', dilDuyuru:'Dil: Türkçe',
   /* sayı ve birimler */
-  birimBin:'{n} bin', birimMn:'{n} mn', birimMr:'{n} mr', gunBasi:'{d}/gün', yuzde:'%{n}', yuzdeAz:'&lt;%1',
+  birimBin:'{n} bin', birimMn:'{n} mn', birimMr:'{n} milyar', gunBasi:'{d}/gün', yuzde:'%{n}', yuzdeAz:'&lt;%1',
   aylar:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
   aylarK:['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],
   aylarH:['O','Ş','M','N','M','H','T','A','E','E','K','A'],
@@ -483,8 +479,8 @@ tr:{
   /* panel */
   panelEtiket:'Hatlar ve arama',
   ustBaslik:'İstanbul raylı sistem istasyonları',
-  altYil:'2025 yıllık yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı',
-  altGun:'2025 günlük ortalama yolcu sayısı · daire alanı yolcu sayısıyla yaklaşık orantılı',
+  altYil:'2025 yıllık yolcu sayısı · daire büyüklüğü yolcu sayısıyla artar',
+  altGun:'2025 günlük ortalama yolcu sayısı · daire büyüklüğü yolcu sayısıyla artar',
   panelGizle:'Paneli gizle', panelGoster:'Paneli göster', panelBuyut:'Paneli büyüt', panelKucult:'Paneli küçült',
   araEtiket:'İstasyon, hat veya ilçe ara', araIpucu:'İstasyon, hat veya ilçe ara…', araSonuclar:'Arama sonuçları',
   sonucSayisi:'{n} sonuç', sonucYok:'“{q}” için sonuç yok',
@@ -522,9 +518,9 @@ tr:{
   profilSatirYokAkt:'{ad}, yolcu yok, aktarma {k}: istasyona git',
   /* veri ve kullanım */
   veriKullanim:'Veri ve kullanım',
-  bilgi1:'<b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer. Dönem ya da gün seçilince daireler ve sayılar <b>günlük ortalamayı</b> gösterir; “Bağlantıyı kopyala” seçili hattı, gizlenen hatları, dönemi, gün türünü ve görünümü paylaşır (harita konumu bağlantıya yazılmaz). Günlük ortalama, takvimdeki gün sayısına bölünerek hesaplanır; yıl içinde açılan istasyonlarda bu yüzden düşük çıkar.',
+  bilgi1:'<b>Kullanım:</b> Kutucuk hattı gösterir veya gizler. Hat adına dokunun veya tıklayın: hatta odaklanılır, diğer hatlar soluklaşır. İstasyona dokununca ayrıntılar açılır. <kbd>Esc</kbd> odağı kaldırır, <kbd>/</kbd> aramaya geçer. Dönem ya da gün seçilince daireler ve sayılar <b>günlük ortalamayı</b> gösterir; “Bağlantıyı kopyala” seçili hattı, gizlenen hatları, dönemi, gün türünü, görünümü ve dili paylaşır (harita konumu bağlantıya yazılmaz). Günlük ortalama, toplamın takvimdeki gün sayısına bölünmesiyle hesaplanır; yıl içinde açılan istasyonlarda bu yüzden düşük çıkar.',
   bilgi2:'Hat çizgileri OpenStreetMap’teki gerçek ray geometrisidir (© OpenStreetMap katkıcıları, ODbL). Kesikli çizgiler TCDD banliyö hatlarıdır.',
-  bilgi3:'<b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı kaynak, istasyon penceresinde yazar.',
+  bilgi3:'<b>Veri:</b> İBB Açık Veri Portalı, OpenStreetMap/Wikidata. “Düzeltildi” notu, kaynak veride düzeltilen kayıtları gösterir. Koordinatlar aksi belirtilmedikçe İBB Açık Veri Portalı’ndandır; farklı bir kaynak kullanıldıysa istasyon penceresinde belirtilir.',
   bilgi4:'<b>Zemin harita:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap katkıcıları.',
   /* harita */
   haritaEtiket:'İstasyon haritası', yakinlastir:'Yakınlaştır', uzaklastir:'Uzaklaştır',
@@ -539,11 +535,15 @@ tr:{
   /* istasyon ve aktarma merkezi pencereleri */
   kapat:'Kapat', istasyon:'İstasyon',
   birimGunOrt:'yolcu / gün (ortalama)',
-  gunlukOrtYaklasik:'Günlük ort. ≈ {n}', donemToplam:'{donem} · 2025 toplamı {n}',
+  gunlukOrtYaklasik:'Günlük ort. ≈ {n}', donemToplam:'{donem} · 2025 yıl toplamı {n}',
   siraSatir:'<span>Hat içinde <b>{sira} / {hat}</b></span> · <span>hat payı <b>{pay}</b></span> · <span>şehirde <b>{sehir} / {toplam}</b></span>',
   grafikBaslik:'Aylık seyir · yıllık ortalamaya göre · {gun}',
   grafikAlt:'Aylık günlük ortalama yolcu, {gun}; yıllık ortalamaya göre. Yıllık ortalama {ort}. {liste}',
   grafikAltSecili:'Aylık günlük ortalama yolcu, {gun}; yıllık ortalamaya göre. Yıllık ortalama {ort}. {liste}. Seçili ay: {ay}',
+  grafikBaslikK:'Aylık seyir · verisi olan ayların ortalamasına göre · {gun}',
+  grafikAltK:'Aylık günlük ortalama yolcu, {gun}; verisi olan ayların ortalamasına göre. Bu ortalama {ort}. {liste}',
+  grafikAltSeciliK:'Aylık günlük ortalama yolcu, {gun}; verisi olan ayların ortalamasına göre. Bu ortalama {ort}. {liste}. Seçili ay: {ay}',
+  hatToplami:'(hat toplamı)', hatKayit:'(hat)',
   grafikAy:'{ay} {deger}', grafikAyYok:'{ay} veri yok',
   enDusukYuksek:'<span>En düşük <b>{dusukAy} {dusuk}</b> ({dusukFark})</span> · <span>en yüksek <b>{yuksekAy} {yuksek}</b> ({yuksekFark})</span>',
   ayYok:'{n} ayda veri yok',
@@ -560,20 +560,20 @@ tr:{
 en:{
   yerel:'en-US',
   baslik:'Istanbul Rail Systems — Station Ridership Map',
-  dilKisa:'TR', dilHedef:'tr', dilGec:'Türkçe’ye geç', dilDuyuru:'Language: English',
+  dilKisa:'TR', dilHedef:'tr', dilGec:'Türkçeye geç', dilDuyuru:'Language: English',
   birimBin:'{n}k', birimMn:'{n}M', birimMr:'{n}B', gunBasi:'{d}/day', yuzde:'{n}%', yuzdeAz:'&lt;1%',
   aylar:['January','February','March','April','May','June','July','August','September','October','November','December'],
   aylarK:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
   aylarH:['J','F','M','A','M','J','J','A','S','O','N','D'],
   gunAd:{all:'all days',hi:'weekdays',hs:'weekends'},
-  tur:{'Metro':'Metro','Banliyö':'Commuter rail','Tramvay':'Tram','Füniküler / Teleferik':'Funicular / Cable car'},
+  tur:{'Metro':'Metro','Banliyö':'Commuter rail','Tramvay':'Tram','Füniküler / Teleferik':'Funicular / cable car'},
   nostaljik:'(heritage)',
   kitaplikYok:'The map library could not be loaded. Check your connection and reload the page.',
   zeminYok:'The basemap could not be loaded. Check your connection and reload the page.',
   panelEtiket:'Lines and search',
   ustBaslik:'Istanbul rail stations',
-  altYil:'2025 annual passengers · circle area is roughly proportional to passengers',
-  altGun:'2025 daily average passengers · circle area is roughly proportional to passengers',
+  altYil:'Annual passengers, 2025 · circle size grows with ridership',
+  altGun:'Average daily passengers, 2025 · circle size grows with ridership',
   panelGizle:'Hide panel', panelGoster:'Show panel', panelBuyut:'Expand panel', panelKucult:'Collapse panel',
   araEtiket:'Search station, line or district', araIpucu:'Search station, line or district…', araSonuclar:'Search results',
   sonucSayisi:{one:'{n} result',other:'{n} results'}, sonucYok:'No results for “{q}”',
@@ -581,21 +581,21 @@ en:{
   aramaHat:'line', yolcuYok:'no passengers',
   gorunen:'Shown: ', gorunenDuyuru:'Shown: {ozet}',
   ozet:'{yolcu} passengers · {yer} · {hat}',
-  ozetGun:'{donem} · daily avg. {yolcu} passengers · {yer} · {hat}',
+  ozetGun:'{donem} · daily average {yolcu} passengers · {yer} · {hat}',
   sayIstasyon:{one:'{n} station',other:'{n} stations'}, sayNokta:{one:'{n} location',other:'{n} locations'}, hatSayisi:{one:'{n} line',other:'{n} lines'},
-  hatYok:'No line selected', hatYokCumle:'No line selected.', tumunuGoster:'Show all',
+  hatYok:'No lines shown', hatYokCumle:'No lines shown.', tumunuGoster:'Show all',
   gorunum:'View',
-  modAyri:'Separate stations', modAyriIpucu:'One circle per line',
+  modAyri:'Separate stations', modAyriIpucu:'A separate circle for each line at a station',
   modMerkez:'Transfer hubs', modMerkezIpucu:'Combine transfer stations into one circle',
-  donem:'Period', tumYilSecenek:'Whole year (2025)', tumYil:'Whole year',
+  donem:'Period', tumYilSecenek:'Full year (2025)', tumYil:'Full year',
   gun:'Day', gunTumu:'All days', gunHi:'Weekdays', gunHs:'Weekends',
-  kopyala:'Copy link', kopyalaIpucu:'Link with the focused line, hidden lines, period, day type and view',
+  kopyala:'Copy link', kopyalaIpucu:'Link that keeps the focused line, hidden lines, period, day type, view and language',
   kopyaAlan:'Link to this view; press Ctrl+C to copy',
   kopyalandi:'Link copied', kopyaSecildi:'Link selected; you can copy it',
   enYogun:'Busiest stations', birimYil:'passengers / year', gunlukOrtalama:'daily average',
   kayitYok:'No passengers in this selection.',
-  hatlar:'Lines', tumu:'Show all', hicbiri:'None',
-  turGoster:'Show {tur} lines', hatGoster:'Show line {kod} {ad}',
+  hatlar:'Lines', tumu:'All', hicbiri:'None',
+  turGoster:'Show lines: {tur}', hatGoster:'Show line {kod} {ad}',
   hatEtiket:'{kod} {ad}, {v} passengers: focus on line',
   hatEtiketGun:'{kod} {ad}, daily average {v} passengers: focus on line',
   odaklan:'Focus', odakta:'Focused',
@@ -609,7 +609,7 @@ en:{
   profilSatirYok:'{ad}, no passengers: go to station',
   profilSatirYokAkt:'{ad}, no passengers, transfer to {k}: go to station',
   veriKullanim:'Data and usage',
-  bilgi1:'<b>Usage:</b> The checkbox shows or hides a line. Tap or click a line name to focus on that line; the other lines fade. Tap a station to open its details. <kbd>Esc</kbd> clears the focus, <kbd>/</kbd> jumps to search. When a period or day type is selected, the circles and figures show the <b>daily average</b>; “Copy link” shares the focused line, hidden lines, period, day type and view (the map position is not saved in the link). The daily average is the total divided by the number of calendar days, so it comes out low for stations that opened during the year.',
+  bilgi1:'<b>Usage:</b> The checkbox shows or hides a line. Tap or click a line name to focus on that line; the other lines fade. Tap a station to open its details. <kbd>Esc</kbd> clears the focus, <kbd>/</kbd> jumps to search. When a period or day type is selected, the circles and figures show the <b>daily average</b>; “Copy link” shares the focused line, hidden lines, period, day type, view and language (the map position is not saved in the link). The daily average is the total divided by the number of calendar days, so it comes out low for stations that opened during the year.',
   bilgi2:'Line routes are the actual track geometry from OpenStreetMap (© OpenStreetMap contributors, ODbL). Dashed lines are TCDD commuter rail lines.',
   bilgi3:'<b>Data:</b> İBB (Istanbul Metropolitan Municipality) Open Data Portal, OpenStreetMap/Wikidata. A “Corrected” note marks records that were corrected in the source data. Coordinates come from the İBB Open Data Portal unless stated otherwise; a different source is shown in the station popup.',
   bilgi4:'<b>Basemap:</b> Esri World Gray Canvas · © Esri, © OpenStreetMap contributors.',
@@ -620,28 +620,32 @@ en:{
   atif:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
   ipucuYok:'no passengers in this selection',
   anahtarYil:'Passengers / year', anahtarGun:'Daily average',
-  anahtarEtiketYil:'Circle size key, passengers per year: {liste}',
-  anahtarEtiketGun:'Circle size key, daily average passengers: {liste}',
+  anahtarEtiketYil:'Circle size legend, passengers per year: {liste}',
+  anahtarEtiketGun:'Circle size legend, daily average passengers: {liste}',
   kapat:'Close', istasyon:'Station',
-  birimGunOrt:'passengers / day (avg.)',
-  gunlukOrtYaklasik:'Daily avg. ≈ {n}', donemToplam:'{donem} · 2025 total {n}',
-  siraSatir:'<span>Line rank <b>{sira} of {hat}</b></span> · <span>line share <b>{pay}</b></span> · <span>city rank <b>{sehir} of {toplam}</b></span>',
+  birimGunOrt:'passengers / day, average',
+  gunlukOrtYaklasik:'Daily average ≈ {n}', donemToplam:'{donem} · full-year 2025 total {n}',
+  siraSatir:'<span>Rank on line <b>{sira} of {hat}</b></span> · <span>share of line <b>{pay}</b></span> · <span>rank in city <b>{sehir} of {toplam}</b></span>',
   grafikBaslik:'Monthly trend · vs. annual average · {gun}',
-  grafikAlt:'Monthly daily average passengers, {gun}; relative to the annual average. Annual average {ort}. {liste}',
-  grafikAltSecili:'Monthly daily average passengers, {gun}; relative to the annual average. Annual average {ort}. {liste}. Selected month: {ay}',
+  grafikAlt:'Average daily passengers by month, {gun}, compared with the annual average. Annual average {ort}. {liste}',
+  grafikAltSecili:'Average daily passengers by month, {gun}, compared with the annual average. Annual average {ort}. {liste}. Selected month: {ay}',
+  grafikBaslikK:'Monthly trend · vs. average of months with data · {gun}',
+  grafikAltK:'Average daily passengers by month, {gun}, compared with the average of the months that have data. That average is {ort}. {liste}',
+  grafikAltSeciliK:'Average daily passengers by month, {gun}, compared with the average of the months that have data. That average is {ort}. {liste}. Selected month: {ay}',
+  hatToplami:'(line total)', hatKayit:'(line)',
   grafikAy:'{ay} {deger}', grafikAyYok:'{ay} no data',
   enDusukYuksek:'<span>Lowest <b>{dusukAy} {dusuk}</b> ({dusukFark})</span> · <span>highest <b>{yuksekAy} {yuksek}</b> ({yuksekFark})</span>',
   ayYok:{one:'no data for {n} month',other:'no data for {n} months'},
-  oran:'Weekends are <b>{yuzde}</b> of weekdays',
-  oranAy:'{ay}: weekends are <b>{yuzde}</b> of weekdays',
+  oran:'Weekend ridership is <b>{yuzde}</b> of weekday',
+  oranAy:'{ay}: weekend ridership is <b>{yuzde}</b> of weekday',
   yasEtiket:'Share of age groups, 2025 overall', yasBaslik:'Age (2025):', bilinmiyor:'Unknown',
-  aktarma:'Transfer', koordinat:'Coordinate source (in Turkish)',
+  aktarma:'Transfers', koordinat:'Coordinate source (in Turkish)',
   notKutu:'<b>Data note (in Turkish):</b> <span lang="tr">{metin}</span>',
   duzeltildi:'<b>Corrected (in Turkish):</b> <span lang="tr">{metin}</span>',
   hattaOdaklan:'Focus on line', merkeziGoster:'Show transfer hub',
-  diger:'Other details', digerDuzeltme:'Other details · includes a correction note', digerNot:'Other details · includes a note',
+  diger:'Other details', digerDuzeltme:'Other details · correction note', digerNot:'Other details · note',
   merkezAlt:{one:'Transfer hub · {n} line',other:'Transfer hub · {n} lines'},
-  merkezNot:'Total; passengers transferring between lines may be counted separately on each line.',
+  merkezNot:'Combined total. Passengers who transfer between lines may be counted once on each line.',
 },
 };
 const DILLER = Object.keys(METIN);
@@ -664,6 +668,16 @@ function metinUygula(){
 }
 function dilTemel(){document.documentElement.lang=dil;document.title=t('baslik');metinUygula()}
 dilTemel();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>if(!window.L)document.getElementById('nolib').hidden=false</script>
+<script>
+const STATIONS = __DATA__;
+/* OpenStreetMap'ten alınmış gerçek ray geometrisi (build_map.py üretir) */
+const ROUTES = __ROUTES__;
+/* Aylık (hafta içi / hafta sonu) ve yaş grubu dökümü (build_detay.py üretir); dosya yoksa null */
+const DETAIL = __DETAIL__;
+
 
 if(window.L){   /* kitaplık yüklenemediyse yalnızca uyarı görünür */
 
@@ -677,12 +691,12 @@ const LINES = {
       seq:[["Bakırköy İDO","Özgürlük Meydanı","İncirli","Haznedar","İlkyuva","Yıldıztepe","Molla Gürani","Kirazlı","Yeni Mahalle","Mahmutbey","İSTOÇ","İkitelli Sanayi","Turgut Özal","Siteler","Başak Konutları","Metrokent","Onurkent","Şehir Hastanesi","Toplu Konutlar","Kayaşehir Merkez"]]},
   M4:{name:"Kadıköy – Sabiha Gökçen Havalimanı",type:"Metro",color:"#e98fbb",
       seq:[["Kadıköy","Ayrılıkçeşme","Acıbadem","Ünalan","Göztepe","Yenisahra","Kozyatağı","Bostancı","Küçükyalı","Maltepe","Huzurevi","Gülsuyu","Esenkent","Hastane-Adliye","Soğanlık","Kartal","Yakacık","Pendik","Tavşantepe","Fevzi Çakmak-Hastane","Yayalar","Kurtköy","Sabiha Gökçen Havalimanı"]]},
-  M5:{name:"Üsküdar – Samandıra Merkez",type:"Metro",color:"#b3a2ea",
+  M5:{name:"Üsküdar – Samandıra Merkez",type:"Metro",color:"#cdc0f4",
       seq:[["Üsküdar","Fıstıkağacı","Bağlarbaşı","Altunizade","Kısıklı","Bulgurlu","Ümraniye","Çarşı","Yamanevler","Çakmak","Ihlamurkuyu","Altınşehir","İmam Hatip Lisesi","Dudullu","Necip Fazıl","Çekmeköy","Meclis","Sarıgazı","Sancaktepe","Samandıra Merkez"]]},
-  M6:{name:"Levent – Boğaziçi Ü./Hisarüstü",type:"Metro",color:"#d4b396",seq:[["Levent","Nispetiye","Etiler","Boğaziçi"]]},
+  M6:{name:"Levent – Boğaziçi Ü./Hisarüstü",type:"Metro",color:"#b8957a",seq:[["Levent","Nispetiye","Etiler","Boğaziçi"]]},
   M7:{name:"Yıldız – Mahmutbey",type:"Metro",color:"#f5cade",
       seq:[["Yıldız","Fulya","Mecidiyeköy","Çağlayan","Kağıthane","Nurtepe","Alibeyköy","Çırçır","Veysel Karani","Yeşilpınar","Kazım Karabekir","Yenimahalle","Karadeniz Mah.","Tekstilkent","Oruç Reis","Göztepe Mah.","Mahmutbey"]]},
-  M8:{name:"Bostancı – Parseller",type:"Metro",color:"#8fa9e6",
+  M8:{name:"Bostancı – Parseller",type:"Metro",color:"#6f8fd2",
       seq:[["Bostancı","Emin Ali Paşa","Ayşe Kadın","Kozyatağı","Küçükbakkalköy","İçerenköy","Kayışdağı","Mevlana","İMES","Modoko-KEYAP","Dudullu","Huzur","Parseller"]]},
   M9:{name:"Ataköy – Olimpiyat",type:"Metro",color:"#f1da86",
       seq:[["Ataköy","Yenibosna","Çobançeşme","29 Ekim Cumhuriyet","Doğu Sanayi","Mimar Sinan","15 Temmuz","Halkalı Caddesi","Atatürk Mahallesi","Bahariye","MASKO","İkitelli Sanayi","Ziya Gökalp Mah.","Olimpiyat"]]},
@@ -693,13 +707,13 @@ const LINES = {
   SK:{name:"Sirkeci – Kazlıçeşme (TCDD)",type:"Banliyö",color:"#b4bdcc",dash:"6 6",
       seq:[["Sirkeci","Cankurtaran","Kumkapı","Yenikapı","Cerrahpaşa","Koca Mustafa Paşa","Yedikule","Kazlıçeşme"]]},
   HB:{name:"Halkalı – Bahçeşehir (TCDD)",type:"Banliyö",color:"#b4bdcc",dash:"2 6",seq:[["Halkalı","Ispartakule","Bahçeşehir"]]},
-  T1:{name:"Kabataş – Bağcılar",type:"Tramvay",color:"#f6b584",
+  T1:{name:"Kabataş – Bağcılar",type:"Tramvay",color:"#eea06c",
       seq:[["Kabataş","Fındıklı","Tophane","Karaköy","Eminönü","Sirkeci","Gülhane","Sultanahmet","Çemberlitaş","Beyazıt","Laleli","Aksaray","Yusufpaşa","Haseki","Fındıkzade","Çapa","Pazartekke","Topkapı","Atatürk Öğrenci Yurdu","Merkezefendi","Akşemsettin","Mithatpaşa","Zeytinburnu","Mehmetakif","Keresteciler","Güngören","Akıncılar","Soğanlı","Cami","Güneştepe","Bağcılar"]]},
   T2:{name:"Taksim – Tünel (nostaljik)",type:"Tramvay",color:"#f1c3ba",seq:[]},
   T3:{name:"Kadıköy – Moda (nostaljik)",type:"Tramvay",color:"#f4e8b8",seq:[]},
-  T4:{name:"Topkapı – Mescid-i Selam",type:"Tramvay",color:"#c3e196",
+  T4:{name:"Topkapı – Mescid-i Selam",type:"Tramvay",color:"#d6efb0",
       seq:[["Topkapı","Fetihkapı","Vatan","Edirnekapı","Şehitlik","Demirkapı","Topçular","Rami","Bereç","Sağmalcılar","Çukurçeşme","Ali Fuat Başgil","Taşköprü","Karadeniz Mahallesi","Kiptaş Venezia","Cumhuriyet","Baştabya","Hacı Şükrü","Yenimahalle","Sultançiftliği","Cebeci","Mescidi Selam"]]},
-  T5:{name:"Eminönü – Alibeyköy Cep Otogarı",type:"Tramvay",color:"#c9c182",
+  T5:{name:"Eminönü – Alibeyköy Cep Otogarı",type:"Tramvay",color:"#9f9b62",
       seq:[["Eminönü","Küçükpazar","Cibali","Fener","Balat","Ayvansaray","Feshane","Eyüp Teleferik","Eyüp Devlet Hastanesi","Silahtarağa","Üniversite","Alibeyköy Merkez","Alibeyköy Metro","Alibeyköy Cep Otogarı"]]},
   F1:{name:"Taksim – Kabataş",type:"Füniküler / Teleferik",color:"#ece6da",seq:[["Taksim","Kabataş"]]},
   F2:{name:"Karaköy – Beyoğlu (Tünel)",type:"Füniküler / Teleferik",color:"#b1b0b0",seq:[["Karaköy","Beyoğlu"]]},
@@ -718,7 +732,7 @@ const yerel = () => METIN[dil].yerel;
 const fmt = n => new Intl.NumberFormat(yerel()).format(n);
 const sayi = (n,o) => n.toLocaleString(yerel(),o);
 const pct = n => t('yuzde',{n});   // %62 / 62%
-const short = n => n>=1e9 ? t('birimMr',{n:sayi(n/1e9,{maximumFractionDigits:2})}) : n>=1e6 ? t('birimMn',{n:sayi(n/1e6,{maximumFractionDigits:n>=1e7?0:1})}) : t('birimBin',{n:sayi(Math.round(n/1e3))});
+const short = n => n>=1e9 ? t('birimMr',{n:sayi(n/1e9,{maximumFractionDigits:2})}) : n>=1e6 ? t('birimMn',{n:sayi(n/1e6,n>=1e7?{maximumFractionDigits:0}:ond1)}) : t('birimBin',{n:sayi(Math.round(n/1e3))});
 /* günlük değerler: 1.000 altı tam sayı; 100 bin altı her zaman bir ondalık (40,0 bin); 100 bin ve üstü ondalıksız; milyonlar bir ondalık */
 const ond1 = {minimumFractionDigits:1,maximumFractionDigits:1};
 const shortD = n => n>=999500 ? t('birimMn',{n:sayi(n/1e6,ond1)}) : n>=99950 ? t('birimBin',{n:sayi(Math.round(n/1e3))}) : n>=999.5 ? t('birimBin',{n:sayi(n/1e3,ond1)}) : fmt(Math.round(n));
@@ -745,7 +759,9 @@ let sheet = 'peek', panelOff = false;
 const visible = new Set(ORDER);
 let focusLine = null, mode = 'station';
 const byLine = {}; ORDER.forEach(l=>byLine[l]=[]);
-STATIONS.forEach((s,i)=>{s.id=i;(byLine[s.line]||(byLine[s.line]=[])).push(s)});
+STATIONS.forEach((s,i)=>{s.id=i;s.ad0=s.name;(byLine[s.line]||(byLine[s.line]=[])).push(s)});
+const adCevir = () => STATIONS.forEach(s=>{s.name=s.ad0.replace('(hat toplamı)',t('hatToplami')).replace(/\(hat\)$/,t('hatKayit'))});   // tek kayıtlı hatların adındaki açıklama
+adCevir();
 const lineTotal = {};
 ORDER.forEach(l=>byLine[l].sort((a,b)=>b.pax-a.pax));
 
@@ -794,6 +810,7 @@ const sysTheme = () => LQ.matches?'light':'dark';
 const stored = () => {try{const t=localStorage.getItem('ist-gorunum');return t==='light'||t==='dark'?t:null}catch(e){return null}};
 let theme = stored() || sysTheme();
 const hubCol = () => theme==='light'?INK:'#f8fafc';
+map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
 const base = L.tileLayer(TILES[theme][0],{maxZoom:19,maxNativeZoom:16,attribution:t('atif')}).addTo(map);
 map.createPane('refs').style.zIndex=350;map.getPane('refs').style.pointerEvents='none';
 const ref = L.tileLayer(TILES[theme][1],{maxZoom:19,maxNativeZoom:16,pane:'refs'}).addTo(map);
@@ -911,8 +928,8 @@ function ayGrafik(list){
   const ort=T/N, lo=p.reduce((a,b)=>b[0]<a[0]?b:a), hi=p.reduce((a,b)=>b[0]>a[0]?b:a), yok=12-p.length, enb=Math.max(...p.map(a=>Math.abs(a[0]-ort)))||1;
   const pc=x=>yuzde(Math.round((x-ort)/ort*100));
   const liste=v.map((x,i)=>var_(x)?t('grafikAy',{ay:ayAd(i),deger:fmt(Math.round(x))}):t('grafikAyYok',{ay:ayAd(i)})).join(', ');
-  const alt=t(ay?'grafikAltSecili':'grafikAlt',{gun:gunAd(gun),ort:fmt(Math.round(ort)),liste,ay:ay?ayAd(ay-1):''});
-  return `<div class="pp-cap">${t('grafikBaslik',{gun:gunAd(gun)})}</div>
+  const alt=t((ay?'grafikAltSecili':'grafikAlt')+(yok?'K':''),{gun:gunAd(gun),ort:fmt(Math.round(ort)),liste,ay:ay?ayAd(ay-1):''});
+  return `<div class="pp-cap">${t(yok?'grafikBaslikK':'grafikBaslik',{gun:gunAd(gun)})}</div>
   <div role="img" aria-label="${alt}"><div class="pp-dv">${v.map((x,i)=>`<span>${var_(x)?`<i class="${x<ort?'dn':'up'}${ay===i+1?' on':''}" style="height:${(Math.abs(x-ort)/enb*50).toFixed(1)}%"></i>`:''}</span>`).join('')}</div><div class="pp-ini">${t('aylarH').map((k,i)=>`<span${ay===i+1?' class="on"':''}>${k}</span>`).join('')}</div></div>
   <div class="pp-mm">${t('enDusukYuksek',{dusukAy:ayKisa(lo[1]),dusuk:shortD(lo[0]),dusukFark:pc(lo[0]),yuksekAy:ayKisa(hi[1]),yuksek:shortD(hi[0]),yuksekFark:pc(hi[0])})}${yok?` · <span>${t('ayYok',{n:yok})}</span>`:''}</div>`;
 }
@@ -936,7 +953,7 @@ function stationPopup(s){
   let h=`<h2 class="pp-title">${esc(s.name)}</h2><div class="pp-town">${badge(s.line)} ${esc(hatAd(s.line))} · ${esc(s.town||'—')}</div>
   <div class="pp-big">${fmt(def?s.pax:Math.round(s.d))} <small>${t(def?'birimYil':'birimGunOrt')}</small></div>
   <div class="pp-day">${def?t('gunlukOrtYaklasik',{n:fmt(Math.round(s.pax/365))}):t('donemToplam',{donem:donem(),n:fmt(s.pax)})}</div>`;
-  const sira=s.v>0?`<div class="pp-rank">${t('siraSatir',{sira:s.rank,hat:byLine[s.line].length,pay:pct(sayi(share,{maximumFractionDigits:1})),sehir:s.crank,toplam:STATIONS.length})}</div>`:'';
+  const sira=s.v>0?`<div class="pp-rank">${t('siraSatir',{sira:s.rank,hat:byLine[s.line].length,pay:pct(sayi(share,share>=99.95?{maximumFractionDigits:0}:ond1)),sehir:s.crank,toplam:STATIONS.length})}</div>`:'';
   const yok=s.v>0?'':`<div class="pp-rank">${t('kayitYok')}</div>`;
   const seyir=ayGrafik([s])+oran([s])+yasDagilimi(s);
   let ek2='';
@@ -961,6 +978,7 @@ function hubPopup(h){
 }
 const hubNot = () => `<div class="pp-note">${t('merkezNot')}</div>`;
 map.on('popupopen',e=>{
+  document.documentElement.classList.add('pop');
   const el=e.popup.getElement(); if(!el) return;
   const x=el.querySelector('.leaflet-popup-close-button'), bas=el.querySelector('.pp-title');
   if(x){x.setAttribute('aria-label',t('kapat'));x.title=t('kapat')}
@@ -974,7 +992,7 @@ map.on('popupopen',e=>{
     const c=p._contentNode; if(d.open&&c.scrollHeight>c.clientHeight) c.scrollTop+=d.getBoundingClientRect().top-c.getBoundingClientRect().top;
   });
 });
-map.on('popupclose',()=>{const r=ret;ret=null;$('key').hidden=false;setTimeout(()=>{if(document.activeElement===document.body&&r&&r.isConnected&&r.offsetParent)r.focus({preventScroll:true})},0)});
+map.on('popupclose',()=>{document.documentElement.classList.remove('pop');const r=ret;ret=null;$('key').hidden=false;setTimeout(()=>{if(document.activeElement===document.body&&r&&r.isConnected&&r.offsetParent)r.focus({preventScroll:true})},0)});
 
 /* ---------- Hareket: tek yardımcı; "hareketi azalt" açıkken animasyonsuz ---------- */
 let pend=null, ret=null;
@@ -1100,11 +1118,11 @@ function readHash(){
   return o;
 }
 /* geçerli durumdan üretilen adres parçası; adres çubuğuna yazılan da kopyalanan da budur */
-function stateHash(){
+function stateHash(tam){
   const g=ORDER.filter(l=>!visible.has(l)).map(code).join(',');
-  return [focusLine&&'hat='+encodeURIComponent(focusLine),ay&&'ay='+ay,gun!=='all'&&'gun='+gun,mode==='hub'&&'mod=hub',g&&'gizli='+g,dil!=='tr'&&'dil='+dil].filter(Boolean).join('&');
+  return [focusLine&&'hat='+encodeURIComponent(code(focusLine)),ay&&'ay='+ay,gun!=='all'&&'gun='+gun,mode==='hub'&&'mod=hub',g&&'gizli='+g,(tam||dil!==(kayitliDil()||tarayiciDil()))&&'dil='+dil].filter(Boolean).join('&');
 }
-const stateUrl = () => {const h=stateHash();return location.href.split('#')[0]+(h?'#'+h:'')};
+const stateUrl = () => location.href.split('#')[0]+'#'+stateHash(true);   // paylaşılan bağlantı dili her zaman taşır
 function writeHash(){
   if(hashLock) return;
   const h=stateHash();
@@ -1114,7 +1132,7 @@ function writeHash(){
 function applyHash(first){
   const o=readHash(), yeni=o.hat&&(first||o.hat!==focusLine), d=o.dil||kayitliDil()||tarayiciDil();   // bağlantıda dil yoksa: kayıtlı tercih, sonra tarayıcı dili
   hashLock=true;
-  if(d!==dil){dil=d;dilStatik()}
+  if(d!==dil){dil=d;dilStatik();adCevir()}
   ay=o.ay; gun=o.gun; mode=o.mod; focusLine=o.hat;
   ORDER.forEach(l=>o.gizli.includes(l)&&l!==o.hat?visible.delete(l):visible.add(l));   // odaktaki hat gizlenemez
   recalc(); syncSel(); syncMode(); syncChecks(); map.closePopup(); syncFocus(); render(); syncPopOpts();
@@ -1175,7 +1193,7 @@ function updateProfile(on){
 
 /* ---------- Boyut göstergesi: iç içe daireler, yakınlaştıkça güncellenir ---------- */
 function updateKey(){
-  const def=isDef(), cls=def?[25e6,15e6,5e6,1e6,2.5e5,1e5]:[1e5,5e4,2e4,5e3,1e3,250], yr=v=>def?v:v*365, ad=def?short:shortD;   // günlük sınıflar yıla ölçeklenerek çizilir
+  const def=isDef(), cls=def?[25e6,15e6,5e6,1e6,2.5e5,1e5]:[1e5,5e4,2e4,5e3,1e3,250], yr=v=>def?v:v*365, ad=v=>v>=1e6?t('birimMn',{n:sayi(v/1e6)}):v>=1e3?t('birimBin',{n:sayi(v/1e3)}):fmt(v);   // günlük sınıflar yıla ölçeklenerek çizilir
   const fit=cls.filter(v=>radius(yr(v))<=(mobile()?30:46)), vs=(fit.length?fit:[cls[cls.length-1]]).slice(0,4), rs=vs.map(v=>radius(yr(v)));
   $('key-t').textContent=t(def?'anahtarYil':'anahtarGun');
   const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, lh=Math.max(mobile()?15:13,Math.round(fs*1.2)), up=Math.round(fs*.36);   // satır yüksekliği yazı boyutuna bağlı
@@ -1289,7 +1307,7 @@ function dilDegistir(d){
   if(d===dil||!METIN[d]) return;
   const k=openKey, acik=res.classList.contains('open');
   dil=d; try{localStorage.setItem('ist-dil',d)}catch(e){}
-  dilStatik(); syncSel(); map.closePopup(); syncFocus(); render();
+  dilStatik(); adCevir(); syncSel(); map.closePopup(); syncFocus(); render();
   if(acik) drawHits();
   if(k&&!mobile()&&markers.has(k)) markers.get(k).openPopup();   // açık pencere yeni dille yenilenir
   say(t('dilDuyuru'));

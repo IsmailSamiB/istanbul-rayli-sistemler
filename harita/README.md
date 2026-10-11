@@ -64,7 +64,7 @@ Veri üzerinde yapılan başlıca düzeltmeler:
 - İstasyon adlarındaki yazım hataları düzeltildi. Örneğin `15.tem` → `15 Temmuz`, `Itü` → `İTÜ-Ayazağa` ve eksik Türkçe karakterler.
 - Yanlış ilçe bilgileri düzeltildi.
 - Aynı istasyona ait birden fazla kayıt birleştirildi. Örneğin T4 Kiptaş Venezia ve M2 Seyrantepe.
-- Hat güzergâhından 140 metreden fazla uzak kalan 9 istasyonun koordinatları OSM'deki durak noktalarına göre düzeltildi.
+- Hat güzergâhından belirgin biçimde uzak kalan 9 istasyonun koordinatları (düzeltmeler yaklaşık 140–800 metre) OSM'deki durak noktalarına göre düzeltildi.
 - Bu düzeltmeler arasındaki en büyük fark M9 Ataköy'de yaklaşık 800 metreydi.
 - M5 Yamanevler'in koordinatı da ayrıca düzeltildi.
 
