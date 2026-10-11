@@ -184,7 +184,6 @@ kbd{font:inherit;color:var(--text);border:1px solid var(--control);border-radius
 .key-t{font-size:var(--fs-cap);font-weight:600;color:var(--muted);margin-bottom:3px;white-space:nowrap}
 .key svg{display:block;overflow:visible}
 .key circle{fill:none;stroke:var(--hub);stroke-width:1.5}
-.key circle.nk{fill:var(--hub);stroke:none}
 .key polyline{fill:none;stroke:var(--muted);stroke-width:1}
 .key text{font-size:var(--fs-cap);fill:var(--text);font-variant-numeric:tabular-nums}
 
@@ -531,7 +530,6 @@ tr:{
   atif:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap katkıcıları',
   ipucuYok:'bu seçimde yolcu yok',
   anahtarYil:'Yıllık yolcu', anahtarGun:'Günlük ortalama',
-  anahtarAlt:'{v} altı', anahtarEtiketAlt:'{e}; {v} altındaki istasyonlar nokta olarak gösterilir',
   anahtarEtiketYil:'Daire boyutu göstergesi, yıllık yolcu: {liste}',
   anahtarEtiketGun:'Daire boyutu göstergesi, günlük ortalama yolcu: {liste}',
   /* istasyon ve aktarma merkezi pencereleri */
@@ -622,7 +620,6 @@ en:{
   atif:'&copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors',
   ipucuYok:'no passengers in this selection',
   anahtarYil:'Passengers / year', anahtarGun:'Daily average',
-  anahtarAlt:'under {v}', anahtarEtiketAlt:'{e}; stations under {v} are shown as dots',
   anahtarEtiketYil:'Circle size legend, passengers per year: {liste}',
   anahtarEtiketGun:'Circle size legend, daily average passengers: {liste}',
   kapat:'Close', istasyon:'Station',
@@ -843,22 +840,8 @@ const routeLayer = L.layerGroup().addTo(map), dotLayer = L.layerGroup().addTo(ma
 const routes = {}, casings = {}, markers = new Map(), drawn = [];
 let labelsOn = true, openKey = null;
 
-function radius(pax){const z=map.getZoom();const k=Math.pow(1.28,z-11);return Math.max(2.5,(1.6+Math.sqrt(pax/1e6)*2.7)*k)}
-
-/* ---------- Uzak görünüm: küçük istasyonlar nokta olur, hatlar incelir, zemin adları gizlenir ---------- */
 const KOYU = '#12161b';   // koyu görünümde daire kenarı ve hat kılıfı: daireler hattan ve birbirinden ayrılır
-const uzak = () => !focusLine && map.getZoom()<12;
-const esik = () => isDef()?5e6:15e3*365;   // yılda 5 mn ya da günde 15 bin
-function isaret(it){
-  const light=theme==='light', zero=bos(it.pax), u=uzak(), n=u&&!zero&&it.pax<esik();
-  return {radius:n?2:radius(it.pax),color:light?mix(it.color,INK):KOYU,weight:n?0:it.multi?2:1.2,fillColor:n?(light?mix(it.color,INK):'#f8fafc'):it.color,
-    fillOpacity:zero?0:n?(light?.95:.8):u?it.st.fill*.85:it.st.fill,opacity:it.st.stroke>.5?1:it.st.stroke};
-}
-const kalin = l => (LINES[l].width||4)*(uzak()?.62:1);
-function ayrinti(){
-  ORDER.forEach(l=>{const w=kalin(l);routes[l].forEach(p=>p.setStyle({weight:w}));casings[l].forEach(p=>p.setStyle({weight:w+(uzak()?1.5:2)}))});
-  ref.setOpacity(map.getZoom()<12?0:1);
-}
+function radius(pax){const z=map.getZoom();const k=Math.pow(1.28,z-11);return Math.max(2.5,(1.6+Math.sqrt(pax/1e6)*2.7)*k)}
 
 function drawRoutes(){
   const osm=Object.fromEntries(ROUTES.features.map(f=>[f.properties.line,f.geometry.coordinates]));
@@ -898,13 +881,12 @@ function syncPopOpts(){const o=popOpts();markers.forEach(m=>Object.assign(m.getP
 function panelPad(){return mobile()?{paddingTopLeft:[16,focusLine?Math.max(76,chipB()+4):16],paddingBottomRight:[64,liftPx()+28]}:{paddingTopLeft:[panelOff?64:370,focusLine?60:20],paddingBottomRight:[60,24]}}
 
 /* seçili istasyonu haritada belirginleştir */
-function hiOn(m){m.sel={weight:m.options.weight,color:m.options.color,fillOpacity:m.options.fillOpacity,opacity:m.options.opacity};m.setStyle({weight:3,color:hubCol(),fillOpacity:.9,opacity:1});if(m.getRadius()<4)m.setRadius(4);m.bringToFront()}
-function hiOff(m){if(!m.sel)return;const s=m.sel;m.sel=null;if(!map.hasLayer(m))return;m.setStyle(s);m.setRadius(isaret(m.it).radius);for(let j=drawn.indexOf(m)+1;j>0&&j<drawn.length;j++)drawn[j].bringToFront()}
+function hiOn(m){m.sel={weight:m.options.weight,color:m.options.color,fillOpacity:m.options.fillOpacity,opacity:m.options.opacity};m.setStyle({weight:3,color:hubCol(),fillOpacity:.9,opacity:1});m.bringToFront()}
+function hiOff(m){if(!m.sel)return;const s=m.sel;m.sel=null;if(!map.hasLayer(m))return;m.setStyle(s);for(let j=drawn.indexOf(m)+1;j>0&&j<drawn.length;j++)drawn[j].bringToFront()}
 
 function render(){
   routeLayer.clearLayers(); dotLayer.clearLayers(); markers.clear(); drawn.length=0;
   const light = theme==='light', po = popOpts();
-  ayrinti();
   const order = (focusLine ? [...ORDER.filter(l=>l!==focusLine),focusLine] : ORDER).filter(l=>visible.has(l));
   order.forEach(l=>{const s=styleFor(l);casings[l].forEach(p=>{p.setStyle({color:light?INK:KOYU,opacity:(light?.6:.75)*s.route/.9});p.addTo(routeLayer)})});
   order.forEach(l=>{const s=styleFor(l);routes[l].forEach(p=>{p.setStyle({opacity:s.route});p.addTo(routeLayer)})});
@@ -912,8 +894,8 @@ function render(){
   // büyükler altta, küçükler üstte kalsın ki hepsi tıklanabilsin; odaktaki hat en üstte
   items.sort((a,b)=>(a.focus-b.focus)||(b.pax-a.pax)).forEach(it=>{
     const zero=bos(it.pax);   // seçimde yolcusu olmayan istasyon: küçük, içi boş daire
-    const m=L.circleMarker([it.lat,it.lon],isaret(it));
-    m.pax=it.pax; m.it=it;
+    const m=L.circleMarker([it.lat,it.lon],{radius:radius(it.pax),color:light?mix(it.color,INK):KOYU,weight:it.multi?2:1.2,fillColor:it.color,fillOpacity:zero?0:it.st.fill,opacity:it.st.stroke>.5?1:it.st.stroke});
+    m.pax=it.pax;
     m.bindTooltip(`${(it.multi?it.members.map(x=>x.line):[it.line]).map(badge).join('')}<b>${esc(it.name)}</b> · ${zero?t('ipucuYok'):valU(it.pax)}`,{className:'tt',direction:'top',offset:[0,-4]});
     m.bindPopup(()=>it.multi?hubPopup(it.hub):stationPopup(it.s),po);
     m.on('popupopen',()=>{openKey=it.key;hiOn(m)}).on('popupclose',()=>{if(openKey===it.key)openKey=null;hiOff(m)});
@@ -1218,12 +1200,10 @@ function updateKey(){
   const fs=parseFloat(getComputedStyle($('key-t')).fontSize)||11, lh=Math.max(mobile()?15:13,Math.round(fs*1.2)), up=Math.round(fs*.36);   // satır yüksekliği yazı boyutuna bağlı
   const R=rs[0], B=2*R+8, cx=R+2, lx=2*R+16;
   let y=0; const ys=rs.map((r,i)=>y=Math.max(B-2*r+4,i?y+lh:Math.round(fs)));
-  const u=uzak(), alt=u?t('anahtarAlt',{v:ad(def?esik():esik()/365)}):'', H0=Math.ceil(Math.max(B,y+4))+1, H=H0+(u?lh+3:0), W=Math.ceil(Math.max(lx+fs*(def?4.3:4.7),u?lx+fs*alt.length*.6:0));
+  const H=Math.ceil(Math.max(B,y+4))+1, W=Math.ceil(lx+fs*(def?4.3:4.7));
   const s=$('key-svg'); s.setAttribute('width',W); s.setAttribute('height',H); s.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-up} ${lx-3},${ys[i]-up}"/><text x="${lx}" y="${ys[i]}">${ad(vs[i])}</text>`).join('')
-    +(u?`<circle class="nk" cx="${cx}" cy="${H0+lh-up}" r="2"/><text x="${lx}" y="${H0+lh}">${alt}</text>`:'');   // uzak görünümde nokta olarak çizilen istasyonlar
-  const e=t(def?'anahtarEtiketYil':'anahtarEtiketGun',{liste:vs.map(ad).join(', ')});
-  $('key').setAttribute('aria-label',u?t('anahtarEtiketAlt',{e,v:ad(def?esik():esik()/365)}):e);
+  s.innerHTML=rs.map((r,i)=>`<circle cx="${cx}" cy="${(B-r).toFixed(1)}" r="${r.toFixed(1)}"/><polyline points="${cx},${(B-2*r).toFixed(1)} ${lx-9},${ys[i]-up} ${lx-3},${ys[i]-up}"/><text x="${lx}" y="${ys[i]}">${ad(vs[i])}</text>`).join('');
+  $('key').setAttribute('aria-label',t(def?'anahtarEtiketYil':'anahtarEtiketGun',{liste:vs.map(ad).join(', ')}));
 }
 
 /* ---------- Etiketler ---------- */
@@ -1339,10 +1319,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){const r=ret;map.closePopup();if(focusLine)clearFocus();if(r&&r.isConnected&&r.offsetParent)r.focus()}
   else if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&document.activeElement!==q){e.preventDefault();q.focus()}
 });
-map.on('zoomend',()=>{
-  ayrinti();
-  markers.forEach(m=>{const s=isaret(m.it);if(m.sel){m.sel={weight:s.weight,color:s.color,fillOpacity:s.fillOpacity,opacity:s.opacity};m.setRadius(Math.max(s.radius,4))}else m.setStyle(s)});
-  updateLabels();updateKey()});
+map.on('zoomend',()=>{markers.forEach(m=>m.setRadius(radius(m.pax)));updateLabels();updateKey()});
 map.on('moveend',updateLabels);
 
 /* ---------- Başlangıç ve yeniden yerleşim ---------- */

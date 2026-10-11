@@ -2,7 +2,7 @@
 
 İstasyon Kullanım Haritası
 
-Bu proje, İstanbul'daki raylı sistem istasyonlarının 2025 yılı yolcu sayılarını etkileşimli bir harita üzerinde gösterir. Hat güzergâhları, OpenStreetMap'ten alınan gerçek ray geometrileri kullanılarak çizilmiştir. Harita uzaktan bakılırken sadeleşir: yılda 5 milyondan az yolcusu olan istasyonlar küçük nokta olarak çizilir, hatlar incelir ve zemin haritanın yer adları gizlenir; yaklaşınca tam görünüm geri gelir.
+Bu proje, İstanbul'daki raylı sistem istasyonlarının 2025 yılı yolcu sayılarını etkileşimli bir harita üzerinde gösterir. Hat güzergâhları, OpenStreetMap'ten alınan gerçek ray geometrileri kullanılarak çizilmiştir.
 
 Altlık: Esri World Gray Canvas (açık/koyu tema).  
 Kaynaklar: Yolcu verileri İBB Açık Veri Portalı; ray geometrileri ve durak noktaları © OpenStreetMap katkıcıları (ODbL).
