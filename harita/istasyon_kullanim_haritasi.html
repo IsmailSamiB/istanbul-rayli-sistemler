@@ -17,7 +17,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#eef1f5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0b0f14" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2322c55e'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='system-ui,Arial,sans-serif' font-size='20' font-weight='700' fill='%230b0f14'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%238ed1a0'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='system-ui,Arial,sans-serif' font-size='20' font-weight='700' fill='%230b0f14'%3EM%3C/text%3E%3C/svg%3E">
 <script>
 /* Görünüm: kullanıcı seçimi yoksa sistem ayarı izlenir; boyamadan önce uygulanır */
 (function(){var t=null;try{localStorage.removeItem('ist-theme');t=localStorage.getItem('ist-gorunum')}catch(e){}
@@ -669,43 +669,43 @@ if(window.L){   /* kitaplık yüklenemediyse yalnızca uyarı görünür */
 
 /* ---------- Hat tanımları: renk, tür, uçlar ve istasyon sırası ---------- */
 const LINES = {
-  M1:{name:"Yenikapı – Atatürk Havalimanı / Kirazlı",type:"Metro",color:"#ef4444",
+  M1:{name:"Yenikapı – Atatürk Havalimanı / Kirazlı",type:"Metro",color:"#f2938c",
       seq:[["Yenikapı","Aksaray","Emniyet","Ulubatlı","Bayrampaşa","Sağmalcılar","Kocatepe","Otogar","Terazidere","Davutpaşa","Merter","Zeytinburnu","Bakırköy-İncirli","Bahçelievler","Ataköy-Şirinevler","Yenibosna","DTM-Fuar Merkezi","Atatürk Havalimanı"],["Otogar","Esenler","Menderes","Üçyüzlü","Bağcılar Meydan","Kirazlı"]]},
-  M2:{name:"Yenikapı – Hacıosman",type:"Metro",color:"#22c55e",
+  M2:{name:"Yenikapı – Hacıosman",type:"Metro",color:"#8ed1a0",
       seq:[["Yenikapı","Vezneciler","Haliç","Şişhane","Taksim","Osmanbey","Şişli-Mecidiyeköy","Gayrettepe","Levent","4 Levent","Sanayi Mah.","İTÜ-Ayazağa","Atatürk Oto Sanayi","Darüşşafaka","Hacıosman"],["Sanayi Mah.","Seyrantepe"]]},
-  M3:{name:"Bakırköy İDO – Kayaşehir Merkez",type:"Metro",color:"#38bdf8",
+  M3:{name:"Bakırköy İDO – Kayaşehir Merkez",type:"Metro",color:"#8cc8ea",
       seq:[["Bakırköy İDO","Özgürlük Meydanı","İncirli","Haznedar","İlkyuva","Yıldıztepe","Molla Gürani","Kirazlı","Yeni Mahalle","Mahmutbey","İSTOÇ","İkitelli Sanayi","Turgut Özal","Siteler","Başak Konutları","Metrokent","Onurkent","Şehir Hastanesi","Toplu Konutlar","Kayaşehir Merkez"]]},
-  M4:{name:"Kadıköy – Sabiha Gökçen Havalimanı",type:"Metro",color:"#ec4899",
+  M4:{name:"Kadıköy – Sabiha Gökçen Havalimanı",type:"Metro",color:"#e98fbb",
       seq:[["Kadıköy","Ayrılıkçeşme","Acıbadem","Ünalan","Göztepe","Yenisahra","Kozyatağı","Bostancı","Küçükyalı","Maltepe","Huzurevi","Gülsuyu","Esenkent","Hastane-Adliye","Soğanlık","Kartal","Yakacık","Pendik","Tavşantepe","Fevzi Çakmak-Hastane","Yayalar","Kurtköy","Sabiha Gökçen Havalimanı"]]},
-  M5:{name:"Üsküdar – Samandıra Merkez",type:"Metro",color:"#8b5cf6",
+  M5:{name:"Üsküdar – Samandıra Merkez",type:"Metro",color:"#b3a2ea",
       seq:[["Üsküdar","Fıstıkağacı","Bağlarbaşı","Altunizade","Kısıklı","Bulgurlu","Ümraniye","Çarşı","Yamanevler","Çakmak","Ihlamurkuyu","Altınşehir","İmam Hatip Lisesi","Dudullu","Necip Fazıl","Çekmeköy","Meclis","Sarıgazı","Sancaktepe","Samandıra Merkez"]]},
-  M6:{name:"Levent – Boğaziçi Ü./Hisarüstü",type:"Metro",color:"#d4a373",seq:[["Levent","Nispetiye","Etiler","Boğaziçi"]]},
-  M7:{name:"Yıldız – Mahmutbey",type:"Metro",color:"#f9a8d4",
+  M6:{name:"Levent – Boğaziçi Ü./Hisarüstü",type:"Metro",color:"#d4b396",seq:[["Levent","Nispetiye","Etiler","Boğaziçi"]]},
+  M7:{name:"Yıldız – Mahmutbey",type:"Metro",color:"#f5cade",
       seq:[["Yıldız","Fulya","Mecidiyeköy","Çağlayan","Kağıthane","Nurtepe","Alibeyköy","Çırçır","Veysel Karani","Yeşilpınar","Kazım Karabekir","Yenimahalle","Karadeniz Mah.","Tekstilkent","Oruç Reis","Göztepe Mah.","Mahmutbey"]]},
-  M8:{name:"Bostancı – Parseller",type:"Metro",color:"#3b82f6",
+  M8:{name:"Bostancı – Parseller",type:"Metro",color:"#8fa9e6",
       seq:[["Bostancı","Emin Ali Paşa","Ayşe Kadın","Kozyatağı","Küçükbakkalköy","İçerenköy","Kayışdağı","Mevlana","İMES","Modoko-KEYAP","Dudullu","Huzur","Parseller"]]},
-  M9:{name:"Ataköy – Olimpiyat",type:"Metro",color:"#facc15",
+  M9:{name:"Ataköy – Olimpiyat",type:"Metro",color:"#f1da86",
       seq:[["Ataköy","Yenibosna","Çobançeşme","29 Ekim Cumhuriyet","Doğu Sanayi","Mimar Sinan","15 Temmuz","Halkalı Caddesi","Atatürk Mahallesi","Bahariye","MASKO","İkitelli Sanayi","Ziya Gökalp Mah.","Olimpiyat"]]},
-  M11:{name:"Gayrettepe – İstanbul Havalimanı – Arnavutköy",type:"Metro",color:"#14b8a6",
+  M11:{name:"Gayrettepe – İstanbul Havalimanı – Arnavutköy",type:"Metro",color:"#7fcdbf",
       seq:[["Gayrettepe","Kağıthane","Hasdal","Kemerburgaz","Göktürk","İhsaniye","İstanbul Havalimanı","Taşoluk","Arnavutköy"]]},
-  Marmaray:{name:"Marmaray · Halkalı – Gebze",type:"Banliyö",color:"#cbd5e1",width:5,
+  Marmaray:{name:"Marmaray · Halkalı – Gebze",type:"Banliyö",color:"#d3d9e2",width:5,
       seq:[["Halkalı","Mustafa Kemal","Küçükçekmece","Florya","Florya Akvaryum","Yeşilköy","Yeşilyurt","Ataköy","Bakırköy","Yenimahalle","Zeytinburnu","Kazlıçeşme","Yenikapı","Sirkeci","Üsküdar","Ayrılıkçeşme","Söğütlüçeşme","Feneryolu","Göztepe","Erenköy","Suadiye","Bostancı","Küçükyalı","İdealtepe","Süreyya Plajı","Maltepe","Cevizli","Atalar","Başak","Kartal","Yunus","Pendik","Kaynarca","Tersane","Güzelyalı","Aydıntepe","İçmeler","Tuzla","Çayırova","Fatih","Osmangazi","Darıca","Gebze"]]},
-  SK:{name:"Sirkeci – Kazlıçeşme (TCDD)",type:"Banliyö",color:"#a8b3c4",dash:"6 6",
+  SK:{name:"Sirkeci – Kazlıçeşme (TCDD)",type:"Banliyö",color:"#b4bdcc",dash:"6 6",
       seq:[["Sirkeci","Cankurtaran","Kumkapı","Yenikapı","Cerrahpaşa","Koca Mustafa Paşa","Yedikule","Kazlıçeşme"]]},
-  HB:{name:"Halkalı – Bahçeşehir (TCDD)",type:"Banliyö",color:"#a8b3c4",dash:"2 6",seq:[["Halkalı","Ispartakule","Bahçeşehir"]]},
-  T1:{name:"Kabataş – Bağcılar",type:"Tramvay",color:"#fb923c",
+  HB:{name:"Halkalı – Bahçeşehir (TCDD)",type:"Banliyö",color:"#b4bdcc",dash:"2 6",seq:[["Halkalı","Ispartakule","Bahçeşehir"]]},
+  T1:{name:"Kabataş – Bağcılar",type:"Tramvay",color:"#f6b584",
       seq:[["Kabataş","Fındıklı","Tophane","Karaköy","Eminönü","Sirkeci","Gülhane","Sultanahmet","Çemberlitaş","Beyazıt","Laleli","Aksaray","Yusufpaşa","Haseki","Fındıkzade","Çapa","Pazartekke","Topkapı","Atatürk Öğrenci Yurdu","Merkezefendi","Akşemsettin","Mithatpaşa","Zeytinburnu","Mehmetakif","Keresteciler","Güngören","Akıncılar","Soğanlı","Cami","Güneştepe","Bağcılar"]]},
-  T2:{name:"Taksim – Tünel (nostaljik)",type:"Tramvay",color:"#fca5a5",seq:[]},
-  T3:{name:"Kadıköy – Moda (nostaljik)",type:"Tramvay",color:"#fde68a",seq:[]},
-  T4:{name:"Topkapı – Mescid-i Selam",type:"Tramvay",color:"#a3e635",
+  T2:{name:"Taksim – Tünel (nostaljik)",type:"Tramvay",color:"#f1c3ba",seq:[]},
+  T3:{name:"Kadıköy – Moda (nostaljik)",type:"Tramvay",color:"#f4e8b8",seq:[]},
+  T4:{name:"Topkapı – Mescid-i Selam",type:"Tramvay",color:"#c3e196",
       seq:[["Topkapı","Fetihkapı","Vatan","Edirnekapı","Şehitlik","Demirkapı","Topçular","Rami","Bereç","Sağmalcılar","Çukurçeşme","Ali Fuat Başgil","Taşköprü","Karadeniz Mahallesi","Kiptaş Venezia","Cumhuriyet","Baştabya","Hacı Şükrü","Yenimahalle","Sultançiftliği","Cebeci","Mescidi Selam"]]},
-  T5:{name:"Eminönü – Alibeyköy Cep Otogarı",type:"Tramvay",color:"#d97706",
+  T5:{name:"Eminönü – Alibeyköy Cep Otogarı",type:"Tramvay",color:"#c9c182",
       seq:[["Eminönü","Küçükpazar","Cibali","Fener","Balat","Ayvansaray","Feshane","Eyüp Teleferik","Eyüp Devlet Hastanesi","Silahtarağa","Üniversite","Alibeyköy Merkez","Alibeyköy Metro","Alibeyköy Cep Otogarı"]]},
-  F1:{name:"Taksim – Kabataş",type:"Füniküler / Teleferik",color:"#e2e8f0",seq:[["Taksim","Kabataş"]]},
-  F2:{name:"Karaköy – Beyoğlu (Tünel)",type:"Füniküler / Teleferik",color:"#a8a29e",seq:[["Karaköy","Beyoğlu"]]},
-  F4:{name:"Boğaziçi Ü./Hisarüstü – Aşiyan",type:"Füniküler / Teleferik",color:"#67e8f9",seq:[["Rumeli Hisarüstü","Aşiyan"]]},
-  TF1:{name:"Maçka – Taşkışla",type:"Füniküler / Teleferik",color:"#fda4af",seq:[]},
-  TF2:{name:"Eyüp – Piyer Loti",type:"Füniküler / Teleferik",color:"#fb7185",seq:[["Eyüp","Piyer Loti"]]},
+  F1:{name:"Taksim – Kabataş",type:"Füniküler / Teleferik",color:"#ece6da",seq:[["Taksim","Kabataş"]]},
+  F2:{name:"Karaköy – Beyoğlu (Tünel)",type:"Füniküler / Teleferik",color:"#b1b0b0",seq:[["Karaköy","Beyoğlu"]]},
+  F4:{name:"Boğaziçi Ü./Hisarüstü – Aşiyan",type:"Füniküler / Teleferik",color:"#a3e1e9",seq:[["Rumeli Hisarüstü","Aşiyan"]]},
+  TF1:{name:"Maçka – Taşkışla",type:"Füniküler / Teleferik",color:"#f4bcc8",seq:[]},
+  TF2:{name:"Eyüp – Piyer Loti",type:"Füniküler / Teleferik",color:"#e6a3ad",seq:[["Eyüp","Piyer Loti"]]},
 };
 const TYPES = ["Metro","Banliyö","Tramvay","Füniküler / Teleferik"];
 const OPEN_TYPES = ["Metro","Tramvay"];
